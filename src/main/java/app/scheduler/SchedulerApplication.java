@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SchedulerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SchedulerApplication.class, args);
-		System.out.println("Spring Boot server running on port https://localhost:8080");
+		System.out.println("Spring Boot server running on https://localhost:8080");
 	}
 
 }

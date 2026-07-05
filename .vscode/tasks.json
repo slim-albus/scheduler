@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "1. Live Compiler",
+            "type": "shell",
+            "command": "./gradlew compileJava -t --quiet",
+            "problemMatcher": [],
+            "presentation": {
+                "group": "dev-group",
+                "panel": "dedicated",
+                "focus": false
+            }
+        },
+        {
+            "label": "2. Spring Server",
+            "type": "shell",
+            "command": "./gradlew bootRun",
+            "problemMatcher": [],
+            "presentation": {
+                "group": "dev-group",
+                "panel": "dedicated",
+                "focus": true
+            }
+        },
+        {
+            "label": "Run Dev Environment",
+            "dependsOn": [
+                "1. Live Compiler",
+                "2. Spring Server"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
