@@ -7,6 +7,7 @@ public class Student {
      * section
      * year
      * program
+     * group
 
      */
 }

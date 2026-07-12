@@ -7,7 +7,7 @@ public class Room {
      * capacity
      * type(lecture/lab)
      * level
-     * hastv?
+     * hasTv?
      * Availability
      */
 }

@@ -16,3 +16,18 @@ POST /api/admin/schedule/generate ➔ Triggers the algorithmic mass schedule gen
 GET | POST | DELETE /api/admin/students ➔ Baseline student catalog dashboard manipulation.
 
 GET | POST | DELETE /api/admin/teachers ➔ Baseline faculty catalog dashboard manipulation.
+
+
+
+/api/schedule?day=''
+/api/schedule?week=''
+
+/api/map
+
+api/manage/users
+api/manage/students
+api/manage/teachers
+api/manage/sections
+api/manage/schedule/generate
+api/manage/rooms
+api/manage/semesters

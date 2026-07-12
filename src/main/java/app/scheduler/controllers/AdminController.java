@@ -1,6 +1,6 @@
 package app.scheduler.controllers;
 
-public class AdminCrudController {
+public class AdminController {
     // @PostMapping("/admin/create")
     
 

@@ -1,5 +1,5 @@
 package app.scheduler.services;
 
-public class SchedulerEngine {
+public class AdminService {
     
 }

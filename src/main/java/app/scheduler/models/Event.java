@@ -11,10 +11,14 @@ public class Event {
     * section
     * teacher
     * semester
+    * group
     *
+    * version
+    * 
     * slot
     * day
     * week
+    * date(date time)
     */
 }
 
