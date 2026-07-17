@@ -1,25 +1,72 @@
 package app.scheduler.models;
 
+import java.time.LocalDateTime;
+
 public class Event {
-    /**
-    * id
-    * type(exam, lecture, lab)
-    * status
-    * topic
-    *
-    * room
-    * section
-    * teacher
-    * semester
-    * group
-    *
-    * version
-    * 
-    * slot
-    * day
-    * week
-    * date(date time)
-    */
+    private String id;
+    private String type;
+    private String topic;
+    private String sectionId;
+    private String courseId;
+    private String teacherId;
+    private String roomId;
+    private String semesterId;
+    private String batchId;
+    private int labGroup;
+    private int day;
+    private int period;
+    private int week;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
+    private int durationMinutes;
+    private int instance;
+    private String createdBy;
+    private LocalDateTime createdAt;
+    private int version;
+    private String status = "SCHEDULED";
+
+    public Event() {}
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public String getTopic() { return topic; }
+    public void setTopic(String topic) { this.topic = topic; }
+    public String getSectionId() { return sectionId; }
+    public void setSectionId(String sectionId) { this.sectionId = sectionId; }
+    public String getCourseId() { return courseId; }
+    public void setCourseId(String courseId) { this.courseId = courseId; }
+    public String getTeacherId() { return teacherId; }
+    public void setTeacherId(String teacherId) { this.teacherId = teacherId; }
+    public String getRoomId() { return roomId; }
+    public void setRoomId(String roomId) { this.roomId = roomId; }
+    public String getSemesterId() { return semesterId; }
+    public void setSemesterId(String semesterId) { this.semesterId = semesterId; }
+    public String getBatchId() { return batchId; }
+    public void setBatchId(String batchId) { this.batchId = batchId; }
+    public int getLabGroup() { return labGroup; }
+    public void setLabGroup(int labGroup) { this.labGroup = labGroup; }
+    public int getDay() { return day; }
+    public void setDay(int day) { this.day = day; }
+    public int getPeriod() { return period; }
+    public void setPeriod(int period) { this.period = period; }
+    public int getWeek() { return week; }
+    public void setWeek(int week) { this.week = week; }
+    public LocalDateTime getStartDateTime() { return startDateTime; }
+    public void setStartDateTime(LocalDateTime startDateTime) { this.startDateTime = startDateTime; }
+    public LocalDateTime getEndDateTime() { return endDateTime; }
+    public void setEndDateTime(LocalDateTime endDateTime) { this.endDateTime = endDateTime; }
+    public int getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(int durationMinutes) { this.durationMinutes = durationMinutes; }
+    public int getInstance() { return instance; }
+    public void setInstance(int instance) { this.instance = instance; }
+    public String getCreatedBy() { return createdBy; }
+    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public int getVersion() { return version; }
+    public void setVersion(int version) { this.version = version; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }
-
-

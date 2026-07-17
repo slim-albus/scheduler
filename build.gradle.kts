@@ -20,13 +20,13 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	implementation("org.aspectj:aspectjweaver:1.9.22")
 	implementation("org.hibernate.orm:hibernate-community-dialects")
 	implementation("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.xerial:sqlite-jdbc")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	
 }
 
 tasks.withType<Test> {

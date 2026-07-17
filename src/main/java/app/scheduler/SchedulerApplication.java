@@ -10,6 +10,5 @@ public class SchedulerApplication {
 		SpringApplication.run(SchedulerApplication.class, args);
 		System.out.println("Spring Boot server running on https://localhost:8080");
 	}
-
 }
 

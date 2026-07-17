@@ -1,5 +1,9 @@
 package app.scheduler.repositories;
 
-public class TeacherRepository {
+import app.scheduler.models.Teacher;
+import java.util.List;
+import java.util.Optional;
 
+public interface TeacherRepository extends Repository<Teacher> {
+    
 }
