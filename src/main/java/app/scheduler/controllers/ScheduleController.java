@@ -3,8 +3,7 @@ package app.scheduler.controllers;
 import app.scheduler.generator.GeneratorConfig;
 import app.scheduler.models.Event;
 import app.scheduler.models.User;
-import app.scheduler.models.dtos.GeneratorConfigRequest;
-import app.scheduler.models.dtos.RoomOccupationDto;
+import app.scheduler.models.dtos.SlotDto;
 import app.scheduler.services.ScheduleQueryService;
 import app.scheduler.services.ScheduleService;
 import app.scheduler.services.LoggerService;
@@ -27,41 +26,43 @@ public class ScheduleController {
         this.queryService = queryService;
     }
 
-    @PostMapping("/generate/{semesterId}")
-    public ResponseEntity<List<Event>> generateSchedule(
-            @PathVariable String semesterId,
-            @RequestBody GeneratorConfigRequest configRequest) {
-        GeneratorConfig config = new GeneratorConfig();
-        config.setPopulationSize(configRequest.populationSize);
-        List<Event> events = scheduleService.generateSchedule(semesterId, config);
-        return ResponseEntity.ok(events);
-    }
-    
-    @GetMapping("/section/{sectionId}")
-    public ResponseEntity<List<Event>> getSectionSchedule(
-            @PathVariable String sectionId,
-            @RequestParam(required = false) Integer week) {
-        if (week != null) {
-            return ResponseEntity.ok(queryService.getEventsBySectionAndWeek(sectionId, week));
+    @GetMapping
+    public ResponseEntity<List<Event>> getSchedule(
+            @RequestParam(required = false) String semesterId,
+            @RequestParam(required = false) String sectionId,
+            @RequestParam(required = false) String teacherId,
+            HttpServletRequest request) {
+        
+        User user = (User) request.getAttribute("user");
+        String role = user.getRole();
+        loggerService.logSchedule("Fetching schedule for " + role + " " + user.getUsername());
+        
+        if ("STUDENT".equals(role)) {
+            return ResponseEntity.ok(scheduleService.getScheduleForStudent(user.getStudentId()));
+        } else if ("TEACHER".equals(role)) {
+            return ResponseEntity.ok(queryService.getEventsByTeacher(user.getTeacherId()));
+        } else {
+            // ADMIN
+            return ResponseEntity.ok(queryService.getAllEvents(semesterId, sectionId, teacherId));
         }
-        return ResponseEntity.ok(queryService.getEventsBySection(sectionId));
     }
-    
-    @GetMapping("/student/{studentId}")
-    public ResponseEntity<List<Event>> getStudentSchedule(@PathVariable String studentId) {
-        return ResponseEntity.ok(scheduleService.getScheduleForStudent(studentId));
-    }
-    
-    @GetMapping("/rooms/occupation")
-    public ResponseEntity<List<RoomOccupationDto>> getRoomOccupation(
-            @RequestParam(required = false) Integer day,
-            @RequestParam(required = false) Integer period) {
-        return ResponseEntity.ok(queryService.getRoomOccupation(day, period));
+
+    @GetMapping("/slots/available")
+    public ResponseEntity<List<SlotDto>> getAvailableSlots(
+            @RequestParam(required = false) String semesterId,
+            @RequestParam(required = false) String sectionId,
+            @RequestParam(required = false) String teacherId,
+            @RequestParam(required = false) String roomId,
+            @RequestParam(required = false) String eventIdToIgnore) {
+            
+        loggerService.logSchedule("Fetching available slots for section: " + sectionId + " room: " + roomId);
+        return ResponseEntity.ok(queryService.getAvailableSlots(semesterId, sectionId, teacherId, roomId, eventIdToIgnore));
     }
 
     @PutMapping("/event/{id}/cancel")
     public ResponseEntity<Event> cancelEvent(@PathVariable String id, HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
+        loggerService.logSchedule("User " + user.getUsername() + " cancelling event: " + id);
         return ResponseEntity.ok(scheduleService.cancelEvent(id, user));
     }
 
@@ -73,12 +74,14 @@ public class ScheduleController {
             @RequestParam String roomId,
             HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
+        loggerService.logSchedule("User " + user.getUsername() + " rescheduling event: " + id + " to day " + day + " period " + period);
         return ResponseEntity.ok(scheduleService.rescheduleEvent(id, day, period, roomId, user));
     }
 
     @PostMapping("/event")
     public ResponseEntity<Event> bookEvent(@RequestBody Event event, HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
+        loggerService.logSchedule("User " + user.getUsername() + " booking new event for section: " + event.getSectionId());
         return ResponseEntity.ok(scheduleService.bookEvent(event, user));
     }
 }

@@ -6,6 +6,7 @@ import app.scheduler.models.Teacher;
 import app.scheduler.models.Course;
 import app.scheduler.models.Section;
 import app.scheduler.models.Batch;
+import app.scheduler.models.dtos.SlotDto;
 import app.scheduler.models.dtos.EventDto;
 import app.scheduler.models.dtos.RoomOccupationDto;
 import app.scheduler.repositories.*;
@@ -52,6 +53,41 @@ public class ScheduleQueryService {
     
     public List<Event> getEventsByTeacherAndDay(String teacherId, int day) {
         return eventRepo.findByTeacherIdAndDay(teacherId, day);
+    }
+
+    public List<Event> getAllEvents(String semesterId, String sectionId, String teacherId) {
+        List<Event> all = eventRepo.findAll();
+        return all.stream()
+            .filter(e -> semesterId == null || semesterId.equals(e.getSemesterId()))
+            .filter(e -> sectionId == null || sectionId.equals(e.getSectionId()))
+            .filter(e -> teacherId == null || teacherId.equals(e.getTeacherId()))
+            .toList();
+    }
+    
+    public List<SlotDto> getAvailableSlots(String semesterId, String sectionId, String teacherId, String roomId, String eventIdToIgnore) {
+        List<Event> conflicts = eventRepo.findAll().stream()
+            .filter(e -> semesterId == null || semesterId.equals(e.getSemesterId()))
+            .filter(e -> !"CANCELED".equals(e.getStatus()))
+            .filter(e -> eventIdToIgnore == null || !e.getId().equals(eventIdToIgnore))
+            .filter(e -> 
+                (sectionId != null && sectionId.equals(e.getSectionId())) ||
+                (teacherId != null && teacherId.equals(e.getTeacherId())) ||
+                (roomId != null && roomId.equals(e.getRoomId()))
+            )
+            .toList();
+            
+        List<SlotDto> available = new ArrayList<>();
+        for (int day = 1; day <= 5; day++) {
+            for (int period = 1; period <= 6; period++) {
+                int d = day;
+                int p = period;
+                boolean conflict = conflicts.stream().anyMatch(e -> e.getDay() == d && e.getPeriod() == p);
+                if (!conflict) {
+                    available.add(new SlotDto(d, p));
+                }
+            }
+        }
+        return available;
     }
     
     public List<RoomOccupationDto> getRoomOccupation(Integer day, Integer period) {

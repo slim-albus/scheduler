@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.jdbc.UncategorizedSQLException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -40,6 +43,29 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
         loggerService.error("AuthenticationException: " + ex.getMessage());
         return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class, UncategorizedSQLException.class})
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(Exception ex) {
+        String msg = ex.getMessage();
+        if (msg != null && msg.contains("UNIQUE constraint failed")) {
+            // Extract the table.column
+            String details = msg.substring(msg.indexOf("UNIQUE constraint failed"));
+            details = details.split(";")[0].split("\\]")[0]; // Clean it up a bit
+            return buildResponse(HttpStatus.CONFLICT, "Duplicate entry: " + details);
+        } else if (msg != null && msg.contains("FOREIGN KEY constraint failed")) {
+            return buildResponse(HttpStatus.BAD_REQUEST, "Invalid reference: A provided ID does not exist in the database.");
+        } else if (msg != null && msg.contains("NOT NULL constraint failed")) {
+            return buildResponse(HttpStatus.BAD_REQUEST, "Missing required field.");
+        }
+        loggerService.logError("DataIntegrityViolationException: " + msg);
+        return buildResponse(HttpStatus.BAD_REQUEST, "Database constraint violation.");
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        loggerService.error("Malformed JSON payload: " + ex.getMessage());
+        return buildResponse(HttpStatus.BAD_REQUEST, "Invalid request payload. Ensure all data types and formats (like Dates) are correct.");
     }
 
     @ExceptionHandler(SchedulerException.class)

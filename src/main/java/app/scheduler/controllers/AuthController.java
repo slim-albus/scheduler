@@ -21,23 +21,19 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        try {
-            User user = authService.authenticate(request.username, request.password);
-            Session session = authService.createSession(user.getId(), user.getRole());
-            return ResponseEntity.ok(new AuthResponse(session.getToken()));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(e.getMessage());
-        }
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        loggerService.logAuth("Login attempt for username: " + request.username);
+        User user = authService.authenticate(request.username, request.password);
+        Session session = authService.createSession(user.getId(), user.getRole());
+        loggerService.logAuth("Successful login for username: " + request.username);
+        return ResponseEntity.ok(new AuthResponse(session.getToken()));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody AuthRequest request) {
-        try {
-            User user = authService.register(request);
-            return ResponseEntity.ok("User registered: " + user.getUsername());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<String> register(@RequestBody AuthRequest request) {
+        loggerService.logAuth("Registration attempt for username: " + request.username);
+        User user = authService.register(request);
+        loggerService.logAuth("Successful registration for username: " + request.username);
+        return ResponseEntity.ok("User registered: " + user.getUsername());
     }
 }

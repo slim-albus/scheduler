@@ -46,7 +46,7 @@ public class ScheduleService {
     }
 
     public List<Event> generateSchedule(String semesterId, GeneratorConfig config) {
-        Semester semester = semesterRepo.findById(semesterId).orElse(null);
+        Semester semester = semesterRepo.findById(semesterId).orElseThrow(() -> new ResourceNotFoundException("Semester not found"));
         List<Batch> batches = batchRepo.findBySemesterId(semesterId);
         List<Section> sections = sectionRepo.findBySemesterId(semesterId);
         List<Course> courses = courseRepo.findAll();

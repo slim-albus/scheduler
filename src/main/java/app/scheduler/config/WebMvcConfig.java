@@ -9,13 +9,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
+    private final LogInterceptor logInterceptor;
 
-    public WebMvcConfig(AuthInterceptor authInterceptor) {
+    public WebMvcConfig(AuthInterceptor authInterceptor, LogInterceptor logInterceptor) {
         this.authInterceptor = authInterceptor;
+        this.logInterceptor = logInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(logInterceptor).addPathPatterns("/api/**");
+        
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/auth/login", "/api/auth/register");

@@ -4,6 +4,8 @@ import app.scheduler.models.*;
 import app.scheduler.models.dtos.*;
 import app.scheduler.repositories.*;
 import app.scheduler.services.LoggerService;
+import app.scheduler.services.ScheduleService;
+import app.scheduler.generator.GeneratorConfig;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +26,20 @@ public class AdminController {
     private final RoomRepository roomRepo;
     private final StudentRepository studentRepo;
     private final BatchCourseMappingRepository batchcoursemappingRepo;
+    private final ScheduleService scheduleService;
 
     public AdminController(
-SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository sectionRepo, CourseRepository courseRepo, TeacherRepository teacherRepo, RoomRepository roomRepo, StudentRepository studentRepo, BatchCourseMappingRepository batchcoursemappingRepo
-    , LoggerService loggerService) {
+        SemesterRepository semesterRepo, 
+        BatchRepository batchRepo, 
+        SectionRepository sectionRepo, 
+        CourseRepository courseRepo, 
+        TeacherRepository teacherRepo, 
+        RoomRepository roomRepo, 
+        StudentRepository studentRepo, 
+        BatchCourseMappingRepository batchcoursemappingRepo, 
+        ScheduleService scheduleService,
+        LoggerService loggerService) {
+        
         this.loggerService = loggerService;
         this.semesterRepo = semesterRepo;
         this.batchRepo = batchRepo;
@@ -37,6 +49,17 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         this.roomRepo = roomRepo;
         this.studentRepo = studentRepo;
         this.batchcoursemappingRepo = batchcoursemappingRepo;
+        this.scheduleService = scheduleService;
+    }
+
+    @PostMapping("/generate/{semesterId}")
+    public ResponseEntity<List<Event>> generateSchedule(
+            @PathVariable String semesterId,
+            @RequestBody GeneratorConfigRequest configRequest) {
+        GeneratorConfig config = new GeneratorConfig();
+        config.setPopulationSize(configRequest.populationSize);
+        List<Event> events = scheduleService.generateSchedule(semesterId, config);
+        return ResponseEntity.ok(events);
     }
 
     // Semester CRUD
@@ -58,7 +81,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
     public ResponseEntity<Semester> getSemester(@PathVariable String id) {
         return semesterRepo.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new app.scheduler.exceptions.ResourceNotFoundException("Entity not found"));
     }
 
     @PostMapping("/semesters")
@@ -72,7 +95,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (semesterRepo.update(dto)) {
             return ResponseEntity.ok(dto);
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     @DeleteMapping("/semesters/{id}")
@@ -80,7 +103,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (semesterRepo.delete(id)) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     // Batch CRUD
@@ -102,7 +125,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
     public ResponseEntity<Batch> getBatch(@PathVariable String id) {
         return batchRepo.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new app.scheduler.exceptions.ResourceNotFoundException("Entity not found"));
     }
 
     @PostMapping("/batches")
@@ -116,7 +139,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (batchRepo.update(dto)) {
             return ResponseEntity.ok(dto);
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     @DeleteMapping("/batches/{id}")
@@ -124,7 +147,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (batchRepo.delete(id)) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     // Section CRUD
@@ -146,7 +169,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
     public ResponseEntity<Section> getSection(@PathVariable String id) {
         return sectionRepo.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new app.scheduler.exceptions.ResourceNotFoundException("Entity not found"));
     }
 
     @PostMapping("/sections")
@@ -160,7 +183,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (sectionRepo.update(dto)) {
             return ResponseEntity.ok(dto);
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     @DeleteMapping("/sections/{id}")
@@ -168,7 +191,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (sectionRepo.delete(id)) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     // Course CRUD
@@ -190,7 +213,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
     public ResponseEntity<Course> getCourse(@PathVariable String id) {
         return courseRepo.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new app.scheduler.exceptions.ResourceNotFoundException("Entity not found"));
     }
 
     @PostMapping("/courses")
@@ -204,7 +227,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (courseRepo.update(dto)) {
             return ResponseEntity.ok(dto);
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     @DeleteMapping("/courses/{id}")
@@ -212,7 +235,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (courseRepo.delete(id)) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     // Teacher CRUD
@@ -234,7 +257,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
     public ResponseEntity<Teacher> getTeacher(@PathVariable String id) {
         return teacherRepo.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new app.scheduler.exceptions.ResourceNotFoundException("Entity not found"));
     }
 
     @PostMapping("/teachers")
@@ -248,7 +271,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (teacherRepo.update(dto)) {
             return ResponseEntity.ok(dto);
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     @DeleteMapping("/teachers/{id}")
@@ -256,7 +279,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (teacherRepo.delete(id)) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     // Room CRUD
@@ -278,7 +301,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
     public ResponseEntity<Room> getRoom(@PathVariable String id) {
         return roomRepo.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new app.scheduler.exceptions.ResourceNotFoundException("Entity not found"));
     }
 
     @PostMapping("/rooms")
@@ -292,7 +315,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (roomRepo.update(dto)) {
             return ResponseEntity.ok(dto);
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     @DeleteMapping("/rooms/{id}")
@@ -300,7 +323,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (roomRepo.delete(id)) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     // Student CRUD
@@ -322,7 +345,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
     public ResponseEntity<Student> getStudent(@PathVariable String id) {
         return studentRepo.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new app.scheduler.exceptions.ResourceNotFoundException("Entity not found"));
     }
 
     @PostMapping("/students")
@@ -336,7 +359,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (studentRepo.update(dto)) {
             return ResponseEntity.ok(dto);
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     @DeleteMapping("/students/{id}")
@@ -344,7 +367,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (studentRepo.delete(id)) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     // BatchCourseMapping CRUD
@@ -366,7 +389,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
     public ResponseEntity<BatchCourseMapping> getBatchCourseMapping(@PathVariable String id) {
         return batchcoursemappingRepo.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new app.scheduler.exceptions.ResourceNotFoundException("Entity not found"));
     }
 
     @PostMapping("/mappings")
@@ -380,7 +403,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (batchcoursemappingRepo.update(dto)) {
             return ResponseEntity.ok(dto);
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
     @DeleteMapping("/mappings/{id}")
@@ -388,7 +411,7 @@ SemesterRepository semesterRepo, BatchRepository batchRepo, SectionRepository se
         if (batchcoursemappingRepo.delete(id)) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.notFound().build();
+        throw new app.scheduler.exceptions.ResourceNotFoundException("Entity not found");
     }
 
 }

@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS semester (
     id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) UNIQUE NOT NULL,
     code VARCHAR(20) UNIQUE NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS semester (
 
 CREATE TABLE IF NOT EXISTS batch (
     id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) UNIQUE NOT NULL,
     program VARCHAR(100),
     year VARCHAR(20),
     semester_id VARCHAR(36),
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS batch (
 
 CREATE TABLE IF NOT EXISTS section (
     id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) UNIQUE NOT NULL,
     batch_id VARCHAR(36),
     lab_group INT DEFAULT 0,
     student_count INT DEFAULT 0,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS section (
 CREATE TABLE IF NOT EXISTS course (
     id VARCHAR(36) PRIMARY KEY,
     code VARCHAR(20) UNIQUE NOT NULL,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) UNIQUE NOT NULL,
     has_lab BOOLEAN DEFAULT 0,
     credits INT DEFAULT 3,
     lecture_hours_per_week INT DEFAULT 2,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS teacher (
 
 CREATE TABLE IF NOT EXISTS room (
     id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) UNIQUE NOT NULL,
     type VARCHAR(20) NOT NULL,
     capacity INT DEFAULT 30,
     building VARCHAR(50),

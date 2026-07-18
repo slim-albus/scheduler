@@ -1,48 +1,52 @@
 package app.scheduler.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class LoggerService {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggerService.class);
+    private static final String RESET = "\u001B[0m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String RED = "\u001B[31m";
+    private static final String CYAN = "\u001B[36m";
 
-    /**
-     * Log a simple informational message.
-     */
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    private void print(String color, String domain, String message) {
+        String time = LocalDateTime.now().format(formatter);
+        System.out.printf("%s[%s] [%s] %s%s%n", color, time, domain, message, RESET);
+    }
+
+    public void logAuth(String message) {
+        print(BLUE, "AUTH", message);
+    }
+
+    public void logAdmin(String message) {
+        print(CYAN, "ADMIN", message);
+    }
+
+    public void logSchedule(String message) {
+        print(GREEN, "SCHEDULE", message);
+    }
+
+    public void logMap(String message) {
+        print(YELLOW, "MAP", message);
+    }
+
+    public void logError(String message) {
+        print(RED, "ERROR", message);
+    }
+
+    // Keep the old ones just in case there are still references while we refactor
     public void info(String message) {
-        logger.info(message);
+        print(GREEN, "INFO", message);
     }
 
-    /**
-     * Log an action performed by a specific component (e.g., a Controller).
-     */
-    public void logAction(String component, String action) {
-        logger.info("[{}] performed action: {}", component, action);
-    }
-
-    /**
-     * Log an error message.
-     */
     public void error(String message) {
-        logger.error(message);
-    }
-
-    /**
-     * Log an error with an exception stack trace.
-     */
-    public void error(String component, String message, Throwable throwable) {
-        logger.error("[{}] Error: {}", component, message, throwable);
-    }
-
-    /**
-     * Simple sysout fallback if standard logger isn't preferred.
-     */
-    public void consoleLog(String message) {
-        System.out.println("[" + LocalDateTime.now() + "] CONSOLE LOG: " + message);
+        print(RED, "ERROR", message);
     }
 }
