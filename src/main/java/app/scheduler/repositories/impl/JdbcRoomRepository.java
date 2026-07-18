@@ -4,6 +4,7 @@ import app.scheduler.models.Room;
 import app.scheduler.repositories.RoomRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -48,18 +49,18 @@ public class JdbcRoomRepository implements RoomRepository {
 
     @Override
     public Optional<Room> findById(String id) {
-        List<Room> results = jdbcTemplate.query("SELECT * FROM room WHERE id = ?", rowMapper, id);
+        List<Room> results = jdbcTemplate.query(SQLQueries.ROOM_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<Room> findAll() {
-        return jdbcTemplate.query("SELECT * FROM room", rowMapper);
+        return jdbcTemplate.query(SQLQueries.ROOM_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM room WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.ROOM_DELETE, id) > 0;
     }
 
     @Override

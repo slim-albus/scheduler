@@ -4,6 +4,7 @@ import app.scheduler.models.Course;
 import app.scheduler.repositories.CourseRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -49,18 +50,18 @@ public class JdbcCourseRepository implements CourseRepository {
 
     @Override
     public Optional<Course> findById(String id) {
-        List<Course> results = jdbcTemplate.query("SELECT * FROM course WHERE id = ?", rowMapper, id);
+        List<Course> results = jdbcTemplate.query(SQLQueries.COURSE_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<Course> findAll() {
-        return jdbcTemplate.query("SELECT * FROM course", rowMapper);
+        return jdbcTemplate.query(SQLQueries.COURSE_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM course WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.COURSE_DELETE, id) > 0;
     }
 
     @Override

@@ -4,6 +4,7 @@ import app.scheduler.models.Section;
 import app.scheduler.repositories.SectionRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -45,18 +46,18 @@ public class JdbcSectionRepository implements SectionRepository {
 
     @Override
     public Optional<Section> findById(String id) {
-        List<Section> results = jdbcTemplate.query("SELECT * FROM section WHERE id = ?", rowMapper, id);
+        List<Section> results = jdbcTemplate.query(SQLQueries.SECTION_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<Section> findAll() {
-        return jdbcTemplate.query("SELECT * FROM section", rowMapper);
+        return jdbcTemplate.query(SQLQueries.SECTION_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM section WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.SECTION_DELETE, id) > 0;
     }
 
     @Override
@@ -69,12 +70,12 @@ public class JdbcSectionRepository implements SectionRepository {
 
     @Override
     public List<Section> findByBatchId(String batchId) {
-        return jdbcTemplate.query("SELECT * FROM section WHERE batch_id = ?", rowMapper, batchId);
+        return jdbcTemplate.query(SQLQueries.SECTION_FIND_BY_BATCH_ID, rowMapper, batchId);
     }
 
     @Override
     public List<Section> findBySemesterId(String semesterId) {
-        return jdbcTemplate.query("SELECT * FROM section WHERE semester_id = ?", rowMapper, semesterId);
+        return jdbcTemplate.query(SQLQueries.SECTION_FIND_BY_SEMESTER_ID, rowMapper, semesterId);
     }
 
 }

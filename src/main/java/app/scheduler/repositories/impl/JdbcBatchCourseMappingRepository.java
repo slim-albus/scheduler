@@ -4,6 +4,7 @@ import app.scheduler.models.BatchCourseMapping;
 import app.scheduler.repositories.BatchCourseMappingRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -45,18 +46,18 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
 
     @Override
     public Optional<BatchCourseMapping> findById(String id) {
-        List<BatchCourseMapping> results = jdbcTemplate.query("SELECT * FROM batch_course_mapping WHERE id = ?", rowMapper, id);
+        List<BatchCourseMapping> results = jdbcTemplate.query(SQLQueries.BATCHCOURSEMAPPING_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<BatchCourseMapping> findAll() {
-        return jdbcTemplate.query("SELECT * FROM batch_course_mapping", rowMapper);
+        return jdbcTemplate.query(SQLQueries.BATCHCOURSEMAPPING_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM batch_course_mapping WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.BATCHCOURSEMAPPING_DELETE, id) > 0;
     }
 
     @Override
@@ -69,17 +70,17 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
 
     @Override
     public List<BatchCourseMapping> findByBatchId(String batchId) {
-        return jdbcTemplate.query("SELECT * FROM batch_course_mapping WHERE batch_id = ?", rowMapper, batchId);
+        return jdbcTemplate.query(SQLQueries.BATCHCOURSEMAPPING_FIND_BY_BATCH_ID, rowMapper, batchId);
     }
 
     @Override
     public List<BatchCourseMapping> findBySemesterId(String semesterId) {
-        return jdbcTemplate.query("SELECT * FROM batch_course_mapping WHERE semester_id = ?", rowMapper, semesterId);
+        return jdbcTemplate.query(SQLQueries.BATCHCOURSEMAPPING_FIND_BY_SEMESTER_ID, rowMapper, semesterId);
     }
 
     @Override
     public Optional<BatchCourseMapping> findByBatchIdAndCourseId(String batchId, String courseId) {
-        List<BatchCourseMapping> results = jdbcTemplate.query("SELECT * FROM batch_course_mapping WHERE batch_id = ? AND course_id = ?", rowMapper, batchId, courseId);
+        List<BatchCourseMapping> results = jdbcTemplate.query(SQLQueries.BATCHCOURSEMAPPING_FIND_BY_BATCH_ID_AND_COURSE_ID, rowMapper, batchId, courseId);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 

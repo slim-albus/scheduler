@@ -4,6 +4,7 @@ import app.scheduler.models.Event;
 import app.scheduler.repositories.EventRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -65,18 +66,18 @@ public class JdbcEventRepository implements EventRepository {
 
     @Override
     public Optional<Event> findById(String id) {
-        List<Event> results = jdbcTemplate.query("SELECT * FROM event WHERE id = ?", rowMapper, id);
+        List<Event> results = jdbcTemplate.query(SQLQueries.EVENT_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<Event> findAll() {
-        return jdbcTemplate.query("SELECT * FROM event", rowMapper);
+        return jdbcTemplate.query(SQLQueries.EVENT_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM event WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.EVENT_DELETE, id) > 0;
     }
 
     @Override
@@ -94,32 +95,32 @@ public class JdbcEventRepository implements EventRepository {
 
     @Override
     public List<Event> findBySectionId(String sectionId) {
-        return jdbcTemplate.query("SELECT * FROM event WHERE section_id = ?", rowMapper, sectionId);
+        return jdbcTemplate.query(SQLQueries.EVENT_FIND_BY_SECTION_ID, rowMapper, sectionId);
     }
 
     @Override
     public List<Event> findByTeacherId(String teacherId) {
-        return jdbcTemplate.query("SELECT * FROM event WHERE teacher_id = ?", rowMapper, teacherId);
+        return jdbcTemplate.query(SQLQueries.EVENT_FIND_BY_TEACHER_ID, rowMapper, teacherId);
     }
 
     @Override
     public List<Event> findByRoomId(String roomId) {
-        return jdbcTemplate.query("SELECT * FROM event WHERE room_id = ?", rowMapper, roomId);
+        return jdbcTemplate.query(SQLQueries.EVENT_FIND_BY_ROOM_ID, rowMapper, roomId);
     }
 
     @Override
     public List<Event> findBySemesterId(String semesterId) {
-        return jdbcTemplate.query("SELECT * FROM event WHERE semester_id = ?", rowMapper, semesterId);
+        return jdbcTemplate.query(SQLQueries.EVENT_FIND_BY_SEMESTER_ID, rowMapper, semesterId);
     }
 
     @Override
     public List<Event> findBySectionIdAndWeek(String sectionId, int week) {
-        return jdbcTemplate.query("SELECT * FROM event WHERE section_id = ? AND week = ?", rowMapper, sectionId, week);
+        return jdbcTemplate.query(SQLQueries.EVENT_FIND_BY_SECTION_ID_AND_WEEK, rowMapper, sectionId, week);
     }
 
     @Override
     public List<Event> findByTeacherIdAndDay(String teacherId, int day) {
-        return jdbcTemplate.query("SELECT * FROM event WHERE teacher_id = ? AND day = ?", rowMapper, teacherId, day);
+        return jdbcTemplate.query(SQLQueries.EVENT_FIND_BY_TEACHER_ID_AND_DAY, rowMapper, teacherId, day);
     }
 
 }

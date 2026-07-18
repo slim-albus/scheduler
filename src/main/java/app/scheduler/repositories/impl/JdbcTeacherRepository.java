@@ -4,6 +4,7 @@ import app.scheduler.models.Teacher;
 import app.scheduler.repositories.TeacherRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -46,18 +47,18 @@ public class JdbcTeacherRepository implements TeacherRepository {
 
     @Override
     public Optional<Teacher> findById(String id) {
-        List<Teacher> results = jdbcTemplate.query("SELECT * FROM teacher WHERE id = ?", rowMapper, id);
+        List<Teacher> results = jdbcTemplate.query(SQLQueries.TEACHER_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<Teacher> findAll() {
-        return jdbcTemplate.query("SELECT * FROM teacher", rowMapper);
+        return jdbcTemplate.query(SQLQueries.TEACHER_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM teacher WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.TEACHER_DELETE, id) > 0;
     }
 
     @Override

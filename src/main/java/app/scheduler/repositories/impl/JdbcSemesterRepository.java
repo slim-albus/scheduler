@@ -4,6 +4,7 @@ import app.scheduler.models.Semester;
 import app.scheduler.repositories.SemesterRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -50,18 +51,18 @@ public class JdbcSemesterRepository implements SemesterRepository {
 
     @Override
     public Optional<Semester> findById(String id) {
-        List<Semester> results = jdbcTemplate.query("SELECT * FROM semester WHERE id = ?", rowMapper, id);
+        List<Semester> results = jdbcTemplate.query(SQLQueries.SEMESTER_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<Semester> findAll() {
-        return jdbcTemplate.query("SELECT * FROM semester", rowMapper);
+        return jdbcTemplate.query(SQLQueries.SEMESTER_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM semester WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.SEMESTER_DELETE, id) > 0;
     }
 
     @Override
@@ -77,13 +78,13 @@ public class JdbcSemesterRepository implements SemesterRepository {
 
     @Override
     public Optional<Semester> findByCode(String code) {
-        List<Semester> results = jdbcTemplate.query("SELECT * FROM semester WHERE code = ?", rowMapper, code);
+        List<Semester> results = jdbcTemplate.query(SQLQueries.SEMESTER_FIND_BY_CODE, rowMapper, code);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<Semester> findByYear(String year) {
-        return jdbcTemplate.query("SELECT * FROM semester WHERE academic_year = ?", rowMapper, year);
+        return jdbcTemplate.query(SQLQueries.SEMESTER_FIND_BY_ACADEMIC_YEAR, rowMapper, year);
     }
 
 }

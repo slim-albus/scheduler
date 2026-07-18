@@ -4,6 +4,7 @@ import app.scheduler.models.Session;
 import app.scheduler.repositories.SessionRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -51,18 +52,18 @@ public class JdbcSessionRepository implements SessionRepository {
 
     @Override
     public Optional<Session> findById(String id) {
-        List<Session> results = jdbcTemplate.query("SELECT * FROM session WHERE id = ?", rowMapper, id);
+        List<Session> results = jdbcTemplate.query(SQLQueries.SESSION_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<Session> findAll() {
-        return jdbcTemplate.query("SELECT * FROM session", rowMapper);
+        return jdbcTemplate.query(SQLQueries.SESSION_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM session WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.SESSION_DELETE, id) > 0;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class JdbcSessionRepository implements SessionRepository {
 
     @Override
     public Optional<Session> findByToken(String token) {
-        List<Session> results = jdbcTemplate.query("SELECT * FROM session WHERE token = ?", rowMapper, token);
+        List<Session> results = jdbcTemplate.query(SQLQueries.SESSION_FIND_BY_TOKEN, rowMapper, token);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 }

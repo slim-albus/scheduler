@@ -1,5 +1,54 @@
 package app.scheduler.utils;
 
 public class SQLQueries {
-    
+    public static final String BATCHCOURSEMAPPING_FIND_BY_ID = "SELECT * FROM batch_course_mapping WHERE id = ?";
+    public static final String BATCHCOURSEMAPPING_FIND_ALL = "SELECT * FROM batch_course_mapping";
+    public static final String BATCHCOURSEMAPPING_DELETE = "DELETE FROM batch_course_mapping WHERE id = ?";
+    public static final String BATCHCOURSEMAPPING_FIND_BY_BATCH_ID = "SELECT * FROM batch_course_mapping WHERE batch_id = ?";
+    public static final String BATCHCOURSEMAPPING_FIND_BY_SEMESTER_ID = "SELECT * FROM batch_course_mapping WHERE semester_id = ?";
+    public static final String BATCHCOURSEMAPPING_FIND_BY_BATCH_ID_AND_COURSE_ID = "SELECT * FROM batch_course_mapping WHERE batch_id = ? AND course_id = ?";
+    public static final String BATCH_FIND_BY_ID = "SELECT * FROM batch WHERE id = ?";
+    public static final String BATCH_FIND_ALL = "SELECT * FROM batch";
+    public static final String BATCH_DELETE = "DELETE FROM batch WHERE id = ?";
+    public static final String BATCH_FIND_BY_SEMESTER_ID = "SELECT * FROM batch WHERE semester_id = ?";
+    public static final String BATCH_FIND_BY_PROGRAM = "SELECT * FROM batch WHERE program = ?";
+    public static final String COURSE_FIND_BY_ID = "SELECT * FROM course WHERE id = ?";
+    public static final String COURSE_FIND_ALL = "SELECT * FROM course";
+    public static final String COURSE_DELETE = "DELETE FROM course WHERE id = ?";
+    public static final String EVENT_FIND_BY_ID = "SELECT * FROM event WHERE id = ?";
+    public static final String EVENT_FIND_ALL = "SELECT * FROM event";
+    public static final String EVENT_DELETE = "DELETE FROM event WHERE id = ?";
+    public static final String EVENT_FIND_BY_SECTION_ID = "SELECT * FROM event WHERE section_id = ?";
+    public static final String EVENT_FIND_BY_TEACHER_ID = "SELECT * FROM event WHERE teacher_id = ?";
+    public static final String EVENT_FIND_BY_ROOM_ID = "SELECT * FROM event WHERE room_id = ?";
+    public static final String EVENT_FIND_BY_SEMESTER_ID = "SELECT * FROM event WHERE semester_id = ?";
+    public static final String EVENT_FIND_BY_SECTION_ID_AND_WEEK = "SELECT * FROM event WHERE section_id = ? AND week = ?";
+    public static final String EVENT_FIND_BY_TEACHER_ID_AND_DAY = "SELECT * FROM event WHERE teacher_id = ? AND day = ?";
+    public static final String ROOM_FIND_BY_ID = "SELECT * FROM room WHERE id = ?";
+    public static final String ROOM_FIND_ALL = "SELECT * FROM room";
+    public static final String ROOM_DELETE = "DELETE FROM room WHERE id = ?";
+    public static final String SECTION_FIND_BY_ID = "SELECT * FROM section WHERE id = ?";
+    public static final String SECTION_FIND_ALL = "SELECT * FROM section";
+    public static final String SECTION_DELETE = "DELETE FROM section WHERE id = ?";
+    public static final String SECTION_FIND_BY_BATCH_ID = "SELECT * FROM section WHERE batch_id = ?";
+    public static final String SECTION_FIND_BY_SEMESTER_ID = "SELECT * FROM section WHERE semester_id = ?";
+    public static final String SEMESTER_FIND_BY_ID = "SELECT * FROM semester WHERE id = ?";
+    public static final String SEMESTER_FIND_ALL = "SELECT * FROM semester";
+    public static final String SEMESTER_DELETE = "DELETE FROM semester WHERE id = ?";
+    public static final String SEMESTER_FIND_BY_CODE = "SELECT * FROM semester WHERE code = ?";
+    public static final String SEMESTER_FIND_BY_ACADEMIC_YEAR = "SELECT * FROM semester WHERE academic_year = ?";
+    public static final String SESSION_FIND_BY_ID = "SELECT * FROM session WHERE id = ?";
+    public static final String SESSION_FIND_ALL = "SELECT * FROM session";
+    public static final String SESSION_DELETE = "DELETE FROM session WHERE id = ?";
+    public static final String SESSION_FIND_BY_TOKEN = "SELECT * FROM session WHERE token = ?";
+    public static final String STUDENT_FIND_BY_ID = "SELECT * FROM student WHERE id = ?";
+    public static final String STUDENT_FIND_ALL = "SELECT * FROM student";
+    public static final String STUDENT_DELETE = "DELETE FROM student WHERE id = ?";
+    public static final String TEACHER_FIND_BY_ID = "SELECT * FROM teacher WHERE id = ?";
+    public static final String TEACHER_FIND_ALL = "SELECT * FROM teacher";
+    public static final String TEACHER_DELETE = "DELETE FROM teacher WHERE id = ?";
+    public static final String USER_FIND_BY_ID = "SELECT * FROM user WHERE id = ?";
+    public static final String USER_FIND_ALL = "SELECT * FROM user";
+    public static final String USER_DELETE = "DELETE FROM user WHERE id = ?";
+    public static final String USER_FIND_BY_USERNAME = "SELECT * FROM user WHERE username = ?";
 }

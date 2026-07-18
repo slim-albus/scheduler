@@ -4,6 +4,7 @@ import app.scheduler.models.User;
 import app.scheduler.repositories.UserRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -54,18 +55,18 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findById(String id) {
-        List<User> results = jdbcTemplate.query("SELECT * FROM user WHERE id = ?", rowMapper, id);
+        List<User> results = jdbcTemplate.query(SQLQueries.USER_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<User> findAll() {
-        return jdbcTemplate.query("SELECT * FROM user", rowMapper);
+        return jdbcTemplate.query(SQLQueries.USER_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM user WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.USER_DELETE, id) > 0;
     }
 
     @Override
@@ -81,7 +82,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        List<User> results = jdbcTemplate.query("SELECT * FROM user WHERE username = ?", rowMapper, username);
+        List<User> results = jdbcTemplate.query(SQLQueries.USER_FIND_BY_USERNAME, rowMapper, username);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 }

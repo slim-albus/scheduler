@@ -4,6 +4,7 @@ import app.scheduler.models.Batch;
 import app.scheduler.repositories.BatchRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -44,18 +45,18 @@ public class JdbcBatchRepository implements BatchRepository {
 
     @Override
     public Optional<Batch> findById(String id) {
-        List<Batch> results = jdbcTemplate.query("SELECT * FROM batch WHERE id = ?", rowMapper, id);
+        List<Batch> results = jdbcTemplate.query(SQLQueries.BATCH_FIND_BY_ID, rowMapper, id);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public List<Batch> findAll() {
-        return jdbcTemplate.query("SELECT * FROM batch", rowMapper);
+        return jdbcTemplate.query(SQLQueries.BATCH_FIND_ALL, rowMapper);
     }
 
     @Override
     public boolean delete(String id) {
-        return jdbcTemplate.update("DELETE FROM batch WHERE id = ?", id) > 0;
+        return jdbcTemplate.update(SQLQueries.BATCH_DELETE, id) > 0;
     }
 
     @Override
@@ -68,12 +69,12 @@ public class JdbcBatchRepository implements BatchRepository {
 
     @Override
     public List<Batch> findBySemesterId(String semesterId) {
-        return jdbcTemplate.query("SELECT * FROM batch WHERE semester_id = ?", rowMapper, semesterId);
+        return jdbcTemplate.query(SQLQueries.BATCH_FIND_BY_SEMESTER_ID, rowMapper, semesterId);
     }
 
     @Override
     public List<Batch> findByProgram(String program) {
-        return jdbcTemplate.query("SELECT * FROM batch WHERE program = ?", rowMapper, program);
+        return jdbcTemplate.query(SQLQueries.BATCH_FIND_BY_PROGRAM, rowMapper, program);
     }
 
 }
