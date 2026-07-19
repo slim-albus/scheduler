@@ -77,8 +77,8 @@ public class ScheduleQueryService {
             .toList();
             
         List<SlotDto> available = new ArrayList<>();
-        for (int day = 1; day <= 5; day++) {
-            for (int period = 1; period <= 6; period++) {
+        for (int day = 1; day <= 6; day++) {
+            for (int period = 1; period <= 5; period++) {
                 int d = day;
                 int p = period;
                 boolean conflict = conflicts.stream().anyMatch(e -> e.getDay() == d && e.getPeriod() == p);
