@@ -1,0 +1,26 @@
+meta {
+  name: Generate Schedule
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/admin/generate/{{semesterId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "populationSize": 50
+  }
+}
+
+script:post-response {
+  expect(res.status).to.equal(200);
+  expect(res.body).to.be.an("array");
+}

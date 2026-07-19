@@ -1,0 +1,20 @@
+meta {
+  name: Get Available Slots
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/schedule/slots/available?semesterId={{semesterId}}&sectionId={{sectionId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post-response {
+  expect(res.status).to.equal(200);
+  expect(res.body).to.be.an("array");
+}
