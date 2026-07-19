@@ -7,7 +7,6 @@ public class Teacher {
     private String department;
     private String type;
     private long availabilityBitmask;
-    private int maxClassesPerDay;
     private boolean isActive;
 
     public Teacher() {}
@@ -24,8 +23,6 @@ public class Teacher {
     public void setType(String type) { this.type = type; }
     public long getAvailabilityBitmask() { return availabilityBitmask; }
     public void setAvailabilityBitmask(long availabilityBitmask) { this.availabilityBitmask = availabilityBitmask; }
-    public int getMaxClassesPerDay() { return maxClassesPerDay; }
-    public void setMaxClassesPerDay(int maxClassesPerDay) { this.maxClassesPerDay = maxClassesPerDay; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
 }

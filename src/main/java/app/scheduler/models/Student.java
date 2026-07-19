@@ -8,9 +8,6 @@ public class Student {
     private String sectionId;
     private String batchId;
     private int labGroup;
-    private String program;
-    private String year;
-    private String semesterId;
     private boolean isActive;
 
     public Student() {}
@@ -29,12 +26,6 @@ public class Student {
     public void setBatchId(String batchId) { this.batchId = batchId; }
     public int getLabGroup() { return labGroup; }
     public void setLabGroup(int labGroup) { this.labGroup = labGroup; }
-    public String getProgram() { return program; }
-    public void setProgram(String program) { this.program = program; }
-    public String getYear() { return year; }
-    public void setYear(String year) { this.year = year; }
-    public String getSemesterId() { return semesterId; }
-    public void setSemesterId(String semesterId) { this.semesterId = semesterId; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
 }

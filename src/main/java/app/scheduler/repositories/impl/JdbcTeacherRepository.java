@@ -28,7 +28,6 @@ public class JdbcTeacherRepository implements TeacherRepository {
         obj.setDepartment(rs.getString("department"));
         obj.setType(rs.getString("type"));
         obj.setAvailabilityBitmask(rs.getLong("availability_bitmask"));
-        obj.setMaxClassesPerDay(rs.getInt("max_classes_per_day"));
         obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
@@ -39,8 +38,8 @@ public class JdbcTeacherRepository implements TeacherRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO teacher (id, name, email, department, type, availability_bitmask, max_classes_per_day, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getAvailabilityBitmask(), entity.getMaxClassesPerDay(), entity.isActive()
+            "INSERT INTO teacher (id, name, email, department, type, availability_bitmask, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            entity.getId(), entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getAvailabilityBitmask(), entity.isActive()
         );
         return entity;
     }
@@ -64,8 +63,8 @@ public class JdbcTeacherRepository implements TeacherRepository {
     @Override
     public boolean update(Teacher entity) {
         return jdbcTemplate.update(
-            "UPDATE teacher SET name = ?, email = ?, department = ?, type = ?, availability_bitmask = ?, max_classes_per_day = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getAvailabilityBitmask(), entity.getMaxClassesPerDay(), entity.isActive(), entity.getId()
+            "UPDATE teacher SET name = ?, email = ?, department = ?, type = ?, availability_bitmask = ?, is_active = ? WHERE id = ?",
+            entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getAvailabilityBitmask(), entity.isActive(), entity.getId()
         ) > 0;
     }
 

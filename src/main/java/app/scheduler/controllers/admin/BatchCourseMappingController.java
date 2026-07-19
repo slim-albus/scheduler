@@ -38,6 +38,17 @@ public class BatchCourseMappingController {
         return ResponseEntity.ok(service.save(entity));
     }
 
+    @PostMapping("/bulk")
+    public ResponseEntity<List<BatchCourseMapping>> createBulk(@RequestBody List<BatchCourseMapping> entities) {
+        loggerService.logAdmin("Admin created bulk BatchCourseMappings");
+        return ResponseEntity.ok(service.saveAll(entities));
+    }
+
+    @GetMapping("/semester/{semesterId}")
+    public ResponseEntity<List<BatchCourseMapping>> getBySemester(@PathVariable String semesterId) {
+        return ResponseEntity.ok(service.findBySemesterId(semesterId));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<BatchCourseMapping> update(@PathVariable String id, @RequestBody BatchCourseMapping entity) {
         entity.setId(id);

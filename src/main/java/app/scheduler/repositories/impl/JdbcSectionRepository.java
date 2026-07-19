@@ -25,9 +25,7 @@ public class JdbcSectionRepository implements SectionRepository {
         obj.setId(rs.getString("id"));
         obj.setName(rs.getString("name"));
         obj.setBatchId(rs.getString("batch_id"));
-        obj.setLabGroup(rs.getInt("lab_group"));
         obj.setStudentCount(rs.getInt("student_count"));
-        obj.setSemesterId(rs.getString("semester_id"));
         obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
@@ -38,8 +36,8 @@ public class JdbcSectionRepository implements SectionRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO section (id, name, batch_id, lab_group, student_count, semester_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getBatchId(), entity.getLabGroup(), entity.getStudentCount(), entity.getSemesterId(), entity.isActive()
+            "INSERT INTO section (id, name, batch_id, student_count, is_active) VALUES (?, ?, ?, ?, ?)",
+            entity.getId(), entity.getName(), entity.getBatchId(), entity.getStudentCount(), entity.isActive()
         );
         return entity;
     }
@@ -63,8 +61,8 @@ public class JdbcSectionRepository implements SectionRepository {
     @Override
     public boolean update(Section entity) {
         return jdbcTemplate.update(
-            "UPDATE section SET name = ?, batch_id = ?, lab_group = ?, student_count = ?, semester_id = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getBatchId(), entity.getLabGroup(), entity.getStudentCount(), entity.getSemesterId(), entity.isActive(), entity.getId()
+            "UPDATE section SET name = ?, batch_id = ?, student_count = ?, is_active = ? WHERE id = ?",
+            entity.getName(), entity.getBatchId(), entity.getStudentCount(), entity.isActive(), entity.getId()
         ) > 0;
     }
 

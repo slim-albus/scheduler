@@ -7,4 +7,6 @@ import java.util.Optional;
 public interface SemesterRepository extends Repository<Semester> {
     Optional<Semester> findByCode(String code);
     List<Semester> findByYear(String year);
+    Optional<Semester> findActive();
+    boolean setActive(String id);
 }

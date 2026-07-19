@@ -31,6 +31,10 @@ public class SemesterService {
         return repository.update(entity);
     }
 
+    public boolean setActive(String id) {
+        return repository.setActive(id);
+    }
+
     public boolean delete(String id) {
         return repository.delete(id);
     }

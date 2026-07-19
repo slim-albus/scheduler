@@ -48,6 +48,15 @@ public class SemesterController {
         return ResponseEntity.notFound().build();
     }
 
+    @PutMapping("/{id}/active")
+    public ResponseEntity<Void> setActive(@PathVariable String id) {
+        if (service.setActive(id)) {
+            loggerService.logAdmin("Admin set active semester to " + id);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         if (service.delete(id)) {

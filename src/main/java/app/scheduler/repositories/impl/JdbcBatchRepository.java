@@ -26,7 +26,6 @@ public class JdbcBatchRepository implements BatchRepository {
         obj.setName(rs.getString("name"));
         obj.setProgram(rs.getString("program"));
         obj.setYear(rs.getString("year"));
-        obj.setSemesterId(rs.getString("semester_id"));
         obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
@@ -37,8 +36,8 @@ public class JdbcBatchRepository implements BatchRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO batch (id, name, program, year, semester_id, is_active) VALUES (?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getProgram(), entity.getYear(), entity.getSemesterId(), entity.isActive()
+            "INSERT INTO batch (id, name, program, year, is_active) VALUES (?, ?, ?, ?, ?)",
+            entity.getId(), entity.getName(), entity.getProgram(), entity.getYear(), entity.isActive()
         );
         return entity;
     }
@@ -62,8 +61,8 @@ public class JdbcBatchRepository implements BatchRepository {
     @Override
     public boolean update(Batch entity) {
         return jdbcTemplate.update(
-            "UPDATE batch SET name = ?, program = ?, year = ?, semester_id = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getProgram(), entity.getYear(), entity.getSemesterId(), entity.isActive(), entity.getId()
+            "UPDATE batch SET name = ?, program = ?, year = ?, is_active = ? WHERE id = ?",
+            entity.getName(), entity.getProgram(), entity.getYear(), entity.isActive(), entity.getId()
         ) > 0;
     }
 

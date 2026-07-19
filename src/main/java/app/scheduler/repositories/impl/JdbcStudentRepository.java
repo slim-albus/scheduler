@@ -29,9 +29,6 @@ public class JdbcStudentRepository implements StudentRepository {
         obj.setSectionId(rs.getString("section_id"));
         obj.setBatchId(rs.getString("batch_id"));
         obj.setLabGroup(rs.getInt("lab_group"));
-        obj.setProgram(rs.getString("program"));
-        obj.setYear(rs.getString("year"));
-        obj.setSemesterId(rs.getString("semester_id"));
         obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
@@ -42,8 +39,8 @@ public class JdbcStudentRepository implements StudentRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO student (id, name, student_id, email, section_id, batch_id, lab_group, program, year, semester_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup(), entity.getProgram(), entity.getYear(), entity.getSemesterId(), entity.isActive()
+            "INSERT INTO student (id, name, student_id, email, section_id, batch_id, lab_group, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            entity.getId(), entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup(), entity.isActive()
         );
         return entity;
     }
@@ -67,8 +64,8 @@ public class JdbcStudentRepository implements StudentRepository {
     @Override
     public boolean update(Student entity) {
         return jdbcTemplate.update(
-            "UPDATE student SET name = ?, student_id = ?, email = ?, section_id = ?, batch_id = ?, lab_group = ?, program = ?, year = ?, semester_id = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup(), entity.getProgram(), entity.getYear(), entity.getSemesterId(), entity.isActive(), entity.getId()
+            "UPDATE student SET name = ?, student_id = ?, email = ?, section_id = ?, batch_id = ?, lab_group = ?, is_active = ? WHERE id = ?",
+            entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup(), entity.isActive(), entity.getId()
         ) > 0;
     }
 

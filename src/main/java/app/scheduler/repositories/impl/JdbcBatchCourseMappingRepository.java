@@ -36,11 +36,13 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
     public BatchCourseMapping save(BatchCourseMapping entity) {
         if (entity.getId() == null || entity.getId().isEmpty()) {
             entity.setId(UUID.randomUUID().toString());
+            jdbcTemplate.update(
+                "INSERT INTO batch_course_mapping (id, batch_id, course_id, lecture_teacher_id, lab_instructor_id, is_required, semester_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                entity.getId(), entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.isRequired(), entity.getSemesterId()
+            );
+        } else {
+            update(entity);
         }
-        jdbcTemplate.update(
-            "INSERT INTO batch_course_mapping (id, batch_id, course_id, lecture_teacher_id, lab_instructor_id, is_required, semester_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.isRequired(), entity.getSemesterId()
-        );
         return entity;
     }
 

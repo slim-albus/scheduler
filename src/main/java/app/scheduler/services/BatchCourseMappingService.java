@@ -27,11 +27,19 @@ public class BatchCourseMappingService {
         return repository.save(entity);
     }
 
+    public List<BatchCourseMapping> saveAll(List<BatchCourseMapping> entities) {
+        return entities.stream().map(repository::save).toList();
+    }
+
     public boolean update(BatchCourseMapping entity) {
         return repository.update(entity);
     }
 
     public boolean delete(String id) {
         return repository.delete(id);
+    }
+    
+    public List<BatchCourseMapping> findBySemesterId(String semesterId) {
+        return repository.findBySemesterId(semesterId);
     }
 }

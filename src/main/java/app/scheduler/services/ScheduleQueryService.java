@@ -9,6 +9,7 @@ import app.scheduler.models.Batch;
 import app.scheduler.models.dtos.SlotDto;
 import app.scheduler.models.dtos.EventDto;
 import app.scheduler.models.dtos.RoomOccupationDto;
+import app.scheduler.models.Semester;
 import app.scheduler.repositories.*;
 import org.springframework.stereotype.Service;
 
@@ -23,42 +24,54 @@ public class ScheduleQueryService {
     private final CourseRepository courseRepo;
     private final SectionRepository sectionRepo;
     private final BatchRepository batchRepo;
+    private final SemesterRepository semesterRepo;
     
     public ScheduleQueryService(EventRepository eventRepo, RoomRepository roomRepo, 
                                 TeacherRepository teacherRepo, CourseRepository courseRepo,
-                                SectionRepository sectionRepo, BatchRepository batchRepo) {
+                                SectionRepository sectionRepo, BatchRepository batchRepo,
+                                SemesterRepository semesterRepo) {
         this.eventRepo = eventRepo;
         this.roomRepo = roomRepo;
         this.teacherRepo = teacherRepo;
         this.courseRepo = courseRepo;
         this.sectionRepo = sectionRepo;
         this.batchRepo = batchRepo;
+        this.semesterRepo = semesterRepo;
+    }
+
+    private List<Event> filterByActiveSemester(List<Event> events) {
+        return semesterRepo.findActive()
+            .map(active -> events.stream().filter(e -> active.getId().equals(e.getSemesterId())).toList())
+            .orElse(new ArrayList<>());
     }
 
     public List<Event> getEventsBySection(String sectionId) {
-        return eventRepo.findBySectionId(sectionId);
+        return filterByActiveSemester(eventRepo.findBySectionId(sectionId));
     }
     
     public List<Event> getEventsByTeacher(String teacherId) {
-        return eventRepo.findByTeacherId(teacherId);
+        return filterByActiveSemester(eventRepo.findByTeacherId(teacherId));
     }
     
     public List<Event> getEventsByRoom(String roomId) {
-        return eventRepo.findByRoomId(roomId);
+        return filterByActiveSemester(eventRepo.findByRoomId(roomId));
     }
     
     public List<Event> getEventsBySectionAndWeek(String sectionId, int week) {
-        return eventRepo.findBySectionIdAndWeek(sectionId, week);
+        return filterByActiveSemester(eventRepo.findBySectionIdAndWeek(sectionId, week));
     }
     
     public List<Event> getEventsByTeacherAndDay(String teacherId, int day) {
-        return eventRepo.findByTeacherIdAndDay(teacherId, day);
+        return filterByActiveSemester(eventRepo.findByTeacherIdAndDay(teacherId, day));
     }
 
     public List<Event> getAllEvents(String semesterId, String sectionId, String teacherId) {
         List<Event> all = eventRepo.findAll();
         return all.stream()
-            .filter(e -> semesterId == null || semesterId.equals(e.getSemesterId()))
+            .filter(e -> {
+                if (semesterId != null) return semesterId.equals(e.getSemesterId());
+                return semesterRepo.findActive().map(active -> active.getId().equals(e.getSemesterId())).orElse(false);
+            })
             .filter(e -> sectionId == null || sectionId.equals(e.getSectionId()))
             .filter(e -> teacherId == null || teacherId.equals(e.getTeacherId()))
             .toList();
@@ -66,7 +79,10 @@ public class ScheduleQueryService {
     
     public List<SlotDto> getAvailableSlots(String semesterId, String sectionId, String teacherId, String roomId, String eventIdToIgnore) {
         List<Event> conflicts = eventRepo.findAll().stream()
-            .filter(e -> semesterId == null || semesterId.equals(e.getSemesterId()))
+            .filter(e -> {
+                if (semesterId != null) return semesterId.equals(e.getSemesterId());
+                return semesterRepo.findActive().map(active -> active.getId().equals(e.getSemesterId())).orElse(false);
+            })
             .filter(e -> !"CANCELED".equals(e.getStatus()))
             .filter(e -> eventIdToIgnore == null || !e.getId().equals(eventIdToIgnore))
             .filter(e -> 
@@ -106,8 +122,8 @@ public class ScheduleQueryService {
             dto.building = room.getBuilding();
             dto.level = room.getLevel();
             
-            // Find an event in this room at this day/period
-            List<Event> roomEvents = eventRepo.findByRoomId(room.getId());
+            // Find an event in this room at this day/period for active semester
+            List<Event> roomEvents = filterByActiveSemester(eventRepo.findByRoomId(room.getId()));
             Event current = roomEvents.stream()
                 .filter(e -> e.getDay() == targetDay && e.getPeriod() == targetPeriod && !"CANCELED".equals(e.getStatus()))
                 .findFirst()

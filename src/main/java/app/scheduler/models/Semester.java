@@ -10,6 +10,7 @@ public class Semester {
     private LocalDate endDate;
     private int weeks;
     private String academicYear;
+    private boolean isGenerated;
     private boolean isActive;
 
     public Semester() {}
@@ -28,6 +29,8 @@ public class Semester {
     public void setWeeks(int weeks) { this.weeks = weeks; }
     public String getAcademicYear() { return academicYear; }
     public void setAcademicYear(String academicYear) { this.academicYear = academicYear; }
+    public boolean isGenerated() { return isGenerated; }
+    public void setGenerated(boolean generated) { isGenerated = generated; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
 }
