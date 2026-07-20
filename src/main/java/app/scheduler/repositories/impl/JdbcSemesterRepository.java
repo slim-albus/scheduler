@@ -67,9 +67,7 @@ public class JdbcSemesterRepository implements SemesterRepository {
     @Override
     public boolean delete(String id) {
         jdbcTemplate.update("DELETE FROM event WHERE semester_id = ?", id);
-        jdbcTemplate.update("DELETE FROM section WHERE semester_id = ?", id);
         jdbcTemplate.update("DELETE FROM batch_course_mapping WHERE semester_id = ?", id);
-        jdbcTemplate.update("UPDATE batch SET semester_id = NULL WHERE semester_id = ?", id);
         return jdbcTemplate.update(SQLQueries.SEMESTER_DELETE, id) > 0;
     }
 
