@@ -60,6 +60,7 @@ public class JdbcRoomRepository implements RoomRepository {
 
     @Override
     public boolean delete(String id) {
+        jdbcTemplate.update("DELETE FROM event WHERE room_id = ?", id);
         return jdbcTemplate.update(SQLQueries.ROOM_DELETE, id) > 0;
     }
 

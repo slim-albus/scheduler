@@ -55,6 +55,10 @@ public class JdbcBatchRepository implements BatchRepository {
 
     @Override
     public boolean delete(String id) {
+        jdbcTemplate.update("DELETE FROM event WHERE batch_id = ?", id);
+        jdbcTemplate.update("DELETE FROM section WHERE batch_id = ?", id);
+        jdbcTemplate.update("DELETE FROM batch_course_mapping WHERE batch_id = ?", id);
+        jdbcTemplate.update("UPDATE student SET batch_id = NULL WHERE batch_id = ?", id);
         return jdbcTemplate.update(SQLQueries.BATCH_DELETE, id) > 0;
     }
 

@@ -55,6 +55,7 @@ public class JdbcSectionRepository implements SectionRepository {
 
     @Override
     public boolean delete(String id) {
+        jdbcTemplate.update("DELETE FROM event WHERE section_id = ?", id);
         return jdbcTemplate.update(SQLQueries.SECTION_DELETE, id) > 0;
     }
 

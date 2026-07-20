@@ -168,3 +168,6 @@ CREATE INDEX IF NOT EXISTS idx_event_teacher ON event(teacher_id);
 CREATE INDEX IF NOT EXISTS idx_event_room ON event(room_id);
 CREATE INDEX IF NOT EXISTS idx_event_semester ON event(semester_id);
 CREATE INDEX IF NOT EXISTS idx_event_day ON event(day, week);
+
+-- Auto create admin user
+INSERT OR IGNORE INTO user (id, user_id, username, email, password_hash, salt, role) VALUES ('admin-1', 'admin_user', 'admin_user', 'admin@example.com', '6sIe5Scx6eRbLqi2gsPXfLfTkUIB8aYWYLCRjvJzzHw=', '1Yxv7sJO24RNqOdI9ubmng==', 'ADMIN');
