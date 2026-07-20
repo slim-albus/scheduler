@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS semester (
     end_date DATE NOT NULL,
     weeks INT DEFAULT 16,
     academic_year VARCHAR(20),
+    is_generated BOOLEAN DEFAULT 0,
     is_active BOOLEAN DEFAULT 1
 );
 
@@ -16,9 +17,7 @@ CREATE TABLE IF NOT EXISTS batch (
     name VARCHAR(100) UNIQUE NOT NULL,
     program VARCHAR(100),
     year VARCHAR(20),
-    semester_id VARCHAR(36),
-    is_active BOOLEAN DEFAULT 1,
-    FOREIGN KEY (semester_id) REFERENCES semester(id)
+    is_active BOOLEAN DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS section (
@@ -27,7 +26,6 @@ CREATE TABLE IF NOT EXISTS section (
     batch_id VARCHAR(36),
     lab_group INT DEFAULT 0,
     student_count INT DEFAULT 0,
-    semester_id VARCHAR(36),
     is_active BOOLEAN DEFAULT 1,
     FOREIGN KEY (batch_id) REFERENCES batch(id)
 );
@@ -53,7 +51,6 @@ CREATE TABLE IF NOT EXISTS teacher (
     department VARCHAR(100),
     type VARCHAR(20) NOT NULL,
     availability_bitmask BIGINT DEFAULT -1,
-    max_classes_per_day INT DEFAULT 5,
     is_active BOOLEAN DEFAULT 1
 );
 
@@ -78,9 +75,6 @@ CREATE TABLE IF NOT EXISTS student (
     section_id VARCHAR(36),
     batch_id VARCHAR(36),
     lab_group INT DEFAULT 0,
-    program VARCHAR(100),
-    year VARCHAR(20),
-    semester_id VARCHAR(36),
     is_active BOOLEAN DEFAULT 1,
     FOREIGN KEY (section_id) REFERENCES section(id)
 );
