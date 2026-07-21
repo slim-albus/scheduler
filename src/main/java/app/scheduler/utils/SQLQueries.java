@@ -10,7 +10,7 @@ public class SQLQueries {
     public static final String BATCH_FIND_BY_ID = "SELECT * FROM batches WHERE id = ?";
     public static final String BATCH_FIND_ALL = "SELECT * FROM batches";
     public static final String BATCH_DELETE = "DELETE FROM batches WHERE id = ?";
-    public static final String BATCH_FIND_BY_SEMESTER_ID = "SELECT * FROM batches WHERE semester_id = ?";
+    public static final String BATCH_FIND_BY_SEMESTER_ID = "SELECT DISTINCT b.* FROM batches b JOIN batch_course_mappings m ON b.id = m.batch_id WHERE m.semester_id = ?";
     public static final String BATCH_FIND_BY_PROGRAM = "SELECT * FROM batches WHERE program = ?";
     public static final String COURSE_FIND_BY_ID = "SELECT * FROM courses WHERE id = ?";
     public static final String COURSE_FIND_ALL = "SELECT * FROM courses";
@@ -31,7 +31,7 @@ public class SQLQueries {
     public static final String SECTION_FIND_ALL = "SELECT * FROM sections";
     public static final String SECTION_DELETE = "DELETE FROM sections WHERE id = ?";
     public static final String SECTION_FIND_BY_BATCH_ID = "SELECT * FROM sections WHERE batch_id = ?";
-    public static final String SECTION_FIND_BY_SEMESTER_ID = "SELECT * FROM sections WHERE semester_id = ?";
+    public static final String SECTION_FIND_BY_SEMESTER_ID = "SELECT DISTINCT s.* FROM sections s JOIN batches b ON s.batch_id = b.id JOIN batch_course_mappings m ON b.id = m.batch_id WHERE m.semester_id = ?";
     public static final String SEMESTER_FIND_BY_ID = "SELECT * FROM semesters WHERE id = ?";
     public static final String SEMESTER_FIND_ALL = "SELECT * FROM semesters";
     public static final String SEMESTER_DELETE = "DELETE FROM semesters WHERE id = ?";

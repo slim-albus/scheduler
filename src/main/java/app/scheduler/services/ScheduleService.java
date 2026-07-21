@@ -62,6 +62,12 @@ public class ScheduleService {
         input.setBatchCourseMappings(mappings);
         input.setConfig(config);
         
+        // Delete any existing schedule events for this semester before generating new ones
+        List<Event> existing = eventRepo.findBySemesterId(semesterId);
+        for (Event e : existing) {
+            eventRepo.delete(e.getId());
+        }
+        
         List<Event> events = generator.generate(input);
         
         for (Event e : events) {
