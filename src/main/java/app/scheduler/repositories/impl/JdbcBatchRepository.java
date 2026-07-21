@@ -80,4 +80,64 @@ public class JdbcBatchRepository implements BatchRepository {
         return jdbcTemplate.query(SQLQueries.BATCH_FIND_BY_PROGRAM, rowMapper, program);
     }
 
+    // --- Section related methods ---
+
+    private final RowMapper<app.scheduler.models.Section> sectionRowMapper = (rs, rowNum) -> {
+        app.scheduler.models.Section obj = new app.scheduler.models.Section();
+        obj.setId(rs.getString("id"));
+        obj.setName(rs.getString("name"));
+        obj.setBatchId(rs.getString("batch_id"));
+        obj.setStudentCount(rs.getInt("student_count"));
+        obj.setActive(rs.getBoolean("is_active"));
+        return obj;
+    };
+
+    @Override
+    public app.scheduler.models.Section saveSection(app.scheduler.models.Section entity) {
+        if (entity.getId() == null || entity.getId().isEmpty()) {
+            entity.setId(UUID.randomUUID().toString());
+        }
+        jdbcTemplate.update(
+            "INSERT INTO sections (id, name, batch_id, student_count, is_active) VALUES (?, ?, ?, ?, ?)",
+            entity.getId(), entity.getName(), entity.getBatchId(), entity.getStudentCount(), entity.isActive()
+        );
+        return entity;
+    }
+
+    @Override
+    public Optional<app.scheduler.models.Section> findSectionById(String id) {
+        List<app.scheduler.models.Section> results = jdbcTemplate.query(SQLQueries.SECTION_FIND_BY_ID, sectionRowMapper, id);
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+    }
+
+    @Override
+    public List<app.scheduler.models.Section> findAllSections() {
+        return jdbcTemplate.query(SQLQueries.SECTION_FIND_ALL, sectionRowMapper);
+    }
+
+    @Override
+    public boolean deleteSection(String id) {
+        jdbcTemplate.update("DELETE FROM events WHERE section_id = ?", id);
+        jdbcTemplate.update("UPDATE students SET section_id = NULL WHERE section_id = ?", id);
+        return jdbcTemplate.update(SQLQueries.SECTION_DELETE, id) > 0;
+    }
+
+    @Override
+    public boolean updateSection(app.scheduler.models.Section entity) {
+        return jdbcTemplate.update(
+            "UPDATE sections SET name = ?, batch_id = ?, student_count = ?, is_active = ? WHERE id = ?",
+            entity.getName(), entity.getBatchId(), entity.getStudentCount(), entity.isActive(), entity.getId()
+        ) > 0;
+    }
+
+    @Override
+    public List<app.scheduler.models.Section> findSectionsByBatchId(String batchId) {
+        return jdbcTemplate.query(SQLQueries.SECTION_FIND_BY_BATCH_ID, sectionRowMapper, batchId);
+    }
+
+    @Override
+    public List<app.scheduler.models.Section> findSectionsBySemesterId(String semesterId) {
+        return jdbcTemplate.query(SQLQueries.SECTION_FIND_BY_SEMESTER_ID, sectionRowMapper, semesterId);
+    }
+
 }

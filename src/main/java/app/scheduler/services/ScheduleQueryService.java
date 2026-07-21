@@ -22,19 +22,17 @@ public class ScheduleQueryService {
     private final RoomRepository roomRepo;
     private final TeacherRepository teacherRepo;
     private final CourseRepository courseRepo;
-    private final SectionRepository sectionRepo;
     private final BatchRepository batchRepo;
     private final SemesterRepository semesterRepo;
     
     public ScheduleQueryService(EventRepository eventRepo, RoomRepository roomRepo, 
                                 TeacherRepository teacherRepo, CourseRepository courseRepo,
-                                SectionRepository sectionRepo, BatchRepository batchRepo,
+                                BatchRepository batchRepo,
                                 SemesterRepository semesterRepo) {
         this.eventRepo = eventRepo;
         this.roomRepo = roomRepo;
         this.teacherRepo = teacherRepo;
         this.courseRepo = courseRepo;
-        this.sectionRepo = sectionRepo;
         this.batchRepo = batchRepo;
         this.semesterRepo = semesterRepo;
     }
@@ -141,7 +139,7 @@ public class ScheduleQueryService {
                 // Fetch rich details if the foreign keys are set
                 if (current.getTeacherId() != null) teacherRepo.findById(current.getTeacherId()).ifPresent(t -> eventDto.teacherName = t.getName());
                 if (current.getCourseId() != null) courseRepo.findById(current.getCourseId()).ifPresent(c -> eventDto.courseName = c.getName());
-                if (current.getSectionId() != null) sectionRepo.findById(current.getSectionId()).ifPresent(s -> eventDto.sectionName = s.getName());
+                if (current.getSectionId() != null) batchRepo.findSectionById(current.getSectionId()).ifPresent(s -> eventDto.sectionName = s.getName());
                 if (current.getBatchId() != null) batchRepo.findById(current.getBatchId()).ifPresent(b -> eventDto.batchName = b.getName());
 
                 dto.currentEvent = eventDto;

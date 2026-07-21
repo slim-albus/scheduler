@@ -3,7 +3,6 @@ package app.scheduler.services;
 import app.scheduler.models.Batch;
 import app.scheduler.models.Section;
 import app.scheduler.repositories.BatchRepository;
-import app.scheduler.repositories.SectionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +11,9 @@ import java.util.Optional;
 @Service
 public class BatchService {
     private final BatchRepository repository;
-    private final SectionRepository sectionRepository;
 
-    public BatchService(BatchRepository repository, SectionRepository sectionRepository) {
+    public BatchService(BatchRepository repository) {
         this.repository = repository;
-        this.sectionRepository = sectionRepository;
     }
 
     public List<Batch> findAll() {
@@ -35,7 +32,7 @@ public class BatchService {
                 section.setName(saved.getName() + " - Section " + (char)('A' + i));
                 section.setBatchId(saved.getId());
                 section.setActive(true);
-                sectionRepository.save(section);
+                repository.saveSection(section);
             }
         }
         return saved;
@@ -47,5 +44,35 @@ public class BatchService {
 
     public boolean delete(String id) {
         return repository.delete(id);
+    }
+
+    // --- Section related methods ---
+
+    public List<Section> findAllSections() {
+        return repository.findAllSections();
+    }
+
+    public List<Section> findSectionsByBatchId(String batchId) {
+        return repository.findSectionsByBatchId(batchId);
+    }
+
+    public List<Section> findSectionsBySemesterId(String semesterId) {
+        return repository.findSectionsBySemesterId(semesterId);
+    }
+
+    public Optional<Section> findSectionById(String id) {
+        return repository.findSectionById(id);
+    }
+
+    public Section saveSection(Section entity) {
+        return repository.saveSection(entity);
+    }
+
+    public boolean updateSection(Section entity) {
+        return repository.updateSection(entity);
+    }
+
+    public boolean deleteSection(String id) {
+        return repository.deleteSection(id);
     }
 }

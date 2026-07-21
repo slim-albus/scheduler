@@ -19,7 +19,6 @@ public class ScheduleService {
 
     private final ScheduleGenerator generator;
     private final BatchRepository batchRepo;
-    private final SectionRepository sectionRepo;
     private final CourseRepository courseRepo;
     private final TeacherRepository teacherRepo;
     private final RoomRepository roomRepo;
@@ -28,13 +27,12 @@ public class ScheduleService {
     private final SemesterRepository semesterRepo;
     private final StudentRepository studentRepo;
     
-    public ScheduleService(ScheduleGenerator generator, BatchRepository batchRepo, SectionRepository sectionRepo,
+    public ScheduleService(ScheduleGenerator generator, BatchRepository batchRepo,
                             CourseRepository courseRepo, TeacherRepository teacherRepo, RoomRepository roomRepo,
                             EventRepository eventRepo, BatchCourseMappingRepository mappingRepo,
                             SemesterRepository semesterRepo, StudentRepository studentRepo, LoggerService loggerService) {
         this.generator = generator;
         this.batchRepo = batchRepo;
-        this.sectionRepo = sectionRepo;
         this.courseRepo = courseRepo;
         this.teacherRepo = teacherRepo;
         this.roomRepo = roomRepo;
@@ -48,7 +46,7 @@ public class ScheduleService {
     public List<Event> generateSchedule(String semesterId, GeneratorConfig config) {
         Semester semester = semesterRepo.findById(semesterId).orElseThrow(() -> new ResourceNotFoundException("Semester not found"));
         List<Batch> batches = batchRepo.findBySemesterId(semesterId);
-        List<Section> sections = sectionRepo.findBySemesterId(semesterId);
+        List<Section> sections = batchRepo.findSectionsBySemesterId(semesterId);
         List<Course> courses = courseRepo.findAll();
         List<Teacher> teachers = teacherRepo.findAll();
         List<Room> rooms = roomRepo.findAll();
