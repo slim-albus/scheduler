@@ -43,27 +43,36 @@ public class ScheduleQueryService {
             .orElse(new ArrayList<>());
     }
 
-    public List<Event> getEventsBySection(String sectionId) {
-        return filterByActiveSemester(eventRepo.findBySectionId(sectionId));
-    }
-    
-    public List<Event> getEventsByTeacher(String teacherId) {
-        return filterByActiveSemester(eventRepo.findByTeacherId(teacherId));
-    }
-    
-    public List<Event> getEventsByRoom(String roomId) {
-        return filterByActiveSemester(eventRepo.findByRoomId(roomId));
-    }
-    
-    public List<Event> getEventsBySectionAndWeek(String sectionId, int week) {
-        return filterByActiveSemester(eventRepo.findBySectionIdAndWeek(sectionId, week));
-    }
-    
-    public List<Event> getEventsByTeacherAndDay(String teacherId, int day) {
-        return filterByActiveSemester(eventRepo.findByTeacherIdAndDay(teacherId, day));
+    public Semester getActiveSemester() {
+        return semesterRepo.findActive().orElse(null);
     }
 
-    public List<Event> getAllEvents(String semesterId, String sectionId, String teacherId) {
+    public List<EventDto> getEventsBySection(String sectionId) {
+        return filterByActiveSemester(eventRepo.findBySectionId(sectionId))
+            .stream().map(this::mapToDto).toList();
+    }
+    
+    public List<EventDto> getEventsByTeacher(String teacherId) {
+        return filterByActiveSemester(eventRepo.findByTeacherId(teacherId))
+            .stream().map(this::mapToDto).toList();
+    }
+    
+    public List<EventDto> getEventsByRoom(String roomId) {
+        return filterByActiveSemester(eventRepo.findByRoomId(roomId))
+            .stream().map(this::mapToDto).toList();
+    }
+    
+    public List<EventDto> getEventsBySectionAndWeek(String sectionId, int week) {
+        return filterByActiveSemester(eventRepo.findBySectionIdAndWeek(sectionId, week))
+            .stream().map(this::mapToDto).toList();
+    }
+    
+    public List<EventDto> getEventsByTeacherAndDay(String teacherId, int day) {
+        return filterByActiveSemester(eventRepo.findByTeacherIdAndDay(teacherId, day))
+            .stream().map(this::mapToDto).toList();
+    }
+
+    public List<EventDto> getAllEvents(String semesterId, String sectionId, String teacherId) {
         List<Event> all = eventRepo.findAll();
         return all.stream()
             .filter(e -> {
@@ -72,9 +81,33 @@ public class ScheduleQueryService {
             })
             .filter(e -> sectionId == null || sectionId.equals(e.getSectionId()))
             .filter(e -> teacherId == null || teacherId.equals(e.getTeacherId()))
+            .map(this::mapToDto)
             .toList();
     }
-    
+
+    public List<EventDto> mapEventsToDto(List<Event> events) {
+        return events.stream().map(this::mapToDto).toList();
+    }
+
+    public EventDto mapToDto(Event current) {
+        if (current == null) return null;
+        EventDto eventDto = new EventDto();
+        eventDto.id = current.getId();
+        eventDto.topic = current.getTopic();
+        eventDto.type = current.getType();
+        eventDto.day = current.getDay();
+        eventDto.period = current.getPeriod();
+        eventDto.status = current.getStatus();
+        eventDto.week = current.getWeek();
+        
+        if (current.getTeacherId() != null) teacherRepo.findById(current.getTeacherId()).ifPresent(t -> eventDto.teacherName = t.getName());
+        if (current.getCourseId() != null) courseRepo.findById(current.getCourseId()).ifPresent(c -> eventDto.courseName = c.getName());
+        if (current.getSectionId() != null) batchRepo.findSectionById(current.getSectionId()).ifPresent(s -> eventDto.sectionName = s.getName());
+        if (current.getBatchId() != null) batchRepo.findById(current.getBatchId()).ifPresent(b -> eventDto.batchName = b.getName());
+        if (current.getRoomId() != null) roomRepo.findById(current.getRoomId()).ifPresent(r -> eventDto.roomName = r.getName());
+        
+        return eventDto;
+    }
     public List<SlotDto> getAvailableSlots(String semesterId, String sectionId, String teacherId, String roomId, String eventIdToIgnore) {
         List<Event> conflicts = eventRepo.findAll().stream()
             .filter(e -> {
@@ -104,9 +137,10 @@ public class ScheduleQueryService {
         return available;
     }
     
-    public List<RoomOccupationDto> getRoomOccupation(Integer day, Integer period) {
+    public List<RoomOccupationDto> getRoomOccupation(Integer week, Integer day, Integer period) {
         // If day/period are null, ideally we calculate the current day/period. 
         // For now, we default to day 0, period 0 if missing.
+        int targetWeek = week != null ? week : 1;
         int targetDay = day != null ? day : 0;
         int targetPeriod = period != null ? period : 0;
         
@@ -124,7 +158,7 @@ public class ScheduleQueryService {
             dto.hasEquipment = room.isHasEquipment();
             
             // Check if there's an event in this room at this day/period
-            Event current = findEventForMap(activeEvents, room.getId(), targetDay, targetPeriod);
+            Event current = findEventForMap(activeEvents, room.getId(), targetWeek, targetDay, targetPeriod);
             
             if (current != null) {
                 // If it's canceled, the room is technically not occupied, but we still send the event info
@@ -155,10 +189,10 @@ public class ScheduleQueryService {
         return result;
     }
 
-    private Event findEventForMap(List<Event> events, String roomId, int day, int period) {
+    private Event findEventForMap(List<Event> events, String roomId, int week, int day, int period) {
         // Find the event for this room, day, period. Don't exclude CANCELED because the UI needs to show it as unoccupied but with info.
         return events.stream()
-            .filter(e -> roomId.equals(e.getRoomId()) && e.getDay() == day && e.getPeriod() == period)
+            .filter(e -> roomId.equals(e.getRoomId()) && e.getWeek() == week && e.getDay() == day && e.getPeriod() == period)
             .findFirst()
             .orElse(null);
     }

@@ -53,7 +53,21 @@ public class MapController {
         else if (hour >= 14 && hour < 16) period = 4;
         else if (hour >= 16 && hour < 18) period = 5;
 
-        loggerService.logMap("Fetching live room occupation for time " + targetTime + " -> day " + day + " period " + period);
-        return ResponseEntity.ok(queryService.getRoomOccupation(day, period));
+        // Calculate week
+        app.scheduler.models.Semester activeSem = queryService.getActiveSemester();
+        int week = 1;
+        if (activeSem != null && activeSem.getStartDate() != null) {
+            java.time.LocalDate start = activeSem.getStartDate();
+            while (start.getDayOfWeek() != java.time.DayOfWeek.MONDAY) {
+                start = start.minusDays(1);
+            }
+            long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, targetTime.toLocalDate());
+            if (daysBetween >= 0) {
+                week = (int) (daysBetween / 7) + 1;
+            }
+        }
+
+        loggerService.logMap("Fetching live room occupation for time " + targetTime + " -> week " + week + " day " + day + " period " + period);
+        return ResponseEntity.ok(queryService.getRoomOccupation(week, day, period));
     }
 }

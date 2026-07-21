@@ -4,6 +4,7 @@ import app.scheduler.generator.GeneratorConfig;
 import app.scheduler.models.Event;
 import app.scheduler.models.User;
 import app.scheduler.models.dtos.SlotDto;
+import app.scheduler.models.dtos.EventDto;
 import app.scheduler.services.ScheduleQueryService;
 import app.scheduler.services.ScheduleService;
 import app.scheduler.services.LoggerService;
@@ -27,7 +28,7 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Event>> getSchedule(
+    public ResponseEntity<List<EventDto>> getSchedule(
             @RequestParam(required = false) String semesterId,
             @RequestParam(required = false) String sectionId,
             @RequestParam(required = false) String teacherId,
@@ -38,7 +39,8 @@ public class ScheduleController {
         loggerService.logSchedule("Fetching schedule for " + role + " " + user.getUsername());
         
         if ("STUDENT".equals(role)) {
-            return ResponseEntity.ok(scheduleService.getScheduleForStudent(user.getStudentId()));
+            List<Event> studentEvents = scheduleService.getScheduleForStudent(user.getStudentId());
+            return ResponseEntity.ok(queryService.mapEventsToDto(studentEvents));
         } else if ("TEACHER".equals(role)) {
             return ResponseEntity.ok(queryService.getEventsByTeacher(user.getTeacherId()));
         } else {
@@ -59,11 +61,23 @@ public class ScheduleController {
         return ResponseEntity.ok(queryService.getAvailableSlots(semesterId, sectionId, teacherId, roomId, eventIdToIgnore));
     }
 
+    @GetMapping("/active-semester")
+    public ResponseEntity<app.scheduler.models.Semester> getActiveSemester() {
+        return ResponseEntity.ok(queryService.getActiveSemester());
+    }
+
     @PutMapping("/event/{id}/cancel")
     public ResponseEntity<Event> cancelEvent(@PathVariable String id, HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
         loggerService.logSchedule("User " + user.getUsername() + " cancelling event: " + id);
         return ResponseEntity.ok(scheduleService.cancelEvent(id, user));
+    }
+
+    @PutMapping("/event/{id}/restore")
+    public ResponseEntity<Event> restoreEvent(@PathVariable String id, HttpServletRequest request) {
+        User user = (User) request.getAttribute("user");
+        loggerService.logSchedule("User " + user.getUsername() + " restoring event: " + id);
+        return ResponseEntity.ok(scheduleService.restoreEvent(id, user));
     }
 
     @PutMapping("/event/{id}/reschedule")

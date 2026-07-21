@@ -24,11 +24,25 @@ public class SemesterService {
     }
 
     public Semester save(Semester entity) {
+        adjustDates(entity);
         return repository.save(entity);
     }
 
     public boolean update(Semester entity) {
+        adjustDates(entity);
         return repository.update(entity);
+    }
+
+    private void adjustDates(Semester entity) {
+        if (entity.getStartDate() != null && entity.getWeeks() > 0) {
+            java.time.LocalDate start = entity.getStartDate();
+            while (start.getDayOfWeek() != java.time.DayOfWeek.MONDAY) {
+                start = start.minusDays(1);
+            }
+            entity.setStartDate(start);
+            // End date is Sunday of the final week
+            entity.setEndDate(start.plusWeeks(entity.getWeeks()).minusDays(1));
+        }
     }
 
     public boolean setActive(String id) {

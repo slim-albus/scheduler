@@ -131,6 +131,16 @@ public class ScheduleService {
         return event;
     }
 
+    public Event restoreEvent(String eventId, User user) {
+        Event event = eventRepo.findById(eventId).orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+        validateUserCanEditEvent(event, user);
+        validateAvailability(event.getDay(), event.getPeriod(), event.getRoomId(), event.getSectionId(), eventId);
+        
+        event.setStatus("SCHEDULED");
+        eventRepo.update(event);
+        return event;
+    }
+
     public Event rescheduleEvent(String eventId, int newDay, int newPeriod, String newRoomId, User user) {
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new ResourceNotFoundException("Event not found"));
         validateUserCanEditEvent(event, user);
