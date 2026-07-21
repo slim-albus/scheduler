@@ -40,7 +40,7 @@ public class JdbcSessionRepository implements SessionRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO session (id, token, user_id, ip_address, user_agent, expires_at, is_active) " +
+            "INSERT INTO sessions (id, token, user_id, ip_address, user_agent, expires_at, is_active) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?)",
             entity.getId(), entity.getToken(), entity.getUserId(), entity.getIpAddress(),
             entity.getUserAgent(), 
@@ -69,7 +69,7 @@ public class JdbcSessionRepository implements SessionRepository {
     @Override
     public boolean update(Session entity) {
         return jdbcTemplate.update(
-            "UPDATE session SET token = ?, user_id = ?, ip_address = ?, user_agent = ?, " +
+            "UPDATE sessions SET token = ?, user_id = ?, ip_address = ?, user_agent = ?, " +
             "expires_at = ?, is_active = ? WHERE id = ?",
             entity.getToken(), entity.getUserId(), entity.getIpAddress(), entity.getUserAgent(),
             DateUtils.formatSqliteTimestamp(entity.getExpiresAt()), 

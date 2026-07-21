@@ -37,7 +37,7 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
         if (entity.getId() == null || entity.getId().isEmpty()) {
             entity.setId(UUID.randomUUID().toString());
             jdbcTemplate.update(
-                "INSERT INTO batch_course_mapping (id, batch_id, course_id, lecture_teacher_id, lab_instructor_id, is_required, semester_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO batch_course_mappings (id, batch_id, course_id, lecture_teacher_id, lab_instructor_id, is_required, semester_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 entity.getId(), entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.isRequired(), entity.getSemesterId()
             );
         } else {
@@ -65,7 +65,7 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
     @Override
     public boolean update(BatchCourseMapping entity) {
         return jdbcTemplate.update(
-            "UPDATE batch_course_mapping SET batch_id = ?, course_id = ?, lecture_teacher_id = ?, lab_instructor_id = ?, is_required = ?, semester_id = ? WHERE id = ?",
+            "UPDATE batch_course_mappings SET batch_id = ?, course_id = ?, lecture_teacher_id = ?, lab_instructor_id = ?, is_required = ?, semester_id = ? WHERE id = ?",
             entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.isRequired(), entity.getSemesterId(), entity.getId()
         ) > 0;
     }

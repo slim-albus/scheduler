@@ -7,8 +7,7 @@ public class Room {
     private int capacity;
     private String building;
     private int level;
-    private boolean hasTV;
-    private boolean hasProjector;
+    private boolean hasEquipment;
     private long availabilityBitmask;
     private boolean isActive;
 
@@ -26,10 +25,8 @@ public class Room {
     public void setBuilding(String building) { this.building = building; }
     public int getLevel() { return level; }
     public void setLevel(int level) { this.level = level; }
-    public boolean isHasTV() { return hasTV; }
-    public void setHasTV(boolean hasTV) { this.hasTV = hasTV; }
-    public boolean isHasProjector() { return hasProjector; }
-    public void setHasProjector(boolean hasProjector) { this.hasProjector = hasProjector; }
+    public boolean isHasEquipment() { return hasEquipment; }
+    public void setHasEquipment(boolean hasEquipment) { this.hasEquipment = hasEquipment; }
     public long getAvailabilityBitmask() { return availabilityBitmask; }
     public void setAvailabilityBitmask(long availabilityBitmask) { this.availabilityBitmask = availabilityBitmask; }
     public boolean isActive() { return isActive; }

@@ -36,7 +36,7 @@ public class JdbcBatchRepository implements BatchRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO batch (id, name, program, year, is_active) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO batches (id, name, program, year, is_active) VALUES (?, ?, ?, ?, ?)",
             entity.getId(), entity.getName(), entity.getProgram(), entity.getYear(), entity.isActive()
         );
         return entity;
@@ -55,17 +55,17 @@ public class JdbcBatchRepository implements BatchRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM event WHERE batch_id = ?", id);
-        jdbcTemplate.update("DELETE FROM section WHERE batch_id = ?", id);
-        jdbcTemplate.update("DELETE FROM batch_course_mapping WHERE batch_id = ?", id);
-        jdbcTemplate.update("UPDATE student SET batch_id = NULL WHERE batch_id = ?", id);
+        jdbcTemplate.update("DELETE FROM events WHERE batch_id = ?", id);
+        jdbcTemplate.update("DELETE FROM sections WHERE batch_id = ?", id);
+        jdbcTemplate.update("DELETE FROM batch_course_mappings WHERE batch_id = ?", id);
+        jdbcTemplate.update("UPDATE students SET batch_id = NULL WHERE batch_id = ?", id);
         return jdbcTemplate.update(SQLQueries.BATCH_DELETE, id) > 0;
     }
 
     @Override
     public boolean update(Batch entity) {
         return jdbcTemplate.update(
-            "UPDATE batch SET name = ?, program = ?, year = ?, is_active = ? WHERE id = ?",
+            "UPDATE batches SET name = ?, program = ?, year = ?, is_active = ? WHERE id = ?",
             entity.getName(), entity.getProgram(), entity.getYear(), entity.isActive(), entity.getId()
         ) > 0;
     }

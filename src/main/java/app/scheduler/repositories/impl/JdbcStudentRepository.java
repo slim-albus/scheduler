@@ -39,7 +39,7 @@ public class JdbcStudentRepository implements StudentRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO student (id, name, student_id, email, section_id, batch_id, lab_group, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO students (id, name, student_id, email, section_id, batch_id, lab_group, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             entity.getId(), entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup(), entity.isActive()
         );
         return entity;
@@ -64,7 +64,7 @@ public class JdbcStudentRepository implements StudentRepository {
     @Override
     public boolean update(Student entity) {
         return jdbcTemplate.update(
-            "UPDATE student SET name = ?, student_id = ?, email = ?, section_id = ?, batch_id = ?, lab_group = ?, is_active = ? WHERE id = ?",
+            "UPDATE students SET name = ?, student_id = ?, email = ?, section_id = ?, batch_id = ?, lab_group = ?, is_active = ? WHERE id = ?",
             entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup(), entity.isActive(), entity.getId()
         ) > 0;
     }

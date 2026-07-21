@@ -25,7 +25,6 @@ public class JdbcSemesterRepository implements SemesterRepository {
         Semester obj = new Semester();
         obj.setId(rs.getString("id"));
         obj.setName(rs.getString("name"));
-        obj.setCode(rs.getString("code"));
         obj.setStartDate(DateUtils.parseSqliteDate(rs.getString("start_date")));
         obj.setEndDate(DateUtils.parseSqliteDate(rs.getString("end_date")));
         obj.setWeeks(rs.getInt("weeks"));
@@ -41,11 +40,11 @@ public class JdbcSemesterRepository implements SemesterRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         if (entity.isActive()) {
-            jdbcTemplate.update("UPDATE semester SET is_active = 0");
+            jdbcTemplate.update("UPDATE semesters SET is_active = 0");
         }
         jdbcTemplate.update(
-            "INSERT INTO semester (id, name, code, start_date, end_date, weeks, academic_year, is_generated, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getCode(), 
+            "INSERT INTO semesters (id, name, start_date, end_date, weeks, academic_year, is_generated, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            entity.getId(), entity.getName(), 
             DateUtils.formatSqliteDate(entity.getStartDate()), 
             DateUtils.formatSqliteDate(entity.getEndDate()), 
             entity.getWeeks(), entity.getAcademicYear(), entity.isGenerated(), entity.isActive()
@@ -66,19 +65,19 @@ public class JdbcSemesterRepository implements SemesterRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM event WHERE semester_id = ?", id);
-        jdbcTemplate.update("DELETE FROM batch_course_mapping WHERE semester_id = ?", id);
+        jdbcTemplate.update("DELETE FROM events WHERE semester_id = ?", id);
+        jdbcTemplate.update("DELETE FROM batch_course_mappings WHERE semester_id = ?", id);
         return jdbcTemplate.update(SQLQueries.SEMESTER_DELETE, id) > 0;
     }
 
     @Override
     public boolean update(Semester entity) {
         if (entity.isActive()) {
-            jdbcTemplate.update("UPDATE semester SET is_active = 0 WHERE id != ?", entity.getId());
+            jdbcTemplate.update("UPDATE semesters SET is_active = 0 WHERE id != ?", entity.getId());
         }
         return jdbcTemplate.update(
-            "UPDATE semester SET name = ?, code = ?, start_date = ?, end_date = ?, weeks = ?, academic_year = ?, is_generated = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getCode(), 
+            "UPDATE semesters SET name = ?, start_date = ?, end_date = ?, weeks = ?, academic_year = ?, is_generated = ?, is_active = ? WHERE id = ?",
+            entity.getName(), 
             DateUtils.formatSqliteDate(entity.getStartDate()), 
             DateUtils.formatSqliteDate(entity.getEndDate()), 
             entity.getWeeks(), entity.getAcademicYear(), entity.isGenerated(), entity.isActive(), entity.getId()
@@ -87,20 +86,19 @@ public class JdbcSemesterRepository implements SemesterRepository {
 
     @Override
     public Optional<Semester> findActive() {
-        List<Semester> results = jdbcTemplate.query("SELECT * FROM semester WHERE is_active = 1 LIMIT 1", rowMapper);
+        List<Semester> results = jdbcTemplate.query("SELECT * FROM semesters WHERE is_active = 1 LIMIT 1", rowMapper);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override
     public boolean setActive(String id) {
-        jdbcTemplate.update("UPDATE semester SET is_active = 0");
-        return jdbcTemplate.update("UPDATE semester SET is_active = 1 WHERE id = ?", id) > 0;
+        jdbcTemplate.update("UPDATE semesters SET is_active = 0");
+        return jdbcTemplate.update("UPDATE semesters SET is_active = 1 WHERE id = ?", id) > 0;
     }
 
     @Override
     public Optional<Semester> findByCode(String code) {
-        List<Semester> results = jdbcTemplate.query(SQLQueries.SEMESTER_FIND_BY_CODE, rowMapper, code);
-        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+        return Optional.empty();
     }
 
     @Override

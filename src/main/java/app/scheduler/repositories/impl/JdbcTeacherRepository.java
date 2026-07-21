@@ -38,7 +38,7 @@ public class JdbcTeacherRepository implements TeacherRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO teacher (id, name, email, department, type, availability_bitmask, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO teachers (id, name, email, department, type, availability_bitmask, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)",
             entity.getId(), entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getAvailabilityBitmask(), entity.isActive()
         );
         return entity;
@@ -57,16 +57,16 @@ public class JdbcTeacherRepository implements TeacherRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM event WHERE teacher_id = ?", id);
-        jdbcTemplate.update("UPDATE batch_course_mapping SET lecture_teacher_id = NULL WHERE lecture_teacher_id = ?", id);
-        jdbcTemplate.update("UPDATE batch_course_mapping SET lab_instructor_id = NULL WHERE lab_instructor_id = ?", id);
+        jdbcTemplate.update("DELETE FROM events WHERE teacher_id = ?", id);
+        jdbcTemplate.update("UPDATE batch_course_mappings SET lecture_teacher_id = NULL WHERE lecture_teacher_id = ?", id);
+        jdbcTemplate.update("UPDATE batch_course_mappings SET lab_instructor_id = NULL WHERE lab_instructor_id = ?", id);
         return jdbcTemplate.update(SQLQueries.TEACHER_DELETE, id) > 0;
     }
 
     @Override
     public boolean update(Teacher entity) {
         return jdbcTemplate.update(
-            "UPDATE teacher SET name = ?, email = ?, department = ?, type = ?, availability_bitmask = ?, is_active = ? WHERE id = ?",
+            "UPDATE teachers SET name = ?, email = ?, department = ?, type = ?, availability_bitmask = ?, is_active = ? WHERE id = ?",
             entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getAvailabilityBitmask(), entity.isActive(), entity.getId()
         ) > 0;
     }

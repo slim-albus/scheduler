@@ -42,7 +42,7 @@ public class JdbcCourseRepository implements CourseRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO course (id, code, name, has_lab, credits, lecture_hours_per_week, lab_hours_per_week, midterm_duration, final_duration, department, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO courses (id, code, name, has_lab, credits, lecture_hours_per_week, lab_hours_per_week, midterm_duration, final_duration, department, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             entity.getId(), entity.getCode(), entity.getName(), entity.isHasLab(), entity.getCredits(), entity.getLectureHoursPerWeek(), entity.getLabHoursPerWeek(), entity.getMidtermDuration(), entity.getFinalDuration(), entity.getDepartment(), entity.isActive()
         );
         return entity;
@@ -61,15 +61,15 @@ public class JdbcCourseRepository implements CourseRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM event WHERE course_id = ?", id);
-        jdbcTemplate.update("DELETE FROM batch_course_mapping WHERE course_id = ?", id);
+        jdbcTemplate.update("DELETE FROM events WHERE course_id = ?", id);
+        jdbcTemplate.update("DELETE FROM batch_course_mappings WHERE course_id = ?", id);
         return jdbcTemplate.update(SQLQueries.COURSE_DELETE, id) > 0;
     }
 
     @Override
     public boolean update(Course entity) {
         return jdbcTemplate.update(
-            "UPDATE course SET code = ?, name = ?, has_lab = ?, credits = ?, lecture_hours_per_week = ?, lab_hours_per_week = ?, midterm_duration = ?, final_duration = ?, department = ?, is_active = ? WHERE id = ?",
+            "UPDATE courses SET code = ?, name = ?, has_lab = ?, credits = ?, lecture_hours_per_week = ?, lab_hours_per_week = ?, midterm_duration = ?, final_duration = ?, department = ?, is_active = ? WHERE id = ?",
             entity.getCode(), entity.getName(), entity.isHasLab(), entity.getCredits(), entity.getLectureHoursPerWeek(), entity.getLabHoursPerWeek(), entity.getMidtermDuration(), entity.getFinalDuration(), entity.getDepartment(), entity.isActive(), entity.getId()
         ) > 0;
     }

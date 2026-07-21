@@ -44,7 +44,7 @@ public class JdbcUserRepository implements UserRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO user (id, user_id, username, email, password_hash, salt, role, teacher_id, student_id, is_active) " +
+            "INSERT INTO users (id, user_id, username, email, password_hash, salt, role, teacher_id, student_id, is_active) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             entity.getId(), entity.getUserId(), entity.getUsername(), entity.getEmail(),
             entity.getPasswordHash(), entity.getSalt(), entity.getRole(),
@@ -72,7 +72,7 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public boolean update(User entity) {
         return jdbcTemplate.update(
-            "UPDATE user SET user_id = ?, username = ?, email = ?, password_hash = ?, salt = ?, " +
+            "UPDATE users SET user_id = ?, username = ?, email = ?, password_hash = ?, salt = ?, " +
             "role = ?, teacher_id = ?, student_id = ?, is_active = ? WHERE id = ?",
             entity.getUserId(), entity.getUsername(), entity.getEmail(),
             entity.getPasswordHash(), entity.getSalt(), entity.getRole(),

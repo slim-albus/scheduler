@@ -36,7 +36,7 @@ public class JdbcSectionRepository implements SectionRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO section (id, name, batch_id, student_count, is_active) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO sections (id, name, batch_id, student_count, is_active) VALUES (?, ?, ?, ?, ?)",
             entity.getId(), entity.getName(), entity.getBatchId(), entity.getStudentCount(), entity.isActive()
         );
         return entity;
@@ -55,15 +55,15 @@ public class JdbcSectionRepository implements SectionRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM event WHERE section_id = ?", id);
-        jdbcTemplate.update("UPDATE student SET section_id = NULL WHERE section_id = ?", id);
+        jdbcTemplate.update("DELETE FROM events WHERE section_id = ?", id);
+        jdbcTemplate.update("UPDATE students SET section_id = NULL WHERE section_id = ?", id);
         return jdbcTemplate.update(SQLQueries.SECTION_DELETE, id) > 0;
     }
 
     @Override
     public boolean update(Section entity) {
         return jdbcTemplate.update(
-            "UPDATE section SET name = ?, batch_id = ?, student_count = ?, is_active = ? WHERE id = ?",
+            "UPDATE sections SET name = ?, batch_id = ?, student_count = ?, is_active = ? WHERE id = ?",
             entity.getName(), entity.getBatchId(), entity.getStudentCount(), entity.isActive(), entity.getId()
         ) > 0;
     }

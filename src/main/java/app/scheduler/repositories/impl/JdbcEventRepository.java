@@ -53,7 +53,7 @@ public class JdbcEventRepository implements EventRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO event (id, type, topic, section_id, course_id, teacher_id, room_id, semester_id, batch_id, lab_group, day, period, week, start_date_time, end_date_time, duration_minutes, instance, created_by, created_at, version, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO events (id, type, topic, section_id, course_id, teacher_id, room_id, semester_id, batch_id, lab_group, day, period, week, start_date_time, end_date_time, duration_minutes, instance, created_by, created_at, version, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             entity.getId(), entity.getType(), entity.getTopic(), entity.getSectionId(), entity.getCourseId(), entity.getTeacherId(), entity.getRoomId(), entity.getSemesterId(), entity.getBatchId(), entity.getLabGroup(), entity.getDay(), entity.getPeriod(), entity.getWeek(), 
             DateUtils.formatSqliteTimestamp(entity.getStartDateTime()), 
             DateUtils.formatSqliteTimestamp(entity.getEndDateTime()), 
@@ -83,7 +83,7 @@ public class JdbcEventRepository implements EventRepository {
     @Override
     public boolean update(Event entity) {
         return jdbcTemplate.update(
-            "UPDATE event SET type = ?, topic = ?, section_id = ?, course_id = ?, teacher_id = ?, room_id = ?, semester_id = ?, batch_id = ?, lab_group = ?, day = ?, period = ?, week = ?, start_date_time = ?, end_date_time = ?, duration_minutes = ?, instance = ?, created_by = ?, created_at = ?, version = ?, status = ? WHERE id = ?",
+            "UPDATE events SET type = ?, topic = ?, section_id = ?, course_id = ?, teacher_id = ?, room_id = ?, semester_id = ?, batch_id = ?, lab_group = ?, day = ?, period = ?, week = ?, start_date_time = ?, end_date_time = ?, duration_minutes = ?, instance = ?, created_by = ?, created_at = ?, version = ?, status = ? WHERE id = ?",
             entity.getType(), entity.getTopic(), entity.getSectionId(), entity.getCourseId(), entity.getTeacherId(), entity.getRoomId(), entity.getSemesterId(), entity.getBatchId(), entity.getLabGroup(), entity.getDay(), entity.getPeriod(), entity.getWeek(), 
             DateUtils.formatSqliteTimestamp(entity.getStartDateTime()), 
             DateUtils.formatSqliteTimestamp(entity.getEndDateTime()), 
