@@ -5,6 +5,8 @@ public class RoomOccupationDto {
     public String roomName;
     public String building;
     public int level;
+    public String roomType;
+    public boolean hasEquipment;
     public boolean isOccupied;
     public EventDto currentEvent;
     

@@ -11,4 +11,5 @@ public class EventDto {
     public String courseName;
     public String sectionName;
     public String batchName;
+    public String status;
 }

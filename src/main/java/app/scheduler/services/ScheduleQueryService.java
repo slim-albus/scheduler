@@ -111,6 +111,7 @@ public class ScheduleQueryService {
         int targetPeriod = period != null ? period : 0;
         
         List<Room> allRooms = roomRepo.findAll();
+        List<Event> activeEvents = filterByActiveSemester(eventRepo.findAll());
         List<RoomOccupationDto> result = new ArrayList<>();
         
         for (Room room : allRooms) {
@@ -119,36 +120,46 @@ public class ScheduleQueryService {
             dto.roomName = room.getName();
             dto.building = room.getBuilding();
             dto.level = room.getLevel();
+            dto.roomType = room.getType();
+            dto.hasEquipment = room.isHasEquipment();
             
-            // Find an event in this room at this day/period for active semester
-            List<Event> roomEvents = filterByActiveSemester(eventRepo.findByRoomId(room.getId()));
-            Event current = roomEvents.stream()
-                .filter(e -> e.getDay() == targetDay && e.getPeriod() == targetPeriod && !"CANCELED".equals(e.getStatus()))
-                .findFirst()
-                .orElse(null);
-                
+            // Check if there's an event in this room at this day/period
+            Event current = findEventForMap(activeEvents, room.getId(), targetDay, targetPeriod);
+            
             if (current != null) {
-                dto.isOccupied = true;
+                // If it's canceled, the room is technically not occupied, but we still send the event info
+                dto.isOccupied = !"CANCELED".equals(current.getStatus());
+                
                 EventDto eventDto = new EventDto();
                 eventDto.id = current.getId();
                 eventDto.topic = current.getTopic();
+                eventDto.type = current.getType();
                 eventDto.day = current.getDay();
                 eventDto.period = current.getPeriod();
-                eventDto.type = current.getType();
+                eventDto.status = current.getStatus();
                 
-                // Fetch rich details if the foreign keys are set
+                // Fetch related names
                 if (current.getTeacherId() != null) teacherRepo.findById(current.getTeacherId()).ifPresent(t -> eventDto.teacherName = t.getName());
                 if (current.getCourseId() != null) courseRepo.findById(current.getCourseId()).ifPresent(c -> eventDto.courseName = c.getName());
                 if (current.getSectionId() != null) batchRepo.findSectionById(current.getSectionId()).ifPresent(s -> eventDto.sectionName = s.getName());
                 if (current.getBatchId() != null) batchRepo.findById(current.getBatchId()).ifPresent(b -> eventDto.batchName = b.getName());
-
+                
                 dto.currentEvent = eventDto;
             } else {
                 dto.isOccupied = false;
             }
+            
             result.add(dto);
         }
         
         return result;
+    }
+
+    private Event findEventForMap(List<Event> events, String roomId, int day, int period) {
+        // Find the event for this room, day, period. Don't exclude CANCELED because the UI needs to show it as unoccupied but with info.
+        return events.stream()
+            .filter(e -> roomId.equals(e.getRoomId()) && e.getDay() == day && e.getPeriod() == period)
+            .findFirst()
+            .orElse(null);
     }
 }
