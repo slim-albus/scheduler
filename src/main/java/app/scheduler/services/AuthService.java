@@ -73,6 +73,24 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    public User autoRegister(String username, String role, String teacherId, String studentId) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            return userRepository.findByUsername(username).get(); // Return existing if already there
+        }
+        String salt = passwordHasher.generateSalt();
+        String hash = passwordHasher.hashPassword("password", salt);
+        User user = new User();
+        user.setUserId(username);
+        user.setUsername(username);
+        user.setPasswordHash(hash);
+        user.setSalt(salt);
+        user.setRole(role);
+        user.setTeacherId(teacherId);
+        user.setStudentId(studentId);
+        user.setActive(true);
+        return userRepository.save(user);
+    }
+
     public void logout(String token) {
         sessionRepository.findByToken(token).ifPresent(s -> {
             s.setActive(false);

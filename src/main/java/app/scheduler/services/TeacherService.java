@@ -10,9 +10,11 @@ import java.util.Optional;
 @Service
 public class TeacherService {
     private final TeacherRepository repository;
+    private final AuthService authService;
 
-    public TeacherService(TeacherRepository repository) {
+    public TeacherService(TeacherRepository repository, AuthService authService) {
         this.repository = repository;
+        this.authService = authService;
     }
 
     public List<Teacher> findAll() {
@@ -24,7 +26,9 @@ public class TeacherService {
     }
 
     public Teacher save(Teacher entity) {
-        return repository.save(entity);
+        Teacher saved = repository.save(entity);
+        authService.autoRegister(saved.getId(), "TEACHER", saved.getId(), null);
+        return saved;
     }
 
     public boolean update(Teacher entity) {
