@@ -117,32 +117,51 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
             }
         }
 
-        // Map final ScheduleItems to Event objects
+        // Map final ScheduleItems to Event objects for all weeks of the semester
         List<Event> events = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
-        for (ScheduleItem item : placed) {
-            Event event = new Event();
-            event.setId(item.id != null ? item.id : UUID.randomUUID().toString());
-            event.setType(item.kind);
-            event.setTopic(getCourseName(input, item.courseId) + " " + item.kind);
-            event.setSectionId(item.sectionId);
-            event.setCourseId(item.courseId);
-            event.setTeacherId(item.teacherId);
-            event.setRoomId(item.roomId);
-            event.setSemesterId(input.getSemester().getId());
-            event.setBatchId(getBatchIdForSection(input, item.sectionId));
-            event.setLabGroup(item.labGroup != null ? item.labGroup : 0);
-            event.setDay(item.day + 1);
-            event.setPeriod(item.period + 1);
-            event.setWeek(1); // Standardized to week 1 as default
-            event.setStartDateTime(now);
-            event.setEndDateTime(now.plusMinutes(90));
-            event.setDurationMinutes(90);
-            event.setInstance(0);
-            event.setStatus("SCHEDULED");
-            event.setCreatedAt(now);
-            event.setVersion(1);
-            events.add(event);
+        int totalWeeks = input.getSemester().getWeeks() > 0 ? input.getSemester().getWeeks() : 16;
+        java.time.LocalDate semStart = input.getSemester().getStartDate() != null ? input.getSemester().getStartDate() : java.time.LocalDate.now();
+        
+        // Ensure semStart is a Monday
+        while (semStart.getDayOfWeek() != DayOfWeek.MONDAY) {
+            semStart = semStart.minusDays(1);
+        }
+
+        for (int week = 1; week <= totalWeeks; week++) {
+            for (ScheduleItem item : placed) {
+                Event event = new Event();
+                event.setId(UUID.randomUUID().toString()); // new ID for each week instance
+                event.setType(item.kind.equals("THEORY") ? "Lecture" : "Lab");
+                event.setTopic(getCourseName(input, item.courseId) + " " + (item.kind.equals("THEORY") ? "Lecture" : "Lab"));
+                event.setSectionId(item.sectionId);
+                event.setCourseId(item.courseId);
+                event.setTeacherId(item.teacherId);
+                event.setRoomId(item.roomId);
+                event.setSemesterId(input.getSemester().getId());
+                event.setBatchId(getBatchIdForSection(input, item.sectionId));
+                event.setLabGroup(item.labGroup != null ? item.labGroup : 0);
+                event.setDay(item.day + 1);
+                event.setPeriod(item.period + 1);
+                event.setWeek(week);
+                
+                // Calculate correct date for this event
+                // day=0 is Monday, day=5 is Saturday
+                java.time.LocalDate eventDate = semStart.plusWeeks(week - 1).plusDays(item.day);
+                
+                // Period starts (assuming P1=8:00, P2=10:00, P3=12:00, P4=14:00, P5=16:00)
+                int hour = 8 + (item.period * 2); 
+                LocalDateTime startDateTime = eventDate.atTime(hour, 0);
+                
+                event.setStartDateTime(startDateTime);
+                event.setEndDateTime(startDateTime.plusMinutes(90));
+                event.setDurationMinutes(90);
+                event.setInstance(0);
+                event.setStatus("SCHEDULED");
+                event.setCreatedAt(now);
+                event.setVersion(1);
+                events.add(event);
+            }
         }
 
         return events;

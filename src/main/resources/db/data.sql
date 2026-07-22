@@ -104,3 +104,12 @@ INSERT OR IGNORE INTO batch_course_mappings (id, batch_id, course_id, lecture_te
 VALUES ('map-econ', 'batch-drbse', 'course-cc0193', 't-tewlde', NULL, 1, 'sem-1');
 INSERT OR IGNORE INTO batch_course_mappings (id, batch_id, course_id, lecture_teacher_id, lab_instructor_id, is_required, semester_id)
 VALUES ('map-global', 'batch-drbse', 'course-cc0197', 't-yirga', NULL, 1, 'sem-1');
+
+-- Insert Users for Teachers
+INSERT OR IGNORE INTO users (id, user_id, username, email, password_hash, salt, role, teacher_id) VALUES ('u-kibrom', 'kibrom', 'kibrom', 'kibrom@acse.local', '6sIe5Scx6eRbLqi2gsPXfLfTkUIB8aYWYLCRjvJzzHw=', '1Yxv7sJO24RNqOdI9ubmng==', 'TEACHER', 't-kibrom');
+INSERT OR IGNORE INTO users (id, user_id, username, email, password_hash, salt, role, teacher_id) VALUES ('u-abelti', 'abelti', 'abelti', 'abelti@acse.local', '6sIe5Scx6eRbLqi2gsPXfLfTkUIB8aYWYLCRjvJzzHw=', '1Yxv7sJO24RNqOdI9ubmng==', 'TEACHER', 't-abelti');
+INSERT OR IGNORE INTO users (id, user_id, username, email, password_hash, salt, role, teacher_id) VALUES ('u-nesredin', 'nesredin', 'nesredin', 'nesredin@acse.local', '6sIe5Scx6eRbLqi2gsPXfLfTkUIB8aYWYLCRjvJzzHw=', '1Yxv7sJO24RNqOdI9ubmng==', 'TEACHER', 't-nesredin');
+INSERT OR IGNORE INTO users (id, user_id, username, email, password_hash, salt, role, teacher_id) VALUES ('u-betsi', 'betsi', 'betsi', 'betsi@acse.local', '6sIe5Scx6eRbLqi2gsPXfLfTkUIB8aYWYLCRjvJzzHw=', '1Yxv7sJO24RNqOdI9ubmng==', 'TEACHER', 't-betsi');
+INSERT OR IGNORE INTO users (id, user_id, username, email, password_hash, salt, role, teacher_id) VALUES ('u-gech', 'gech', 'gech', 'gech@acse.local', '6sIe5Scx6eRbLqi2gsPXfLfTkUIB8aYWYLCRjvJzzHw=', '1Yxv7sJO24RNqOdI9ubmng==', 'TEACHER', 't-gech');
+INSERT OR IGNORE INTO users (id, user_id, username, email, password_hash, salt, role, teacher_id) VALUES ('u-tewlde', 'tewlde', 'tewlde', 'tewlde@acse.local', '6sIe5Scx6eRbLqi2gsPXfLfTkUIB8aYWYLCRjvJzzHw=', '1Yxv7sJO24RNqOdI9ubmng==', 'TEACHER', 't-tewlde');
+INSERT OR IGNORE INTO users (id, user_id, username, email, password_hash, salt, role, teacher_id) VALUES ('u-yirga', 'yirga', 'yirga', 'yirga@acse.local', '6sIe5Scx6eRbLqi2gsPXfLfTkUIB8aYWYLCRjvJzzHw=', '1Yxv7sJO24RNqOdI9ubmng==', 'TEACHER', 't-yirga');
