@@ -47,14 +47,24 @@ public class ScheduleQueryService {
         return semesterRepo.findActive().orElse(null);
     }
 
-    public List<EventDto> getEventsBySection(String sectionId) {
-        return filterByActiveSemester(eventRepo.findBySectionId(sectionId))
-            .stream().map(this::mapToDto).toList();
+    public List<EventDto> getEventsBySection(String sectionId, String semesterId) {
+        List<Event> events = eventRepo.findBySectionId(sectionId);
+        if (semesterId != null) {
+            events = events.stream().filter(e -> semesterId.equals(e.getSemesterId())).toList();
+        } else {
+            events = filterByActiveSemester(events);
+        }
+        return events.stream().map(this::mapToDto).toList();
     }
     
-    public List<EventDto> getEventsByTeacher(String teacherId) {
-        return filterByActiveSemester(eventRepo.findByTeacherId(teacherId))
-            .stream().map(this::mapToDto).toList();
+    public List<EventDto> getEventsByTeacher(String teacherId, String semesterId) {
+        List<Event> events = eventRepo.findByTeacherId(teacherId);
+        if (semesterId != null) {
+            events = events.stream().filter(e -> semesterId.equals(e.getSemesterId())).toList();
+        } else {
+            events = filterByActiveSemester(events);
+        }
+        return events.stream().map(this::mapToDto).toList();
     }
     
     public List<EventDto> getEventsByRoom(String roomId) {
@@ -108,7 +118,19 @@ public class ScheduleQueryService {
         
         return eventDto;
     }
-    public List<SlotDto> getAvailableSlots(String semesterId, String sectionId, String teacherId, String roomId, String eventIdToIgnore) {
+    public List<SlotDto> getAvailableSlots(String semesterId, String sectionId, String teacherId, Integer week, String eventIdToIgnore) {
+        // Find teacher type to filter rooms
+        String roomTypePreference = null;
+        if (teacherId != null) {
+            teacherRepo.findById(teacherId).ifPresent(t -> {
+                if ("LAB_INSTRUCTOR".equals(t.getType())) {
+                    // roomTypePreference = "COMPUTER_LAB"; // Actually the user said "consider the kind of room the need lab or lecture(based on their teacher type)". Let's just find rooms that match the type.
+                }
+            });
+        }
+        final String teacherType = teacherId != null ? teacherRepo.findById(teacherId).map(Teacher::getType).orElse(null) : null;
+        final String requiredRoomType = "LAB_INSTRUCTOR".equals(teacherType) ? "COMPUTER_LAB" : "LECTURE_ROOM";
+
         List<Event> conflicts = eventRepo.findAll().stream()
             .filter(e -> {
                 if (semesterId != null) return semesterId.equals(e.getSemesterId());
@@ -116,33 +138,84 @@ public class ScheduleQueryService {
             })
             .filter(e -> !"CANCELED".equals(e.getStatus()))
             .filter(e -> eventIdToIgnore == null || !e.getId().equals(eventIdToIgnore))
-            .filter(e -> 
-                (sectionId != null && sectionId.equals(e.getSectionId())) ||
-                (teacherId != null && teacherId.equals(e.getTeacherId())) ||
-                (roomId != null && roomId.equals(e.getRoomId()))
-            )
+            .filter(e -> week == null || e.getWeek() == week)
             .toList();
             
+        List<Room> allRooms = roomRepo.findAll().stream()
+            .filter(r -> requiredRoomType.equals(r.getType()))
+            .toList();
+
         List<SlotDto> available = new ArrayList<>();
         for (int day = 1; day <= 6; day++) {
             for (int period = 1; period <= 5; period++) {
                 int d = day;
                 int p = period;
-                boolean conflict = conflicts.stream().anyMatch(e -> e.getDay() == d && e.getPeriod() == p);
-                if (!conflict) {
-                    available.add(new SlotDto(d, p));
+                
+                // Check if section or teacher is busy
+                boolean personOrSectionBusy = conflicts.stream().anyMatch(e -> 
+                    e.getDay() == d && e.getPeriod() == p && 
+                    ((sectionId != null && sectionId.equals(e.getSectionId())) ||
+                     (teacherId != null && teacherId.equals(e.getTeacherId())))
+                );
+                
+                if (!personOrSectionBusy) {
+                    // Find available rooms for this slot
+                    List<Room> availableRooms = new ArrayList<>();
+                    for (Room room : allRooms) {
+                        boolean roomBusy = conflicts.stream().anyMatch(e -> 
+                            e.getDay() == d && e.getPeriod() == p && room.getId().equals(e.getRoomId())
+                        );
+                        if (!roomBusy) {
+                            availableRooms.add(room);
+                        }
+                    }
+                    
+                    if (!availableRooms.isEmpty()) {
+                        available.add(new SlotDto(d, p, availableRooms));
+                    }
                 }
             }
         }
         return available;
     }
     
-    public List<RoomOccupationDto> getRoomOccupation(Integer week, Integer day, Integer period) {
-        // If day/period are null, ideally we calculate the current day/period. 
-        // For now, we default to day 0, period 0 if missing.
-        int targetWeek = week != null ? week : 1;
-        int targetDay = day != null ? day : 0;
-        int targetPeriod = period != null ? period : 0;
+    public List<RoomOccupationDto> getLiveRoomOccupation(java.time.LocalDateTime clientTime) {
+        Semester active = semesterRepo.findActive().orElse(null);
+        if (active == null || active.getStartDate() == null) {
+            return new ArrayList<>();
+        }
+
+        // Calculate week and day
+        java.time.LocalDate start = active.getStartDate().with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+        java.time.LocalDate clientDate = clientTime.toLocalDate();
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, clientDate);
+        
+        int targetWeek = (int) (daysBetween / 7) + 1;
+        int targetDay = (int) (daysBetween % 7) + 1;
+        
+        // Calculate period based on time (8:00 start, 90m duration, 15m break, lunch 13-14)
+        java.time.LocalTime time = clientTime.toLocalTime();
+        int targetPeriod = 0;
+        
+        java.time.LocalTime p1Start = java.time.LocalTime.of(8, 0);
+        java.time.LocalTime p1End = p1Start.plusMinutes(90);
+        java.time.LocalTime p2Start = p1End.plusMinutes(15);
+        java.time.LocalTime p2End = p2Start.plusMinutes(90);
+        java.time.LocalTime p3Start = p2End.plusMinutes(15);
+        java.time.LocalTime p3End = p3Start.plusMinutes(90);
+        java.time.LocalTime p4Start = java.time.LocalTime.of(14, 0); // After lunch
+        java.time.LocalTime p4End = p4Start.plusMinutes(90);
+        java.time.LocalTime p5Start = p4End.plusMinutes(15);
+        java.time.LocalTime p5End = p5Start.plusMinutes(90);
+        
+        if (!time.isBefore(p1Start) && time.isBefore(p1End)) targetPeriod = 1;
+        else if (!time.isBefore(p2Start) && time.isBefore(p2End)) targetPeriod = 2;
+        else if (!time.isBefore(p3Start) && time.isBefore(p3End)) targetPeriod = 3;
+        else if (!time.isBefore(p4Start) && time.isBefore(p4End)) targetPeriod = 4;
+        else if (!time.isBefore(p5Start) && time.isBefore(p5End)) targetPeriod = 5;
+
+        // If outside normal hours or during break, we can just return empty or the next period. 
+        // For simplicity, if targetPeriod is 0, we can just say no rooms are occupied right now (or it's break time).
         
         List<Room> allRooms = roomRepo.findAll();
         List<Event> activeEvents = filterByActiveSemester(eventRepo.findAll());
@@ -157,11 +230,12 @@ public class ScheduleQueryService {
             dto.roomType = room.getType();
             dto.hasEquipment = room.isHasEquipment();
             
-            // Check if there's an event in this room at this day/period
-            Event current = findEventForMap(activeEvents, room.getId(), targetWeek, targetDay, targetPeriod);
+            Event current = null;
+            if (targetPeriod > 0 && targetWeek > 0 && targetWeek <= active.getWeeks() && targetDay >= 1 && targetDay <= 6) {
+                current = findEventForMap(activeEvents, room.getId(), targetWeek, targetDay, targetPeriod);
+            }
             
             if (current != null) {
-                // If it's canceled, the room is technically not occupied, but we still send the event info
                 dto.isOccupied = !"CANCELED".equals(current.getStatus());
                 
                 EventDto eventDto = new EventDto();
@@ -172,7 +246,6 @@ public class ScheduleQueryService {
                 eventDto.period = current.getPeriod();
                 eventDto.status = current.getStatus();
                 
-                // Fetch related names
                 if (current.getTeacherId() != null) teacherRepo.findById(current.getTeacherId()).ifPresent(t -> eventDto.teacherName = t.getName());
                 if (current.getCourseId() != null) courseRepo.findById(current.getCourseId()).ifPresent(c -> eventDto.courseName = c.getName());
                 if (current.getSectionId() != null) batchRepo.findSectionById(current.getSectionId()).ifPresent(s -> eventDto.sectionName = s.getName());

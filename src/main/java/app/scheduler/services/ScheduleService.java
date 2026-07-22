@@ -76,11 +76,15 @@ public class ScheduleService {
         return events;
     }
     
-    public List<Event> getScheduleForStudent(String studentId) {
+    public List<Event> getScheduleForStudent(String studentId, String semesterId) {
         Student student = studentRepo.findById(studentId).orElse(null);
         if (student == null) return List.of();
         
         List<Event> events = eventRepo.findBySectionId(student.getSectionId());
+        
+        if (semesterId != null) {
+            events = events.stream().filter(e -> semesterId.equals(e.getSemesterId())).collect(Collectors.toList());
+        }
         
         if (student.getLabGroup() > 0) {
             events = events.stream()
@@ -108,11 +112,11 @@ public class ScheduleService {
         }
     }
 
-    private void validateAvailability(int day, int period, String roomId, String sectionId, String eventIdToIgnore) {
+    private void validateAvailability(int week, int day, int period, String roomId, String sectionId, String eventIdToIgnore) {
         // Room availability
         List<Event> roomEvents = eventRepo.findByRoomId(roomId);
         boolean roomConflict = roomEvents.stream().anyMatch(e -> 
-            e.getDay() == day && e.getPeriod() == period && 
+            e.getWeek() == week && e.getDay() == day && e.getPeriod() == period && 
             !"CANCELED".equals(e.getStatus()) &&
             (eventIdToIgnore == null || !e.getId().equals(eventIdToIgnore))
         );
@@ -121,7 +125,7 @@ public class ScheduleService {
         // Section availability
         List<Event> sectionEvents = eventRepo.findBySectionId(sectionId);
         boolean sectionConflict = sectionEvents.stream().anyMatch(e -> 
-            e.getDay() == day && e.getPeriod() == period && 
+            e.getWeek() == week && e.getDay() == day && e.getPeriod() == period && 
             !"CANCELED".equals(e.getStatus()) &&
             (eventIdToIgnore == null || !e.getId().equals(eventIdToIgnore))
         );
@@ -140,7 +144,7 @@ public class ScheduleService {
     public Event restoreEvent(String eventId, User user) {
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new ResourceNotFoundException("Event not found"));
         validateUserCanEditEvent(event, user);
-        validateAvailability(event.getDay(), event.getPeriod(), event.getRoomId(), event.getSectionId(), eventId);
+        validateAvailability(event.getWeek(), event.getDay(), event.getPeriod(), event.getRoomId(), event.getSectionId(), eventId);
         
         event.setStatus("SCHEDULED");
         eventRepo.update(event);
@@ -150,7 +154,7 @@ public class ScheduleService {
     public Event rescheduleEvent(String eventId, int newDay, int newPeriod, String newRoomId, User user) {
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new ResourceNotFoundException("Event not found"));
         validateUserCanEditEvent(event, user);
-        validateAvailability(newDay, newPeriod, newRoomId, event.getSectionId(), eventId);
+        validateAvailability(event.getWeek(), newDay, newPeriod, newRoomId, event.getSectionId(), eventId);
         
         event.setDay(newDay);
         event.setPeriod(newPeriod);
@@ -162,7 +166,7 @@ public class ScheduleService {
 
     public Event bookEvent(Event newEvent, User user) {
         validateUserCanEditEvent(newEvent, user);
-        validateAvailability(newEvent.getDay(), newEvent.getPeriod(), newEvent.getRoomId(), newEvent.getSectionId(), null);
+        validateAvailability(newEvent.getWeek(), newEvent.getDay(), newEvent.getPeriod(), newEvent.getRoomId(), newEvent.getSectionId(), null);
         
         newEvent.setStatus("SCHEDULED");
         Event saved = eventRepo.save(newEvent);

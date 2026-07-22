@@ -36,16 +36,25 @@ public class ScheduleController {
         
         User user = (User) request.getAttribute("user");
         String role = user.getRole();
-        loggerService.logSchedule("Fetching schedule for " + role + " " + user.getUsername());
+        // Use provided semesterId or fallback to the active semester
+        String targetSemesterId = semesterId;
+        if (targetSemesterId == null) {
+            app.scheduler.models.Semester activeSem = queryService.getActiveSemester();
+            if (activeSem != null) {
+                targetSemesterId = activeSem.getId();
+            }
+        }
+
+        loggerService.logSchedule("Fetching schedule for " + role + " " + user.getUsername() + " in semester " + targetSemesterId);
         
         if ("STUDENT".equals(role)) {
-            List<Event> studentEvents = scheduleService.getScheduleForStudent(user.getStudentId());
+            List<Event> studentEvents = scheduleService.getScheduleForStudent(user.getStudentId(), targetSemesterId);
             return ResponseEntity.ok(queryService.mapEventsToDto(studentEvents));
         } else if ("TEACHER".equals(role)) {
-            return ResponseEntity.ok(queryService.getEventsByTeacher(user.getTeacherId()));
+            return ResponseEntity.ok(queryService.getEventsByTeacher(user.getTeacherId(), targetSemesterId));
         } else {
             // ADMIN
-            return ResponseEntity.ok(queryService.getAllEvents(semesterId, sectionId, teacherId));
+            return ResponseEntity.ok(queryService.getAllEvents(targetSemesterId, sectionId, teacherId));
         }
     }
 
@@ -54,11 +63,11 @@ public class ScheduleController {
             @RequestParam(required = false) String semesterId,
             @RequestParam(required = false) String sectionId,
             @RequestParam(required = false) String teacherId,
-            @RequestParam(required = false) String roomId,
+            @RequestParam(required = false) Integer week,
             @RequestParam(required = false) String eventIdToIgnore) {
             
-        loggerService.logSchedule("Fetching available slots for section: " + sectionId + " room: " + roomId);
-        return ResponseEntity.ok(queryService.getAvailableSlots(semesterId, sectionId, teacherId, roomId, eventIdToIgnore));
+        loggerService.logSchedule("Fetching available slots for section: " + sectionId + " week: " + week);
+        return ResponseEntity.ok(queryService.getAvailableSlots(semesterId, sectionId, teacherId, week, eventIdToIgnore));
     }
 
     @GetMapping("/active-semester")

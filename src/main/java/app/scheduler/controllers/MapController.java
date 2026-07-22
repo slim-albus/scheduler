@@ -34,40 +34,15 @@ public class MapController {
         } else {
             try {
                 // frontend might send ISO string like "2026-07-21T17:31:25.123Z"
-                targetTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_DATE_TIME);
-            } catch (DateTimeParseException e) {
+                // Instant parsing would be better but we'll try to parse or fallback to now
+                java.time.Instant instant = java.time.Instant.parse(time);
+                targetTime = LocalDateTime.ofInstant(instant, java.time.ZoneId.systemDefault());
+            } catch (Exception e) {
                 targetTime = LocalDateTime.now();
             }
         }
         
-        // Map DayOfWeek (1=Monday...7=Sunday). Keep 1-6 for Schedule.
-        int day = targetTime.getDayOfWeek().getValue();
-        if (day > 6) day = 1; // Default Sunday to Monday for map visualization if needed, or leave it (no events on Sunday)
-        
-        int hour = targetTime.getHour();
-        int period = 0;
-        
-        if (hour >= 8 && hour < 10) period = 1;
-        else if (hour >= 10 && hour < 12) period = 2;
-        else if (hour >= 12 && hour < 14) period = 3;
-        else if (hour >= 14 && hour < 16) period = 4;
-        else if (hour >= 16 && hour < 18) period = 5;
-
-        // Calculate week
-        app.scheduler.models.Semester activeSem = queryService.getActiveSemester();
-        int week = 1;
-        if (activeSem != null && activeSem.getStartDate() != null) {
-            java.time.LocalDate start = activeSem.getStartDate();
-            while (start.getDayOfWeek() != java.time.DayOfWeek.MONDAY) {
-                start = start.minusDays(1);
-            }
-            long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, targetTime.toLocalDate());
-            if (daysBetween >= 0) {
-                week = (int) (daysBetween / 7) + 1;
-            }
-        }
-
-        loggerService.logMap("Fetching live room occupation for time " + targetTime + " -> week " + week + " day " + day + " period " + period);
-        return ResponseEntity.ok(queryService.getRoomOccupation(week, day, period));
+        loggerService.logMap("Fetching live room occupation for time " + targetTime);
+        return ResponseEntity.ok(queryService.getLiveRoomOccupation(targetTime));
     }
 }
