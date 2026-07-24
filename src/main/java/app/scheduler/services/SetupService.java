@@ -58,11 +58,10 @@ public class SetupService implements CommandLineRunner {
         LocalDate now = LocalDate.now();
         LocalDate startOfThisWeek = now.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
         sem1.setStartDate(startOfThisWeek);
-        sem1.setEndDate(startOfThisWeek.plusWeeks(16));
+        
         sem1.setWeeks(16);
         sem1.setAcademicYear("2026/27");
         sem1.setGenerated(false);
-        sem1.setActive(true);
         semesterRepo.save(sem1);
 
         // Batches & Sections
@@ -71,7 +70,6 @@ public class SetupService implements CommandLineRunner {
         batch1.setName("DRBSE2502");
         batch1.setProgram("Software Engineering");
         batch1.setYear("2026/27");
-        batch1.setActive(true);
         batchRepo.save(batch1);
 
         Section secA = new Section();
@@ -79,51 +77,75 @@ public class SetupService implements CommandLineRunner {
         secA.setName("Section A");
         secA.setBatchId("batch-drbse");
         secA.setStudentCount(35);
-        secA.setActive(true);
         batchRepo.saveSection(secA);
 
-        // Rooms
+        Section secB = new Section();
+        secB.setId("sec-drbse-b");
+        secB.setName("Section B");
+        secB.setBatchId("batch-drbse");
+        secB.setStudentCount(35);
+        batchRepo.saveSection(secB);
+
+        // Rooms (201-601, Lab 204-504)
         createRoom("room-201", "201", "LECTURE_ROOM", 45, 2, true);
-        createRoom("room-202", "202", "LECTURE_ROOM", 45, 2, false);
-        createRoom("room-lab-204", "Lab 204", "COMPUTER_LAB", 24, 2, true);
         createRoom("room-301", "301", "LECTURE_ROOM", 45, 3, true);
+        createRoom("room-401", "401", "LECTURE_ROOM", 45, 4, true);
+        createRoom("room-501", "501", "LECTURE_ROOM", 45, 5, true);
+        createRoom("room-601", "601", "LECTURE_ROOM", 45, 6, true);
+        
+        createRoom("room-lab-204", "Lab 204", "COMPUTER_LAB", 30, 2, true);
+        createRoom("room-lab-304", "Lab 304", "COMPUTER_LAB", 30, 3, true);
+        createRoom("room-lab-404", "Lab 404", "COMPUTER_LAB", 30, 4, true);
+        createRoom("room-lab-504", "Lab 504", "COMPUTER_LAB", 30, 5, true);
 
         // Courses
-        createCourse("course-se2222", "SE2222", "Web", true, 3, 3, 2, "Software Engineering");
-        createCourse("course-se1221", "SE1221", "OOP", true, 3, 3, 2, "Software Engineering");
+        createCourse("course-se2222", "SE2222", "Web Development", true, 3, "Software Engineering");
+        createCourse("course-se1221", "SE1221", "Object Oriented Programming", true, 3, "Software Engineering");
+        createCourse("course-cc2131", "CC2131", "Data Structures", false, 3, "Computer Science");
+        createCourse("course-cc0193", "CC0193", "Database Systems", true, 4, "Computer Science");
+        createCourse("course-cc0197", "CC0197", "Operating Systems", false, 3, "Computer Science");
 
-        // Teachers
+        // Teachers: Kibrom, Abelti, Nesredin, Betsi, Gech, Tewlde, Yirga
         Teacher tKibrom = createTeacher("t-kibrom", "Kibrom", "kibrom@acse.local", "Software Engineering", "LECTURER");
         Teacher tAbelti = createTeacher("t-abelti", "Abelti", "abelti@acse.local", "Software Engineering", "LAB_INSTRUCTOR");
+        Teacher tNesredin = createTeacher("t-nesredin", "Nesredin", "nesredin@acse.local", "Computer Science", "LECTURER");
+        Teacher tBetsi = createTeacher("t-betsi", "Betsi", "betsi@acse.local", "Computer Science", "LAB_INSTRUCTOR");
+        Teacher tGech = createTeacher("t-gech", "Gech", "gech@acse.local", "Computer Science", "LECTURER");
+        Teacher tTewlde = createTeacher("t-tewlde", "Tewlde", "tewlde@acse.local", "Software Engineering", "LECTURER");
+        Teacher tYirga = createTeacher("t-yirga", "Yirga", "yirga@acse.local", "Computer Science", "LECTURER");
 
         // Students
         createStudent("s-1001", "Alice Student", "1001", "alice@acse.local", "sec-drbse-a", "batch-drbse");
+        createStudent("s-1002", "Bob Student", "1002", "bob@acse.local", "sec-drbse-b", "batch-drbse");
 
         // Mappings
-        createMapping("map-web", "batch-drbse", "course-se2222", "t-kibrom", "t-abelti", "sem-1");
+        createMapping("map-1", "batch-drbse", "course-se2222", "t-kibrom", "t-abelti", "sem-1");
+        createMapping("map-2", "batch-drbse", "course-se1221", "t-tewlde", "t-abelti", "sem-1");
+        createMapping("map-3", "batch-drbse", "course-cc2131", "t-nesredin", null, "sem-1");
+        createMapping("map-4", "batch-drbse", "course-cc0193", "t-gech", "t-betsi", "sem-1");
+        createMapping("map-5", "batch-drbse", "course-cc0197", "t-yirga", null, "sem-1");
 
         // Dummy Event - let's schedule an event TODAY so the live map is populated
         int currentDayOfWeek = now.getDayOfWeek().getValue(); // 1=Mon, 7=Sun
         if (currentDayOfWeek <= 6) {
-            Event e = new Event();
-            e.setId("evt-live-demo");
-            e.setType("Lecture");
-            e.setTopic("Web Dev Intro");
-            e.setSectionId("sec-drbse-a");
-            e.setCourseId("course-se2222");
-            e.setTeacherId("t-kibrom");
-            e.setRoomId("room-201");
-            e.setSemesterId("sem-1");
-            e.setBatchId("batch-drbse");
-            e.setDay(currentDayOfWeek);
-            e.setPeriod(3); // period 3 is usually around 11:30
-            e.setWeek(1);
-            
-            // Time logic matches the query service
-            LocalTime p3Start = LocalTime.of(11, 30);
-            e.setDate(sem1.getStartDate());
-            e.setStatus("SCHEDULED");
-            eventRepo.save(e);
+            for (int i = 1; i <= 5; i++) {
+                Event e = new Event();
+                e.setId("evt-live-demo-" + i);
+                e.setType(i % 2 == 0 ? "Lab" : "Lecture");
+                e.setTopic(i % 2 == 0 ? "Web Dev Lab" : "Web Dev Intro");
+                e.setSectionId(i % 2 == 0 ? "sec-drbse-b" : "sec-drbse-a");
+                e.setCourseId("course-se2222");
+                e.setTeacherId("t-kibrom");
+                e.setRoomId(i % 2 == 0 ? "room-lab1" : "room-201");
+                e.setSemesterId("sem-1");
+                e.setBatchId("batch-drbse");
+                e.setDay(currentDayOfWeek);
+                e.setPeriod(i);
+                e.setWeek(1);
+                e.setDate(sem1.getStartDate().plusDays(currentDayOfWeek - 1));
+                e.setStatus("SCHEDULED");
+                eventRepo.save(e);
+            }
         }
 
         System.out.println("SetupService completed successfully!");
@@ -137,21 +159,17 @@ public class SetupService implements CommandLineRunner {
         r.setCapacity(capacity);
         r.setLevel(level);
         r.setHasEquipment(hasEquipment);
-        r.setActive(true);
         roomRepo.save(r);
     }
 
-    private void createCourse(String id, String code, String name, boolean hasLab, int credits, int lecHours, int labHours, String dept) {
+    private void createCourse(String id, String code, String name, boolean hasLab, int credits, String dept) {
         Course c = new Course();
         c.setId(id);
         c.setCode(code);
         c.setName(name);
         c.setHasLab(hasLab);
         c.setCredits(credits);
-        c.setLectureHoursPerWeek(lecHours);
-        c.setLabHoursPerWeek(labHours);
         c.setDepartment(dept);
-        c.setActive(true);
         courseRepo.save(c);
     }
 
@@ -162,7 +180,6 @@ public class SetupService implements CommandLineRunner {
         t.setEmail(email);
         t.setDepartment(dept);
         t.setType(type);
-        t.setActive(true);
         return teacherService.save(t);
     }
 
@@ -174,7 +191,6 @@ public class SetupService implements CommandLineRunner {
         s.setEmail(email);
         s.setSectionId(secId);
         s.setBatchId(batchId);
-        s.setActive(true);
         studentService.save(s);
     }
 

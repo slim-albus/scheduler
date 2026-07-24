@@ -18,9 +18,6 @@ public class Event {
     private int period;
     private int week;
     private LocalDate date;
-    private int instance;
-    private String createdBy;
-    private LocalDateTime createdAt;
     private int version;
     private String status = "SCHEDULED";
 
@@ -54,12 +51,6 @@ public class Event {
     public void setWeek(int week) { this.week = week; }
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
-    public int getInstance() { return instance; }
-    public void setInstance(int instance) { this.instance = instance; }
-    public String getCreatedBy() { return createdBy; }
-    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public int getVersion() { return version; }
     public void setVersion(int version) { this.version = version; }
     public String getStatus() { return status; }

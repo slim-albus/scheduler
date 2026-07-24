@@ -41,7 +41,7 @@ public class SemesterService {
             }
             entity.setStartDate(start);
             // End date is Sunday of the final week
-            entity.setEndDate(start.plusWeeks(entity.getWeeks()).minusDays(1));
+            
         }
     }
 

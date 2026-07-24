@@ -51,7 +51,6 @@ public class AuthService {
         session.setToken(token);
         session.setUserId(userId);
         session.setExpiresAt(LocalDateTime.now().plusDays(1));
-        session.setActive(true);
         return sessionRepository.save(session);
     }
     
@@ -93,7 +92,6 @@ public class AuthService {
 
     public void logout(String token) {
         sessionRepository.findByToken(token).ifPresent(s -> {
-            s.setActive(false);
             sessionRepository.update(s);
         });
     }
@@ -102,7 +100,7 @@ public class AuthService {
         Optional<Session> sessionOpt = sessionRepository.findByToken(token);
         if (sessionOpt.isPresent()) {
             Session s = sessionOpt.get();
-            if (s.isActive() && s.getExpiresAt().isAfter(LocalDateTime.now())) {
+            if (s.getExpiresAt().isAfter(LocalDateTime.now())) {
                 return userRepository.findById(s.getUserId());
             }
         }

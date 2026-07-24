@@ -27,7 +27,6 @@ public class JdbcTeacherRepository implements TeacherRepository {
         obj.setEmail(rs.getString("email"));
         obj.setDepartment(rs.getString("department"));
         obj.setType(rs.getString("type"));
-        obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
 
@@ -37,8 +36,8 @@ public class JdbcTeacherRepository implements TeacherRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO teachers (id, name, email, department, type, is_active) VALUES (?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.isActive()
+            SQLQueries.TEACHER_INSERT,
+            entity.getId(), entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType()
         );
         return entity;
     }
@@ -65,8 +64,8 @@ public class JdbcTeacherRepository implements TeacherRepository {
     @Override
     public boolean update(Teacher entity) {
         return jdbcTemplate.update(
-            "UPDATE teachers SET name = ?, email = ?, department = ?, type = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.isActive(), entity.getId()
+            SQLQueries.TEACHER_UPDATE,
+            entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getId()
         ) > 0;
     }
 

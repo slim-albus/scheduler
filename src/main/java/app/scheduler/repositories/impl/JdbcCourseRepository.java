@@ -27,12 +27,7 @@ public class JdbcCourseRepository implements CourseRepository {
         obj.setName(rs.getString("name"));
         obj.setHasLab(rs.getBoolean("has_lab"));
         obj.setCredits(rs.getInt("credits"));
-        obj.setLectureHoursPerWeek(rs.getInt("lecture_hours_per_week"));
-        obj.setLabHoursPerWeek(rs.getInt("lab_hours_per_week"));
-        obj.setMidtermDuration(rs.getInt("midterm_duration"));
-        obj.setFinalDuration(rs.getInt("final_duration"));
         obj.setDepartment(rs.getString("department"));
-        obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
 
@@ -42,8 +37,9 @@ public class JdbcCourseRepository implements CourseRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO courses (id, code, name, has_lab, credits, lecture_hours_per_week, lab_hours_per_week, midterm_duration, final_duration, department, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getCode(), entity.getName(), entity.isHasLab(), entity.getCredits(), entity.getLectureHoursPerWeek(), entity.getLabHoursPerWeek(), entity.getMidtermDuration(), entity.getFinalDuration(), entity.getDepartment(), entity.isActive()
+            SQLQueries.COURSE_INSERT,
+            entity.getId(), entity.getCode(), entity.getName(), entity.isHasLab(), entity.getCredits(), 
+            entity.getDepartment()
         );
         return entity;
     }
@@ -69,8 +65,9 @@ public class JdbcCourseRepository implements CourseRepository {
     @Override
     public boolean update(Course entity) {
         return jdbcTemplate.update(
-            "UPDATE courses SET code = ?, name = ?, has_lab = ?, credits = ?, lecture_hours_per_week = ?, lab_hours_per_week = ?, midterm_duration = ?, final_duration = ?, department = ?, is_active = ? WHERE id = ?",
-            entity.getCode(), entity.getName(), entity.isHasLab(), entity.getCredits(), entity.getLectureHoursPerWeek(), entity.getLabHoursPerWeek(), entity.getMidtermDuration(), entity.getFinalDuration(), entity.getDepartment(), entity.isActive(), entity.getId()
+            SQLQueries.COURSE_UPDATE,
+            entity.getCode(), entity.getName(), entity.isHasLab(), entity.getCredits(), 
+            entity.getDepartment(), entity.getId()
         ) > 0;
     }
 

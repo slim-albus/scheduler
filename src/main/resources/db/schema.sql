@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS semesters (
     id VARCHAR(36) PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
     start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
     weeks INT DEFAULT 16,
     academic_year VARCHAR(20),
     is_generated BOOLEAN DEFAULT 0,
@@ -15,8 +14,7 @@ CREATE TABLE IF NOT EXISTS batches (
     id VARCHAR(36) PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
     program VARCHAR(100),
-    year VARCHAR(20),
-    is_active BOOLEAN DEFAULT 1
+    year VARCHAR(20)
 );
 
 CREATE TABLE IF NOT EXISTS sections (
@@ -25,7 +23,6 @@ CREATE TABLE IF NOT EXISTS sections (
     batch_id VARCHAR(36),
     lab_group INT DEFAULT 0,
     student_count INT DEFAULT 0,
-    is_active BOOLEAN DEFAULT 1,
     FOREIGN KEY (batch_id) REFERENCES batches(id)
 );
 
@@ -33,14 +30,9 @@ CREATE TABLE IF NOT EXISTS courses (
     id VARCHAR(36) PRIMARY KEY,
     code VARCHAR(20) UNIQUE NOT NULL,
     name VARCHAR(100) UNIQUE NOT NULL,
-    has_lab BOOLEAN DEFAULT 0,
-    credits INT DEFAULT 3,
-    lecture_hours_per_week INT DEFAULT 2,
-    lab_hours_per_week INT DEFAULT 1,
-    midterm_duration INT DEFAULT 60,
-    final_duration INT DEFAULT 120,
-    department VARCHAR(100),
-    is_active BOOLEAN DEFAULT 1
+    has_lab BOOLEAN NOT NULL DEFAULT 0,
+    credits INTEGER NOT NULL,
+    department VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS teachers (
@@ -48,8 +40,7 @@ CREATE TABLE IF NOT EXISTS teachers (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE,
     department VARCHAR(100),
-    type VARCHAR(20) NOT NULL,
-    is_active BOOLEAN DEFAULT 1
+    type VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS rooms (
@@ -58,8 +49,7 @@ CREATE TABLE IF NOT EXISTS rooms (
     type VARCHAR(20) NOT NULL,
     capacity INT DEFAULT 30,
     level INT DEFAULT 0,
-    has_equipment BOOLEAN DEFAULT 0,
-    is_active BOOLEAN DEFAULT 1
+    has_equipment BOOLEAN DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS students (
@@ -70,7 +60,6 @@ CREATE TABLE IF NOT EXISTS students (
     section_id VARCHAR(36),
     batch_id VARCHAR(36),
     lab_group INT DEFAULT 0,
-    is_active BOOLEAN DEFAULT 1,
     FOREIGN KEY (section_id) REFERENCES sections(id)
 );
 
@@ -85,8 +74,6 @@ CREATE TABLE IF NOT EXISTS users (
     teacher_id VARCHAR(36),
     student_id VARCHAR(36),
     is_active BOOLEAN DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (teacher_id) REFERENCES teachers(id),
     FOREIGN KEY (student_id) REFERENCES students(id)
 );
@@ -99,7 +86,6 @@ CREATE TABLE IF NOT EXISTS sessions (
     user_agent VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP NOT NULL,
-    is_active BOOLEAN DEFAULT 1,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -117,7 +103,7 @@ CREATE TABLE IF NOT EXISTS batch_course_mappings (
     FOREIGN KEY (lecture_teacher_id) REFERENCES teachers(id),
     FOREIGN KEY (lab_instructor_id) REFERENCES teachers(id),
     FOREIGN KEY (semester_id) REFERENCES semesters(id),
-    UNIQUE(batch_id, course_id)
+    UNIQUE(batch_id, course_id, semester_id)
 );
 
 -- Events Table (The Output)
@@ -136,9 +122,6 @@ CREATE TABLE IF NOT EXISTS events (
     period INT NOT NULL,
     week INT NOT NULL,
     date VARCHAR(20),
-    instance INT DEFAULT 0,
-    created_by VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     version INT DEFAULT 1,
     status VARCHAR(20) DEFAULT 'SCHEDULED',
     FOREIGN KEY (section_id) REFERENCES sections(id),

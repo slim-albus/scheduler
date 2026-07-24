@@ -28,7 +28,7 @@ public class JdbcSessionRepository implements SessionRepository {
         session.setUserId(rs.getString("user_id"));
         session.setIpAddress(rs.getString("ip_address"));
         session.setUserAgent(rs.getString("user_agent"));
-        session.setActive(rs.getBoolean("is_active"));
+        
         session.setCreatedAt(DateUtils.parseSqliteTimestamp(rs.getString("created_at")));
         session.setExpiresAt(DateUtils.parseSqliteTimestamp(rs.getString("expires_at")));
         return session;
@@ -40,12 +40,10 @@ public class JdbcSessionRepository implements SessionRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO sessions (id, token, user_id, ip_address, user_agent, expires_at, is_active) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            SQLQueries.SESSION_INSERT,
             entity.getId(), entity.getToken(), entity.getUserId(), entity.getIpAddress(),
             entity.getUserAgent(), 
-            DateUtils.formatSqliteTimestamp(entity.getExpiresAt()), 
-            entity.isActive()
+            DateUtils.formatSqliteTimestamp(entity.getExpiresAt())
         );
         return entity;
     }
@@ -69,11 +67,9 @@ public class JdbcSessionRepository implements SessionRepository {
     @Override
     public boolean update(Session entity) {
         return jdbcTemplate.update(
-            "UPDATE sessions SET token = ?, user_id = ?, ip_address = ?, user_agent = ?, " +
-            "expires_at = ?, is_active = ? WHERE id = ?",
+            SQLQueries.SESSION_UPDATE,
             entity.getToken(), entity.getUserId(), entity.getIpAddress(), entity.getUserAgent(),
-            DateUtils.formatSqliteTimestamp(entity.getExpiresAt()), 
-            entity.isActive(), entity.getId()
+            DateUtils.formatSqliteTimestamp(entity.getExpiresAt()), entity.getId()
         ) > 0;
     }
 

@@ -147,9 +147,7 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
                 // day=0 is Monday, day=5 is Saturday
                 java.time.LocalDate eventDate = semStart.plusWeeks(week - 1).plusDays(item.day);
                 event.setDate(eventDate);
-                event.setInstance(0);
                 event.setStatus("SCHEDULED");
-                event.setCreatedAt(now);
                 event.setVersion(1);
                 events.add(event);
             }

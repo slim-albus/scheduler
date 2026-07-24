@@ -37,7 +37,7 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
         if (entity.getId() == null || entity.getId().isEmpty()) {
             entity.setId(UUID.randomUUID().toString());
             jdbcTemplate.update(
-                "INSERT INTO batch_course_mappings (id, batch_id, course_id, lecture_teacher_id, lab_instructor_id, is_required, semester_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                SQLQueries.BATCHCOURSEMAPPING_INSERT,
                 entity.getId(), entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.isRequired(), entity.getSemesterId()
             );
         } else {
@@ -65,7 +65,7 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
     @Override
     public boolean update(BatchCourseMapping entity) {
         return jdbcTemplate.update(
-            "UPDATE batch_course_mappings SET batch_id = ?, course_id = ?, lecture_teacher_id = ?, lab_instructor_id = ?, is_required = ?, semester_id = ? WHERE id = ?",
+            SQLQueries.BATCHCOURSEMAPPING_UPDATE,
             entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.isRequired(), entity.getSemesterId(), entity.getId()
         ) > 0;
     }
@@ -81,8 +81,8 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
     }
 
     @Override
-    public Optional<BatchCourseMapping> findByBatchIdAndCourseId(String batchId, String courseId) {
-        List<BatchCourseMapping> results = jdbcTemplate.query(SQLQueries.BATCHCOURSEMAPPING_FIND_BY_BATCH_ID_AND_COURSE_ID, rowMapper, batchId, courseId);
+    public Optional<BatchCourseMapping> findByBatchIdAndCourseIdAndSemesterId(String batchId, String courseId, String semesterId) {
+        List<BatchCourseMapping> results = jdbcTemplate.query(SQLQueries.BATCHCOURSEMAPPING_FIND_BY_BATCH_ID_AND_COURSE_ID_AND_SEMESTER_ID, rowMapper, batchId, courseId, semesterId);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 

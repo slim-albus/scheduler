@@ -6,12 +6,7 @@ public class Course {
     private String name;
     private boolean hasLab;
     private int credits;
-    private int lectureHoursPerWeek;
-    private int labHoursPerWeek;
-    private int midtermDuration;
-    private int finalDuration;
     private String department;
-    private boolean isActive;
 
     public Course() {}
 
@@ -25,16 +20,6 @@ public class Course {
     public void setHasLab(boolean hasLab) { this.hasLab = hasLab; }
     public int getCredits() { return credits; }
     public void setCredits(int credits) { this.credits = credits; }
-    public int getLectureHoursPerWeek() { return lectureHoursPerWeek; }
-    public void setLectureHoursPerWeek(int lectureHoursPerWeek) { this.lectureHoursPerWeek = lectureHoursPerWeek; }
-    public int getLabHoursPerWeek() { return labHoursPerWeek; }
-    public void setLabHoursPerWeek(int labHoursPerWeek) { this.labHoursPerWeek = labHoursPerWeek; }
-    public int getMidtermDuration() { return midtermDuration; }
-    public void setMidtermDuration(int midtermDuration) { this.midtermDuration = midtermDuration; }
-    public int getFinalDuration() { return finalDuration; }
-    public void setFinalDuration(int finalDuration) { this.finalDuration = finalDuration; }
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
 }

@@ -7,7 +7,6 @@ public class Room {
     private int capacity;
     private int level;
     private boolean hasEquipment;
-    private boolean isActive;
 
     public Room() {}
 
@@ -23,6 +22,4 @@ public class Room {
     public void setLevel(int level) { this.level = level; }
     public boolean isHasEquipment() { return hasEquipment; }
     public void setHasEquipment(boolean hasEquipment) { this.hasEquipment = hasEquipment; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
 }

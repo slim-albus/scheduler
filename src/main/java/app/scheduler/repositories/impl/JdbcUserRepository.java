@@ -33,8 +33,7 @@ public class JdbcUserRepository implements UserRepository {
         user.setTeacherId(rs.getString("teacher_id"));
         user.setStudentId(rs.getString("student_id"));
         user.setActive(rs.getBoolean("is_active"));
-        user.setCreatedAt(DateUtils.parseSqliteTimestamp(rs.getString("created_at")));
-        user.setUpdatedAt(DateUtils.parseSqliteTimestamp(rs.getString("updated_at")));
+        
         return user;
     };
 
@@ -44,8 +43,7 @@ public class JdbcUserRepository implements UserRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO users (id, user_id, username, email, password_hash, salt, role, teacher_id, student_id, is_active) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            SQLQueries.USER_INSERT,
             entity.getId(), entity.getUserId(), entity.getUsername(), entity.getEmail(),
             entity.getPasswordHash(), entity.getSalt(), entity.getRole(),
             entity.getTeacherId(), entity.getStudentId(), entity.isActive()
@@ -72,8 +70,7 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public boolean update(User entity) {
         return jdbcTemplate.update(
-            "UPDATE users SET user_id = ?, username = ?, email = ?, password_hash = ?, salt = ?, " +
-            "role = ?, teacher_id = ?, student_id = ?, is_active = ? WHERE id = ?",
+            SQLQueries.USER_UPDATE,
             entity.getUserId(), entity.getUsername(), entity.getEmail(),
             entity.getPasswordHash(), entity.getSalt(), entity.getRole(),
             entity.getTeacherId(), entity.getStudentId(), entity.isActive(), entity.getId()

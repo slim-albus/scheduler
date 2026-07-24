@@ -26,7 +26,6 @@ public class JdbcBatchRepository implements BatchRepository {
         obj.setName(rs.getString("name"));
         obj.setProgram(rs.getString("program"));
         obj.setYear(rs.getString("year"));
-        obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
 
@@ -36,8 +35,8 @@ public class JdbcBatchRepository implements BatchRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO batches (id, name, program, year, is_active) VALUES (?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getProgram(), entity.getYear(), entity.isActive()
+            SQLQueries.BATCH_INSERT,
+            entity.getId(), entity.getName(), entity.getProgram(), entity.getYear()
         );
         return entity;
     }
@@ -65,8 +64,8 @@ public class JdbcBatchRepository implements BatchRepository {
     @Override
     public boolean update(Batch entity) {
         return jdbcTemplate.update(
-            "UPDATE batches SET name = ?, program = ?, year = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getProgram(), entity.getYear(), entity.isActive(), entity.getId()
+            SQLQueries.BATCH_UPDATE,
+            entity.getName(), entity.getProgram(), entity.getYear(), entity.getId()
         ) > 0;
     }
 
@@ -88,7 +87,6 @@ public class JdbcBatchRepository implements BatchRepository {
         obj.setName(rs.getString("name"));
         obj.setBatchId(rs.getString("batch_id"));
         obj.setStudentCount(rs.getInt("student_count"));
-        obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
 
@@ -98,8 +96,8 @@ public class JdbcBatchRepository implements BatchRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO sections (id, name, batch_id, student_count, is_active) VALUES (?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getBatchId(), entity.getStudentCount(), entity.isActive()
+            SQLQueries.SECTION_INSERT,
+            entity.getId(), entity.getName(), entity.getBatchId(), entity.getStudentCount()
         );
         return entity;
     }
@@ -125,8 +123,8 @@ public class JdbcBatchRepository implements BatchRepository {
     @Override
     public boolean updateSection(app.scheduler.models.Section entity) {
         return jdbcTemplate.update(
-            "UPDATE sections SET name = ?, batch_id = ?, student_count = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getBatchId(), entity.getStudentCount(), entity.isActive(), entity.getId()
+            SQLQueries.SECTION_UPDATE,
+            entity.getName(), entity.getBatchId(), entity.getStudentCount(), entity.getId()
         ) > 0;
     }
 

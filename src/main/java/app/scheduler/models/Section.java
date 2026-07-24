@@ -5,7 +5,6 @@ public class Section {
     private String name;
     private String batchId;
     private int studentCount;
-    private boolean isActive;
 
     public Section() {}
 
@@ -17,6 +16,4 @@ public class Section {
     public void setBatchId(String batchId) { this.batchId = batchId; }
     public int getStudentCount() { return studentCount; }
     public void setStudentCount(int studentCount) { this.studentCount = studentCount; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
 }

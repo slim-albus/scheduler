@@ -28,7 +28,6 @@ public class JdbcRoomRepository implements RoomRepository {
         obj.setCapacity(rs.getInt("capacity"));
         obj.setLevel(rs.getInt("level"));
         obj.setHasEquipment(rs.getBoolean("has_equipment"));
-        obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
 
@@ -37,8 +36,8 @@ public class JdbcRoomRepository implements RoomRepository {
         if (entity.getId() == null || entity.getId().isEmpty()) {
             entity.setId(UUID.randomUUID().toString());
             jdbcTemplate.update(
-                "INSERT INTO rooms (id, name, type, capacity, level, has_equipment, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                entity.getId(), entity.getName(), entity.getType(), entity.getCapacity(), entity.getLevel(), entity.isHasEquipment(), entity.isActive()
+                SQLQueries.ROOM_INSERT,
+                entity.getId(), entity.getName(), entity.getType(), entity.getCapacity(), entity.getLevel(), entity.isHasEquipment()
             );
         } else {
             update(entity);
@@ -65,8 +64,8 @@ public class JdbcRoomRepository implements RoomRepository {
     @Override
     public boolean update(Room entity) {
         return jdbcTemplate.update(
-            "UPDATE rooms SET name = ?, type = ?, capacity = ?, level = ?, has_equipment = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getType(), entity.getCapacity(), entity.getLevel(), entity.isHasEquipment(), entity.isActive(), entity.getId()
+            SQLQueries.ROOM_UPDATE,
+            entity.getName(), entity.getType(), entity.getCapacity(), entity.getLevel(), entity.isHasEquipment(), entity.getId()
         ) > 0;
     }
 

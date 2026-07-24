@@ -40,9 +40,6 @@ public class JdbcEventRepository implements EventRepository {
         if (rs.getString("date") != null) {
             obj.setDate(LocalDate.parse(rs.getString("date")));
         }
-        obj.setInstance(rs.getInt("instance"));
-        obj.setCreatedBy(rs.getString("created_by"));
-        obj.setCreatedAt(DateUtils.parseSqliteTimestamp(rs.getString("created_at")));
         obj.setVersion(rs.getInt("version"));
         obj.setStatus(rs.getString("status"));
         return obj;
@@ -54,11 +51,9 @@ public class JdbcEventRepository implements EventRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO events (id, type, topic, section_id, course_id, teacher_id, room_id, semester_id, batch_id, lab_group, day, period, week, date, instance, created_by, created_at, version, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            SQLQueries.EVENT_INSERT,
             entity.getId(), entity.getType(), entity.getTopic(), entity.getSectionId(), entity.getCourseId(), entity.getTeacherId(), entity.getRoomId(), entity.getSemesterId(), entity.getBatchId(), entity.getLabGroup(), entity.getDay(), entity.getPeriod(), entity.getWeek(), 
             entity.getDate() != null ? entity.getDate().toString() : null,
-            entity.getInstance(), entity.getCreatedBy(), 
-            DateUtils.formatSqliteTimestamp(entity.getCreatedAt()), 
             entity.getVersion(), entity.getStatus()
         );
         return entity;
@@ -83,11 +78,9 @@ public class JdbcEventRepository implements EventRepository {
     @Override
     public boolean update(Event entity) {
         return jdbcTemplate.update(
-            "UPDATE events SET type = ?, topic = ?, section_id = ?, course_id = ?, teacher_id = ?, room_id = ?, semester_id = ?, batch_id = ?, lab_group = ?, day = ?, period = ?, week = ?, date = ?, instance = ?, created_by = ?, created_at = ?, version = ?, status = ? WHERE id = ?",
+            SQLQueries.EVENT_UPDATE,
             entity.getType(), entity.getTopic(), entity.getSectionId(), entity.getCourseId(), entity.getTeacherId(), entity.getRoomId(), entity.getSemesterId(), entity.getBatchId(), entity.getLabGroup(), entity.getDay(), entity.getPeriod(), entity.getWeek(), 
             entity.getDate() != null ? entity.getDate().toString() : null,
-            entity.getInstance(), entity.getCreatedBy(), 
-            DateUtils.formatSqliteTimestamp(entity.getCreatedAt()), 
             entity.getVersion(), entity.getStatus(), entity.getId()
         ) > 0;
     }

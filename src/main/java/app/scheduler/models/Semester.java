@@ -6,7 +6,6 @@ public class Semester {
     private String id;
     private String name;
     private LocalDate startDate;
-    private LocalDate endDate;
     private int weeks;
     private String academicYear;
     private boolean isGenerated;
@@ -20,8 +19,6 @@ public class Semester {
     public void setName(String name) { this.name = name; }
     public LocalDate getStartDate() { return startDate; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
-    public LocalDate getEndDate() { return endDate; }
-    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
     public int getWeeks() { return weeks; }
     public void setWeeks(int weeks) { this.weeks = weeks; }
     public String getAcademicYear() { return academicYear; }

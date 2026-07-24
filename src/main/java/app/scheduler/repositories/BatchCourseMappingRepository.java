@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface BatchCourseMappingRepository extends Repository<BatchCourseMapping> {
     List<BatchCourseMapping> findByBatchId(String batchId);
     List<BatchCourseMapping> findBySemesterId(String semesterId);
-    Optional<BatchCourseMapping> findByBatchIdAndCourseId(String batchId, String courseId);
+    Optional<BatchCourseMapping> findByBatchIdAndCourseIdAndSemesterId(String batchId, String courseId, String semesterId);
 }

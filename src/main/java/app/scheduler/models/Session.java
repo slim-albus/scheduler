@@ -10,7 +10,6 @@ public class Session {
     private String userAgent;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
-    private boolean isActive;
 
     public Session() {}
 
@@ -28,6 +27,4 @@ public class Session {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getExpiresAt() { return expiresAt; }
     public void setExpiresAt(LocalDateTime expiresAt) { this.expiresAt = expiresAt; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
 }

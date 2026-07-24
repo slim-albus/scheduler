@@ -7,13 +7,6 @@ import app.scheduler.generator.GeneratorConfig;
 import app.scheduler.generator.GeneratorInput;
 import app.scheduler.generator.ScheduleGenerator;
 import app.scheduler.models.*;
-import app.scheduler.models.Batch;
-import app.scheduler.models.Course;
-import app.scheduler.models.Event;
-import app.scheduler.models.Room;
-import app.scheduler.models.Section;
-import app.scheduler.models.Semester;
-import app.scheduler.models.Teacher;
 import app.scheduler.models.dtos.EventDto;
 import app.scheduler.models.dtos.RoomOccupationDto;
 import app.scheduler.models.dtos.SlotDto;
@@ -22,18 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -368,6 +349,7 @@ public class ScheduleService {
     public List<RoomOccupationDto> getLiveRoomOccupation(java.time.LocalDateTime clientTime) {
         Semester active = semesterRepo.findActive().orElse(null);
         if (active == null || active.getStartDate() == null) {
+            loggerService.logMap("No active semester found or active semester has no start date. Returning empty room occupation.");
             return new ArrayList<>();
         }
 

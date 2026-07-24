@@ -6,7 +6,6 @@ public class Teacher {
     private String email;
     private String department;
     private String type;
-    private boolean isActive;
 
     public Teacher() {}
 
@@ -20,6 +19,4 @@ public class Teacher {
     public void setDepartment(String department) { this.department = department; }
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
 }

@@ -13,8 +13,6 @@ public class User {
     private String teacherId;
     private String studentId;
     private boolean isActive;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
     public User() {}
 
@@ -38,8 +36,4 @@ public class User {
     public void setStudentId(String studentId) { this.studentId = studentId; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

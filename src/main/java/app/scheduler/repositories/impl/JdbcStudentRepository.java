@@ -29,7 +29,6 @@ public class JdbcStudentRepository implements StudentRepository {
         obj.setSectionId(rs.getString("section_id"));
         obj.setBatchId(rs.getString("batch_id"));
         obj.setLabGroup(rs.getInt("lab_group"));
-        obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
 
@@ -39,8 +38,8 @@ public class JdbcStudentRepository implements StudentRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO students (id, name, student_id, email, section_id, batch_id, lab_group, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup(), entity.isActive()
+            SQLQueries.STUDENT_INSERT,
+            entity.getId(), entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup()
         );
         return entity;
     }
@@ -64,8 +63,8 @@ public class JdbcStudentRepository implements StudentRepository {
     @Override
     public boolean update(Student entity) {
         return jdbcTemplate.update(
-            "UPDATE students SET name = ?, student_id = ?, email = ?, section_id = ?, batch_id = ?, lab_group = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup(), entity.isActive(), entity.getId()
+            SQLQueries.STUDENT_UPDATE,
+            entity.getName(), entity.getStudentId(), entity.getEmail(), entity.getSectionId(), entity.getBatchId(), entity.getLabGroup(), entity.getId()
         ) > 0;
     }
 

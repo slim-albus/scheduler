@@ -26,7 +26,6 @@ public class JdbcSemesterRepository implements SemesterRepository {
         obj.setId(rs.getString("id"));
         obj.setName(rs.getString("name"));
         obj.setStartDate(DateUtils.parseSqliteDate(rs.getString("start_date")));
-        obj.setEndDate(DateUtils.parseSqliteDate(rs.getString("end_date")));
         obj.setWeeks(rs.getInt("weeks"));
         obj.setAcademicYear(rs.getString("academic_year"));
         obj.setGenerated(rs.getBoolean("is_generated"));
@@ -40,13 +39,12 @@ public class JdbcSemesterRepository implements SemesterRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         if (entity.isActive()) {
-            jdbcTemplate.update("UPDATE semesters SET is_active = 0");
+            jdbcTemplate.update(SQLQueries.SEMESTER_SET_ALL_INACTIVE);
         }
         jdbcTemplate.update(
-            "INSERT INTO semesters (id, name, start_date, end_date, weeks, academic_year, is_generated, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            SQLQueries.SEMESTER_INSERT,
             entity.getId(), entity.getName(), 
             DateUtils.formatSqliteDate(entity.getStartDate()), 
-            DateUtils.formatSqliteDate(entity.getEndDate()), 
             entity.getWeeks(), entity.getAcademicYear(), entity.isGenerated(), entity.isActive()
         );
         return entity;
@@ -73,13 +71,12 @@ public class JdbcSemesterRepository implements SemesterRepository {
     @Override
     public boolean update(Semester entity) {
         if (entity.isActive()) {
-            jdbcTemplate.update("UPDATE semesters SET is_active = 0 WHERE id != ?", entity.getId());
+            jdbcTemplate.update(SQLQueries.SEMESTER_SET_ALL_INACTIVE);
         }
         return jdbcTemplate.update(
-            "UPDATE semesters SET name = ?, start_date = ?, end_date = ?, weeks = ?, academic_year = ?, is_generated = ?, is_active = ? WHERE id = ?",
+            SQLQueries.SEMESTER_UPDATE,
             entity.getName(), 
             DateUtils.formatSqliteDate(entity.getStartDate()), 
-            DateUtils.formatSqliteDate(entity.getEndDate()), 
             entity.getWeeks(), entity.getAcademicYear(), entity.isGenerated(), entity.isActive(), entity.getId()
         ) > 0;
     }
@@ -92,8 +89,8 @@ public class JdbcSemesterRepository implements SemesterRepository {
 
     @Override
     public boolean setActive(String id) {
-        jdbcTemplate.update("UPDATE semesters SET is_active = 0");
-        return jdbcTemplate.update("UPDATE semesters SET is_active = 1 WHERE id = ?", id) > 0;
+        jdbcTemplate.update(SQLQueries.SEMESTER_SET_ALL_INACTIVE);
+        return jdbcTemplate.update(SQLQueries.SEMESTER_SET_ACTIVE, id) > 0;
     }
 
     @Override
@@ -103,7 +100,7 @@ public class JdbcSemesterRepository implements SemesterRepository {
 
     @Override
     public List<Semester> findByYear(String year) {
-        return jdbcTemplate.query(SQLQueries.SEMESTER_FIND_BY_ACADEMIC_YEAR, rowMapper, year);
+        return jdbcTemplate.query("SELECT * FROM semesters WHERE academic_year = ?", rowMapper, year);
     }
 
 }

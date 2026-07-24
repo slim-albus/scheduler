@@ -8,7 +8,6 @@ public class Student {
     private String sectionId;
     private String batchId;
     private int labGroup;
-    private boolean isActive;
 
     public Student() {}
 
@@ -26,6 +25,4 @@ public class Student {
     public void setBatchId(String batchId) { this.batchId = batchId; }
     public int getLabGroup() { return labGroup; }
     public void setLabGroup(int labGroup) { this.labGroup = labGroup; }
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
 }
