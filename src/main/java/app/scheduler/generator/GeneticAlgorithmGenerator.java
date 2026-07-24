@@ -131,7 +131,7 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
             for (ScheduleItem item : placed) {
                 Event event = new Event();
                 event.setId(UUID.randomUUID().toString()); // new ID for each week instance
-                event.setType(item.kind.equals("THEORY") ? "Lecture" : "Lab");
+                event.setType(item.kind.equals("THEORY") ? "LECTURE" : "LAB");
                 event.setTopic(getCourseName(input, item.courseId) + " " + (item.kind.equals("THEORY") ? "Lecture" : "Lab"));
                 event.setSectionId(item.sectionId);
                 event.setCourseId(item.courseId);
@@ -412,9 +412,9 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
             return false;
         }
         if ("LAB".equals(instance.kind)) {
-            return "COMPUTER_LAB".equals(room.getType());
+            return "LAB".equals(room.getType());
         }
-        return "LECTURE_ROOM".equals(room.getType());
+        return "LECTURE".equals(room.getType());
     }
 
     private Candidate score(int day, int period, Room room, ClassInstance instance, List<ScheduleItem> placed, GeneratorInput input) {

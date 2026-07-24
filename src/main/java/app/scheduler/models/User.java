@@ -1,6 +1,5 @@
 package app.scheduler.models;
 
-import java.time.LocalDateTime;
 
 public class User {
     private String id;
