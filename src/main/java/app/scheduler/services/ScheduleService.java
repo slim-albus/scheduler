@@ -181,11 +181,12 @@ public class ScheduleService {
         return event;
     }
 
-    public Event rescheduleEvent(String eventId, int newDay, int newPeriod, String newRoomId, User user) {
+    public Event rescheduleEvent(String eventId, int newWeek, int newDay, int newPeriod, String newRoomId, User user) {
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new ResourceNotFoundException("Event not found"));
         validateUserCanEditEvent(event, user);
-        validateAvailability(event.getWeek(), newDay, newPeriod, newRoomId, event.getSectionId(), eventId);
+        validateAvailability(newWeek, newDay, newPeriod, newRoomId, event.getSectionId(), eventId);
         
+        event.setWeek(newWeek);
         event.setDay(newDay);
         event.setPeriod(newPeriod);
         event.setRoomId(newRoomId);
@@ -286,7 +287,7 @@ public class ScheduleService {
         
         return eventDto;
     }
-    public List<SlotDto> getAvailableSlots(String semesterId, String sectionId, String teacherId, Integer week, String eventIdToIgnore) {
+    public List<SlotDto> getAvailableSlots(String semesterId, String sectionId, String teacherId, Integer startWeek, String eventIdToIgnore) {
         // Find teacher type to filter rooms
         String roomTypePreference = null;
         if (teacherId != null) {
@@ -299,14 +300,17 @@ public class ScheduleService {
         final String teacherType = teacherId != null ? teacherRepo.findById(teacherId).map(Teacher::getType).orElse(null) : null;
         final String requiredRoomType = "LAB_INSTRUCTOR".equals(teacherType) ? "COMPUTER_LAB" : "LECTURE_ROOM";
 
+        Semester active = semesterId != null ? semesterRepo.findById(semesterId).orElse(semesterRepo.findActive().orElse(null)) : semesterRepo.findActive().orElse(null);
+        if (active == null) return new ArrayList<>();
+
+        int maxWeeks = active.getWeeks();
+        int beginWeek = startWeek != null ? startWeek : 1;
+
         List<Event> conflicts = eventRepo.findAll().stream()
-            .filter(e -> {
-                if (semesterId != null) return semesterId.equals(e.getSemesterId());
-                return semesterRepo.findActive().map(active -> active.getId().equals(e.getSemesterId())).orElse(false);
-            })
+            .filter(e -> active.getId().equals(e.getSemesterId()))
             .filter(e -> !"CANCELED".equals(e.getStatus()))
             .filter(e -> eventIdToIgnore == null || !e.getId().equals(eventIdToIgnore))
-            .filter(e -> week == null || e.getWeek() == week)
+            .filter(e -> e.getWeek() >= beginWeek)
             .toList();
             
         List<Room> allRooms = roomRepo.findAll().stream()
@@ -314,32 +318,57 @@ public class ScheduleService {
             .toList();
 
         List<SlotDto> available = new ArrayList<>();
-        for (int day = 1; day <= 6; day++) {
-            for (int period = 1; period <= 5; period++) {
-                int d = day;
-                int p = period;
-                
-                // Check if section or teacher is busy
-                boolean personOrSectionBusy = conflicts.stream().anyMatch(e -> 
-                    e.getDay() == d && e.getPeriod() == p && 
-                    ((sectionId != null && sectionId.equals(e.getSectionId())) ||
-                     (teacherId != null && teacherId.equals(e.getTeacherId())))
-                );
-                
-                if (!personOrSectionBusy) {
-                    // Find available rooms for this slot
-                    List<Room> availableRooms = new ArrayList<>();
-                    for (Room room : allRooms) {
-                        boolean roomBusy = conflicts.stream().anyMatch(e -> 
-                            e.getDay() == d && e.getPeriod() == p && room.getId().equals(e.getRoomId())
-                        );
-                        if (!roomBusy) {
-                            availableRooms.add(room);
-                        }
-                    }
+        java.time.LocalDate startDate = active.getStartDate();
+        
+        String[] daysOfWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+        for (int w = beginWeek; w <= maxWeeks; w++) {
+            for (int day = 1; day <= 6; day++) {
+                for (int period = 1; period <= 5; period++) {
+                    int currentW = w;
+                    int d = day;
+                    int p = period;
                     
-                    if (!availableRooms.isEmpty()) {
-                        available.add(new SlotDto(d, p, availableRooms));
+                    // Check if section or teacher is busy in this specific week, day, period
+                    boolean personOrSectionBusy = conflicts.stream().anyMatch(e -> 
+                        e.getWeek() == currentW && e.getDay() == d && e.getPeriod() == p && 
+                        ((sectionId != null && sectionId.equals(e.getSectionId())) ||
+                         (teacherId != null && teacherId.equals(e.getTeacherId())))
+                    );
+                    
+                    if (!personOrSectionBusy) {
+                        // Find available rooms for this slot
+                        List<Room> availableRooms = new ArrayList<>();
+                        for (Room room : allRooms) {
+                            boolean roomBusy = conflicts.stream().anyMatch(e -> 
+                                e.getWeek() == currentW && e.getDay() == d && e.getPeriod() == p && room.getId().equals(e.getRoomId())
+                            );
+                            if (!roomBusy) {
+                                availableRooms.add(room);
+                            }
+                        }
+                        
+                        if (!availableRooms.isEmpty()) {
+                            SlotDto slot = new SlotDto();
+                            slot.week = currentW;
+                            slot.day = d;
+                            slot.period = p;
+                            slot.availableRooms = availableRooms;
+                            
+                            String dateStr = "";
+                            if (startDate != null) {
+                                java.time.LocalDate slotDate = startDate.plusWeeks(currentW - 1).plusDays(d - 1);
+                                java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("MMM d");
+                                dateStr = slotDate.format(formatter) + " ";
+                            }
+                            
+                            String weekLabel = (startWeek != null && currentW == startWeek) ? "This Week" : 
+                                               (startWeek != null && currentW == startWeek + 1) ? "Next Week" : "Week " + currentW;
+                            
+                            slot.description = weekLabel + " - " + dateStr + "(" + daysOfWeek[d - 1] + ") - Period " + p;
+                            
+                            available.add(slot);
+                        }
                     }
                 }
             }

@@ -27,7 +27,6 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
         obj.setCourseId(rs.getString("course_id"));
         obj.setLectureTeacherId(rs.getString("lecture_teacher_id"));
         obj.setLabInstructorId(rs.getString("lab_instructor_id"));
-        obj.setRequired(rs.getBoolean("is_required"));
         obj.setSemesterId(rs.getString("semester_id"));
         return obj;
     };
@@ -38,7 +37,7 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
             entity.setId(UUID.randomUUID().toString());
             jdbcTemplate.update(
                 SQLQueries.BATCHCOURSEMAPPING_INSERT,
-                entity.getId(), entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.isRequired(), entity.getSemesterId()
+                entity.getId(), entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.getSemesterId()
             );
         } else {
             update(entity);
@@ -66,7 +65,7 @@ public class JdbcBatchCourseMappingRepository implements BatchCourseMappingRepos
     public boolean update(BatchCourseMapping entity) {
         return jdbcTemplate.update(
             SQLQueries.BATCHCOURSEMAPPING_UPDATE,
-            entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.isRequired(), entity.getSemesterId(), entity.getId()
+            entity.getBatchId(), entity.getCourseId(), entity.getLectureTeacherId(), entity.getLabInstructorId(), entity.getSemesterId(), entity.getId()
         ) > 0;
     }
 

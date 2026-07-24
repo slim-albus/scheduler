@@ -17,8 +17,8 @@ public class SQLQueries {
     public static final String BATCHCOURSEMAPPING_FIND_BY_BATCH_ID = "SELECT * FROM batch_course_mappings WHERE batch_id = ?";
     public static final String BATCHCOURSEMAPPING_FIND_BY_SEMESTER_ID = "SELECT * FROM batch_course_mappings WHERE semester_id = ?";
     public static final String BATCHCOURSEMAPPING_FIND_BY_BATCH_ID_AND_COURSE_ID_AND_SEMESTER_ID = "SELECT * FROM batch_course_mappings WHERE batch_id = ? AND course_id = ? AND semester_id = ?";
-    public static final String BATCHCOURSEMAPPING_INSERT = "INSERT INTO batch_course_mappings (id, batch_id, course_id, lecture_teacher_id, lab_instructor_id, is_required, semester_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    public static final String BATCHCOURSEMAPPING_UPDATE = "UPDATE batch_course_mappings SET batch_id = ?, course_id = ?, lecture_teacher_id = ?, lab_instructor_id = ?, is_required = ?, semester_id = ? WHERE id = ?";
+    public static final String BATCHCOURSEMAPPING_INSERT = "INSERT INTO batch_course_mappings (id, batch_id, course_id, lecture_teacher_id, lab_instructor_id, semester_id) VALUES (?, ?, ?, ?, ?, ?)";
+    public static final String BATCHCOURSEMAPPING_UPDATE = "UPDATE batch_course_mappings SET batch_id = ?, course_id = ?, lecture_teacher_id = ?, lab_instructor_id = ?, semester_id = ? WHERE id = ?";
 
     // COURSE
     public static final String COURSE_FIND_BY_ID = "SELECT * FROM courses WHERE id = ?";

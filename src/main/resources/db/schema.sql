@@ -96,7 +96,6 @@ CREATE TABLE IF NOT EXISTS batch_course_mappings (
     course_id VARCHAR(36) NOT NULL,
     lecture_teacher_id VARCHAR(36) NOT NULL,
     lab_instructor_id VARCHAR(36),
-    is_required BOOLEAN DEFAULT 1,
     semester_id VARCHAR(36) NOT NULL,
     FOREIGN KEY (batch_id) REFERENCES batches(id),
     FOREIGN KEY (course_id) REFERENCES courses(id),

@@ -47,9 +47,20 @@ public class AuthInterceptor implements HandlerInterceptor {
                 // Admin endpoints require ADMIN role
                 if (uri.startsWith("/api/admin")) {
                     if (!"ADMIN".equals(role)) {
-                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                        response.getWriter().write("Forbidden: Admins only");
-                        return false;
+                        // Allow TEACHER to make GET requests to specific admin endpoints for dropdowns
+                        boolean isTeacherGetAllowed = "TEACHER".equals(role) && "GET".equalsIgnoreCase(request.getMethod()) && (
+                                uri.startsWith("/api/admin/courses") ||
+                                uri.startsWith("/api/admin/sections") ||
+                                uri.startsWith("/api/admin/teachers") ||
+                                uri.startsWith("/api/admin/rooms") ||
+                                uri.startsWith("/api/admin/mappings")
+                        );
+                        
+                        if (!isTeacherGetAllowed) {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.getWriter().write("Forbidden: Admins only");
+                            return false;
+                        }
                     }
                 }
                 

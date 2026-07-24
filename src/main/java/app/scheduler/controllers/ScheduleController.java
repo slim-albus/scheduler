@@ -62,11 +62,11 @@ public class ScheduleController {
             @RequestParam(required = false) String semesterId,
             @RequestParam(required = false) String sectionId,
             @RequestParam(required = false) String teacherId,
-            @RequestParam(required = false) Integer week,
+            @RequestParam(required = false) Integer startWeek,
             @RequestParam(required = false) String eventIdToIgnore) {
             
-        loggerService.logSchedule("Fetching available slots for section: " + sectionId + " week: " + week);
-        return ResponseEntity.ok(scheduleService.getAvailableSlots(semesterId, sectionId, teacherId, week, eventIdToIgnore));
+        loggerService.logSchedule("Fetching available slots for section: " + sectionId + " startWeek: " + startWeek);
+        return ResponseEntity.ok(scheduleService.getAvailableSlots(semesterId, sectionId, teacherId, startWeek, eventIdToIgnore));
     }
 
     @GetMapping("/active-semester")
@@ -111,13 +111,14 @@ public class ScheduleController {
     @PutMapping("/event/{id}/reschedule")
     public ResponseEntity<Event> rescheduleEvent(
             @PathVariable String id,
+            @RequestParam int week,
             @RequestParam int day,
             @RequestParam int period,
             @RequestParam String roomId,
             HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
-        loggerService.logSchedule("User " + user.getUsername() + " rescheduling event: " + id + " to day " + day + " period " + period);
-        return ResponseEntity.ok(scheduleService.rescheduleEvent(id, day, period, roomId, user));
+        loggerService.logSchedule("User " + user.getUsername() + " rescheduling event: " + id + " to week " + week + " day " + day + " period " + period);
+        return ResponseEntity.ok(scheduleService.rescheduleEvent(id, week, day, period, roomId, user));
     }
 
     @PostMapping("/event")

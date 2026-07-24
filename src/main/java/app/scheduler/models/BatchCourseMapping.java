@@ -6,7 +6,6 @@ public class BatchCourseMapping {
     private String courseId;
     private String lectureTeacherId;
     private String labInstructorId;
-    private boolean isRequired;
     private String semesterId;
 
     public BatchCourseMapping() {}
@@ -21,8 +20,6 @@ public class BatchCourseMapping {
     public void setLectureTeacherId(String lectureTeacherId) { this.lectureTeacherId = lectureTeacherId; }
     public String getLabInstructorId() { return labInstructorId; }
     public void setLabInstructorId(String labInstructorId) { this.labInstructorId = labInstructorId; }
-    public boolean isRequired() { return isRequired; }
-    public void setRequired(boolean required) { isRequired = required; }
     public String getSemesterId() { return semesterId; }
     public void setSemesterId(String semesterId) { this.semesterId = semesterId; }
 }

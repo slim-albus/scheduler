@@ -4,8 +4,10 @@ import java.util.List;
 import app.scheduler.models.Room;
 
 public class SlotDto {
+    public int week;
     public int day;
     public int period;
+    public String description;
     public List<Room> availableRooms;
     
     public SlotDto() {}
