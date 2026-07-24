@@ -49,7 +49,6 @@ CREATE TABLE IF NOT EXISTS teachers (
     email VARCHAR(100) UNIQUE,
     department VARCHAR(100),
     type VARCHAR(20) NOT NULL,
-    availability_bitmask BIGINT DEFAULT -1,
     is_active BOOLEAN DEFAULT 1
 );
 
@@ -58,10 +57,8 @@ CREATE TABLE IF NOT EXISTS rooms (
     name VARCHAR(50) UNIQUE NOT NULL,
     type VARCHAR(20) NOT NULL,
     capacity INT DEFAULT 30,
-    building VARCHAR(50),
     level INT DEFAULT 0,
     has_equipment BOOLEAN DEFAULT 0,
-    availability_bitmask BIGINT DEFAULT -1,
     is_active BOOLEAN DEFAULT 1
 );
 
@@ -138,9 +135,7 @@ CREATE TABLE IF NOT EXISTS events (
     day INT NOT NULL,
     period INT NOT NULL,
     week INT NOT NULL,
-    start_date_time TIMESTAMP NOT NULL,
-    end_date_time TIMESTAMP NOT NULL,
-    duration_minutes INT DEFAULT 90,
+    date VARCHAR(20),
     instance INT DEFAULT 0,
     created_by VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

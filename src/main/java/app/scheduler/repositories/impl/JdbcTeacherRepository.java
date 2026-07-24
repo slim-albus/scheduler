@@ -27,7 +27,6 @@ public class JdbcTeacherRepository implements TeacherRepository {
         obj.setEmail(rs.getString("email"));
         obj.setDepartment(rs.getString("department"));
         obj.setType(rs.getString("type"));
-        obj.setAvailabilityBitmask(rs.getLong("availability_bitmask"));
         obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
@@ -38,8 +37,8 @@ public class JdbcTeacherRepository implements TeacherRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO teachers (id, name, email, department, type, availability_bitmask, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getAvailabilityBitmask(), entity.isActive()
+            "INSERT INTO teachers (id, name, email, department, type, is_active) VALUES (?, ?, ?, ?, ?, ?)",
+            entity.getId(), entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.isActive()
         );
         return entity;
     }
@@ -66,8 +65,8 @@ public class JdbcTeacherRepository implements TeacherRepository {
     @Override
     public boolean update(Teacher entity) {
         return jdbcTemplate.update(
-            "UPDATE teachers SET name = ?, email = ?, department = ?, type = ?, availability_bitmask = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getAvailabilityBitmask(), entity.isActive(), entity.getId()
+            "UPDATE teachers SET name = ?, email = ?, department = ?, type = ?, is_active = ? WHERE id = ?",
+            entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.isActive(), entity.getId()
         ) > 0;
     }
 

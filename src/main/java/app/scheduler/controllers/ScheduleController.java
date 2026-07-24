@@ -5,7 +5,7 @@ import app.scheduler.models.Event;
 import app.scheduler.models.User;
 import app.scheduler.models.dtos.SlotDto;
 import app.scheduler.models.dtos.EventDto;
-import app.scheduler.services.ScheduleQueryService;
+import app.scheduler.models.dtos.RoomOccupationDto;
 import app.scheduler.services.ScheduleService;
 import app.scheduler.services.LoggerService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,18 +13,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/schedule")
 public class ScheduleController {
     private final LoggerService loggerService;
     private final ScheduleService scheduleService;
-    private final ScheduleQueryService queryService;
     
-    public ScheduleController(ScheduleService scheduleService, ScheduleQueryService queryService, LoggerService loggerService) {
+    public ScheduleController(ScheduleService scheduleService, LoggerService loggerService) {
         this.loggerService = loggerService;
         this.scheduleService = scheduleService;
-        this.queryService = queryService;
     }
 
     @GetMapping
@@ -39,7 +38,7 @@ public class ScheduleController {
         // Use provided semesterId or fallback to the active semester
         String targetSemesterId = semesterId;
         if (targetSemesterId == null) {
-            app.scheduler.models.Semester activeSem = queryService.getActiveSemester();
+            app.scheduler.models.Semester activeSem = scheduleService.getActiveSemester();
             if (activeSem != null) {
                 targetSemesterId = activeSem.getId();
             }
@@ -49,12 +48,12 @@ public class ScheduleController {
         
         if ("STUDENT".equals(role)) {
             List<Event> studentEvents = scheduleService.getScheduleForStudent(user.getStudentId(), targetSemesterId);
-            return ResponseEntity.ok(queryService.mapEventsToDto(studentEvents));
+            return ResponseEntity.ok(scheduleService.mapEventsToDto(studentEvents));
         } else if ("TEACHER".equals(role)) {
-            return ResponseEntity.ok(queryService.getEventsByTeacher(user.getTeacherId(), targetSemesterId));
+            return ResponseEntity.ok(scheduleService.getEventsByTeacher(user.getTeacherId(), targetSemesterId));
         } else {
             // ADMIN
-            return ResponseEntity.ok(queryService.getAllEvents(targetSemesterId, sectionId, teacherId));
+            return ResponseEntity.ok(scheduleService.getAllEvents(targetSemesterId, sectionId, teacherId));
         }
     }
 
@@ -67,12 +66,32 @@ public class ScheduleController {
             @RequestParam(required = false) String eventIdToIgnore) {
             
         loggerService.logSchedule("Fetching available slots for section: " + sectionId + " week: " + week);
-        return ResponseEntity.ok(queryService.getAvailableSlots(semesterId, sectionId, teacherId, week, eventIdToIgnore));
+        return ResponseEntity.ok(scheduleService.getAvailableSlots(semesterId, sectionId, teacherId, week, eventIdToIgnore));
     }
 
     @GetMapping("/active-semester")
     public ResponseEntity<app.scheduler.models.Semester> getActiveSemester() {
-        return ResponseEntity.ok(queryService.getActiveSemester());
+        return ResponseEntity.ok(scheduleService.getActiveSemester());
+    }
+
+    @GetMapping("/map")
+    public ResponseEntity<List<RoomOccupationDto>> getRoomOccupation(
+            @RequestParam(required = false) String time) {
+        
+        LocalDateTime targetTime;
+        if (time == null || time.isEmpty()) {
+            targetTime = LocalDateTime.now();
+        } else {
+            try {
+                java.time.Instant instant = java.time.Instant.parse(time);
+                targetTime = LocalDateTime.ofInstant(instant, java.time.ZoneId.systemDefault());
+            } catch (Exception e) {
+                targetTime = LocalDateTime.now();
+            }
+        }
+        
+        loggerService.logMap("Fetching live room occupation for time " + targetTime);
+        return ResponseEntity.ok(scheduleService.getLiveRoomOccupation(targetTime));
     }
 
     @PutMapping("/event/{id}/cancel")

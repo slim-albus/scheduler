@@ -1,7 +1,6 @@
 package app.scheduler.generator;
 
 import app.scheduler.models.*;
-import app.scheduler.utils.BitmaskUtils;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
@@ -144,18 +143,10 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
                 event.setDay(item.day + 1);
                 event.setPeriod(item.period + 1);
                 event.setWeek(week);
-                
                 // Calculate correct date for this event
                 // day=0 is Monday, day=5 is Saturday
                 java.time.LocalDate eventDate = semStart.plusWeeks(week - 1).plusDays(item.day);
-                
-                // Period starts (assuming P1=8:00, P2=10:00, P3=12:00, P4=14:00, P5=16:00)
-                int hour = 8 + (item.period * 2); 
-                LocalDateTime startDateTime = eventDate.atTime(hour, 0);
-                
-                event.setStartDateTime(startDateTime);
-                event.setEndDateTime(startDateTime.plusMinutes(90));
-                event.setDurationMinutes(90);
+                event.setDate(eventDate);
                 event.setInstance(0);
                 event.setStatus("SCHEDULED");
                 event.setCreatedAt(now);
@@ -331,9 +322,6 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
 
         for (int day : TEACHING_DAYS) {
             for (int period : PERIODS) {
-                if (!BitmaskUtils.isAvailable(teacher.getAvailabilityBitmask(), day, period)) {
-                    continue;
-                }
                 if (dailyLoad(placed, instance, day) >= 3) {
                     continue;
                 }
@@ -347,9 +335,6 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
 
                 for (Room room : input.getRooms()) {
                     if (!roomFits(room, instance)) {
-                        continue;
-                    }
-                    if (!BitmaskUtils.isAvailable(room.getAvailabilityBitmask(), day, period)) {
                         continue;
                     }
                     if (placed.stream().anyMatch(item -> item.day == day && item.period == period && item.roomId.equals(room.getId()))) {

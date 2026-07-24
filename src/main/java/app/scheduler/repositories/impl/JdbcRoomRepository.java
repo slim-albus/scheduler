@@ -26,10 +26,8 @@ public class JdbcRoomRepository implements RoomRepository {
         obj.setName(rs.getString("name"));
         obj.setType(rs.getString("type"));
         obj.setCapacity(rs.getInt("capacity"));
-        obj.setBuilding(rs.getString("building"));
         obj.setLevel(rs.getInt("level"));
         obj.setHasEquipment(rs.getBoolean("has_equipment"));
-        obj.setAvailabilityBitmask(rs.getLong("availability_bitmask"));
         obj.setActive(rs.getBoolean("is_active"));
         return obj;
     };
@@ -38,11 +36,13 @@ public class JdbcRoomRepository implements RoomRepository {
     public Room save(Room entity) {
         if (entity.getId() == null || entity.getId().isEmpty()) {
             entity.setId(UUID.randomUUID().toString());
+            jdbcTemplate.update(
+                "INSERT INTO rooms (id, name, type, capacity, level, has_equipment, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                entity.getId(), entity.getName(), entity.getType(), entity.getCapacity(), entity.getLevel(), entity.isHasEquipment(), entity.isActive()
+            );
+        } else {
+            update(entity);
         }
-        jdbcTemplate.update(
-            "INSERT INTO rooms (id, name, type, capacity, building, level, has_equipment, availability_bitmask, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            entity.getId(), entity.getName(), entity.getType(), entity.getCapacity(), entity.getBuilding(), entity.getLevel(), entity.isHasEquipment(), entity.getAvailabilityBitmask(), entity.isActive()
-        );
         return entity;
     }
 
@@ -59,15 +59,14 @@ public class JdbcRoomRepository implements RoomRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM events WHERE room_id = ?", id);
         return jdbcTemplate.update(SQLQueries.ROOM_DELETE, id) > 0;
     }
 
     @Override
     public boolean update(Room entity) {
         return jdbcTemplate.update(
-            "UPDATE rooms SET name = ?, type = ?, capacity = ?, building = ?, level = ?, has_equipment = ?, availability_bitmask = ?, is_active = ? WHERE id = ?",
-            entity.getName(), entity.getType(), entity.getCapacity(), entity.getBuilding(), entity.getLevel(), entity.isHasEquipment(), entity.getAvailabilityBitmask(), entity.isActive(), entity.getId()
+            "UPDATE rooms SET name = ?, type = ?, capacity = ?, level = ?, has_equipment = ?, is_active = ? WHERE id = ?",
+            entity.getName(), entity.getType(), entity.getCapacity(), entity.getLevel(), entity.isHasEquipment(), entity.isActive(), entity.getId()
         ) > 0;
     }
 

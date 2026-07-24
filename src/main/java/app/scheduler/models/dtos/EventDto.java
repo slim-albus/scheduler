@@ -14,4 +14,5 @@ public class EventDto {
     public String roomName;
     public String status;
     public int week;
+    public String date;
 }

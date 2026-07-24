@@ -1,5 +1,6 @@
 package app.scheduler.models;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Event {
@@ -16,9 +17,7 @@ public class Event {
     private int day;
     private int period;
     private int week;
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
-    private int durationMinutes;
+    private LocalDate date;
     private int instance;
     private String createdBy;
     private LocalDateTime createdAt;
@@ -53,12 +52,8 @@ public class Event {
     public void setPeriod(int period) { this.period = period; }
     public int getWeek() { return week; }
     public void setWeek(int week) { this.week = week; }
-    public LocalDateTime getStartDateTime() { return startDateTime; }
-    public void setStartDateTime(LocalDateTime startDateTime) { this.startDateTime = startDateTime; }
-    public LocalDateTime getEndDateTime() { return endDateTime; }
-    public void setEndDateTime(LocalDateTime endDateTime) { this.endDateTime = endDateTime; }
-    public int getDurationMinutes() { return durationMinutes; }
-    public void setDurationMinutes(int durationMinutes) { this.durationMinutes = durationMinutes; }
+    public LocalDate getDate() { return date; }
+    public void setDate(LocalDate date) { this.date = date; }
     public int getInstance() { return instance; }
     public void setInstance(int instance) { this.instance = instance; }
     public String getCreatedBy() { return createdBy; }

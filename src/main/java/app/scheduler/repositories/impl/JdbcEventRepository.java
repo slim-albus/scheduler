@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import app.scheduler.utils.DateUtils;
+import java.time.LocalDate;
 
 @Repository
 public class JdbcEventRepository implements EventRepository {
@@ -36,9 +37,9 @@ public class JdbcEventRepository implements EventRepository {
         obj.setDay(rs.getInt("day"));
         obj.setPeriod(rs.getInt("period"));
         obj.setWeek(rs.getInt("week"));
-        obj.setStartDateTime(DateUtils.parseSqliteTimestamp(rs.getString("start_date_time")));
-        obj.setEndDateTime(DateUtils.parseSqliteTimestamp(rs.getString("end_date_time")));
-        obj.setDurationMinutes(rs.getInt("duration_minutes"));
+        if (rs.getString("date") != null) {
+            obj.setDate(LocalDate.parse(rs.getString("date")));
+        }
         obj.setInstance(rs.getInt("instance"));
         obj.setCreatedBy(rs.getString("created_by"));
         obj.setCreatedAt(DateUtils.parseSqliteTimestamp(rs.getString("created_at")));
@@ -53,11 +54,10 @@ public class JdbcEventRepository implements EventRepository {
             entity.setId(UUID.randomUUID().toString());
         }
         jdbcTemplate.update(
-            "INSERT INTO events (id, type, topic, section_id, course_id, teacher_id, room_id, semester_id, batch_id, lab_group, day, period, week, start_date_time, end_date_time, duration_minutes, instance, created_by, created_at, version, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO events (id, type, topic, section_id, course_id, teacher_id, room_id, semester_id, batch_id, lab_group, day, period, week, date, instance, created_by, created_at, version, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             entity.getId(), entity.getType(), entity.getTopic(), entity.getSectionId(), entity.getCourseId(), entity.getTeacherId(), entity.getRoomId(), entity.getSemesterId(), entity.getBatchId(), entity.getLabGroup(), entity.getDay(), entity.getPeriod(), entity.getWeek(), 
-            DateUtils.formatSqliteTimestamp(entity.getStartDateTime()), 
-            DateUtils.formatSqliteTimestamp(entity.getEndDateTime()), 
-            entity.getDurationMinutes(), entity.getInstance(), entity.getCreatedBy(), 
+            entity.getDate() != null ? entity.getDate().toString() : null,
+            entity.getInstance(), entity.getCreatedBy(), 
             DateUtils.formatSqliteTimestamp(entity.getCreatedAt()), 
             entity.getVersion(), entity.getStatus()
         );
@@ -83,11 +83,10 @@ public class JdbcEventRepository implements EventRepository {
     @Override
     public boolean update(Event entity) {
         return jdbcTemplate.update(
-            "UPDATE events SET type = ?, topic = ?, section_id = ?, course_id = ?, teacher_id = ?, room_id = ?, semester_id = ?, batch_id = ?, lab_group = ?, day = ?, period = ?, week = ?, start_date_time = ?, end_date_time = ?, duration_minutes = ?, instance = ?, created_by = ?, created_at = ?, version = ?, status = ? WHERE id = ?",
+            "UPDATE events SET type = ?, topic = ?, section_id = ?, course_id = ?, teacher_id = ?, room_id = ?, semester_id = ?, batch_id = ?, lab_group = ?, day = ?, period = ?, week = ?, date = ?, instance = ?, created_by = ?, created_at = ?, version = ?, status = ? WHERE id = ?",
             entity.getType(), entity.getTopic(), entity.getSectionId(), entity.getCourseId(), entity.getTeacherId(), entity.getRoomId(), entity.getSemesterId(), entity.getBatchId(), entity.getLabGroup(), entity.getDay(), entity.getPeriod(), entity.getWeek(), 
-            DateUtils.formatSqliteTimestamp(entity.getStartDateTime()), 
-            DateUtils.formatSqliteTimestamp(entity.getEndDateTime()), 
-            entity.getDurationMinutes(), entity.getInstance(), entity.getCreatedBy(), 
+            entity.getDate() != null ? entity.getDate().toString() : null,
+            entity.getInstance(), entity.getCreatedBy(), 
             DateUtils.formatSqliteTimestamp(entity.getCreatedAt()), 
             entity.getVersion(), entity.getStatus(), entity.getId()
         ) > 0;

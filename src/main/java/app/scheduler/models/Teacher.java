@@ -6,7 +6,6 @@ public class Teacher {
     private String email;
     private String department;
     private String type;
-    private long availabilityBitmask;
     private boolean isActive;
 
     public Teacher() {}
@@ -21,8 +20,6 @@ public class Teacher {
     public void setDepartment(String department) { this.department = department; }
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-    public long getAvailabilityBitmask() { return availabilityBitmask; }
-    public void setAvailabilityBitmask(long availabilityBitmask) { this.availabilityBitmask = availabilityBitmask; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
 }

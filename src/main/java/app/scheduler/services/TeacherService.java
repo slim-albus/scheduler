@@ -27,7 +27,7 @@ public class TeacherService {
 
     public Teacher save(Teacher entity) {
         Teacher saved = repository.save(entity);
-        authService.autoRegister(saved.getId(), "TEACHER", saved.getId(), null);
+        authService.autoRegister(saved.getEmail(), "TEACHER", saved.getId(), null);
         return saved;
     }
 
