@@ -131,8 +131,9 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
             for (ScheduleItem item : placed) {
                 Event event = new Event();
                 event.setId(UUID.randomUUID().toString()); // new ID for each week instance
+
                 event.setType(item.kind.equals("THEORY") ? "LECTURE" : "LAB");
-                event.setTopic(getCourseName(input, item.courseId) + " " + (item.kind.equals("THEORY") ? "Lecture" : "Lab"));
+                event.setTopic(getCourseName(input, item.courseId) + " " + (item.kind.equals("THEORY") ? "Lecture" : "Lab (Group " + (item.labGroup != null ? item.labGroup : 0) + ")"));
                 event.setSectionId(item.sectionId);
                 event.setCourseId(item.courseId);
                 event.setTeacherId(item.teacherId);

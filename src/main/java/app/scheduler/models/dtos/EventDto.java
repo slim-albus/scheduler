@@ -15,4 +15,5 @@ public class EventDto {
     public String status;
     public int week;
     public String date;
+    public int labGroup;
 }

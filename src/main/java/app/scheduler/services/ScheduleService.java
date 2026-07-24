@@ -276,6 +276,7 @@ public class ScheduleService {
         eventDto.status = current.getStatus();
         eventDto.week = current.getWeek();
         eventDto.date = current.getDate() != null ? current.getDate().toString() : null;
+        eventDto.labGroup = current.getLabGroup();
         
         if (current.getTeacherId() != null) teacherRepo.findById(current.getTeacherId()).ifPresent(t -> eventDto.teacherName = t.getName());
         if (current.getCourseId() != null) courseRepo.findById(current.getCourseId()).ifPresent(c -> eventDto.courseName = c.getName());
