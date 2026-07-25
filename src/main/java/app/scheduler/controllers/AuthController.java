@@ -61,6 +61,6 @@ public class AuthController {
                 .orElse(user.getUsername());
         }
         
-        return ResponseEntity.ok(new AuthMeDto(user.getId(), user.getUsername(), user.getRole(), name));
+        return ResponseEntity.ok(new AuthMeDto(user.getId(), user.getUsername(), user.getRole(), name, user.getTeacherId()));
     }
 }

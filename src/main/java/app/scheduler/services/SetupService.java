@@ -15,19 +15,22 @@ public class SetupService implements CommandLineRunner {
     private final RoomService roomService;
     private final TeacherService teacherService;
     private final BatchCourseMappingService mappingService;
+    private final StudentService studentService;
 
     public SetupService(SemesterService semesterService,
                         BatchService batchService,
                         CourseService courseService,
                         RoomService roomService,
                         TeacherService teacherService,
-                        BatchCourseMappingService mappingService) {
+                        BatchCourseMappingService mappingService,
+                        StudentService studentService) {
         this.semesterService = semesterService;
         this.batchService = batchService;
-        this.courseService = courseService;
+        this.courseService = courseService; 
         this.roomService = roomService;
         this.teacherService = teacherService;
         this.mappingService = mappingService;
+        this.studentService = studentService;
     }
 
     @Override
@@ -130,6 +133,12 @@ public class SetupService implements CommandLineRunner {
         createMapping(drbse2502.getId(), swe202.getId(), tLecSWE2.getId(), tLabSWE1.getId(), fall2026.getId());
 
         createMapping(drbse2503.getId(), swe203.getId(), tLecSWE3.getId(), tLabSWE2.getId(), fall2026.getId());
+
+        // create 60 students for each of the 4 batches we have 
+        
+        
+        
+        
         
         System.out.println("SetupService successfully seeded Fall2026 active semester mappings.");
     }
@@ -191,5 +200,15 @@ public class SetupService implements CommandLineRunner {
         mapping.setLabInstructorId(labInstructorId);
         mapping.setSemesterId(semesterId);
         mappingService.save(mapping);
+    }
+    // add a createStudent method that inserts a student of the fall 2026 batches
+    private void createStudent(String name,String studentId, String email, String batchId,int labGroup) {
+        Student student = new Student();
+        student.setName(name);
+        student.setStudentId(studentId);
+        student.setEmail(email);
+        student.setBatchId(batchId);
+        student.setLabGroup(labGroup);
+        studentService.save(student);
     }
 }
