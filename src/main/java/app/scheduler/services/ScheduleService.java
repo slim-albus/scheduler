@@ -20,8 +20,7 @@ import org.springframework.stereotype.Service;
 public class ScheduleService {
     private final LoggerService loggerService;
 
-    private final List<ScheduleGenerator> generators;
-    private String activeAlgorithmName;
+    private final ScheduleGenerator generator;
     private final BatchRepository batchRepo;
     private final CourseRepository courseRepo;
     private final TeacherRepository teacherRepo;
@@ -31,14 +30,11 @@ public class ScheduleService {
     private final SemesterRepository semesterRepo;
     private final StudentRepository studentRepo;
 
-    public ScheduleService(List<ScheduleGenerator> generators, BatchRepository batchRepo,
+    public ScheduleService(ScheduleGenerator generator, BatchRepository batchRepo,
             CourseRepository courseRepo, TeacherRepository teacherRepo, RoomRepository roomRepo,
             EventRepository eventRepo, BatchCourseMappingRepository mappingRepo,
             SemesterRepository semesterRepo, StudentRepository studentRepo, LoggerService loggerService) {
-        this.generators = generators;
-        if (!generators.isEmpty()) {
-            this.activeAlgorithmName = generators.get(0).getAlgorithmName();
-        }
+        this.generator = generator;
         this.batchRepo = batchRepo;
         this.courseRepo = courseRepo;
         this.teacherRepo = teacherRepo;
@@ -50,22 +46,9 @@ public class ScheduleService {
         this.loggerService = loggerService;
     }
 
-    public List<String> getAvailableAlgorithms() {
-        return generators.stream().map(ScheduleGenerator::getAlgorithmName).collect(Collectors.toList());
-    }
-
-    public String getActiveAlgorithm() {
-        return activeAlgorithmName;
-    }
-
-    public void setActiveAlgorithm(String algorithmName) {
-        if (generators.stream().anyMatch(g -> g.getAlgorithmName().equals(algorithmName))) {
-            this.activeAlgorithmName = algorithmName;
-        } else {
-            throw new ValidationException("Unknown algorithm: " + algorithmName);
-        }
-    }
-
+    // Generates a completely new schedule for the semester.
+    // It will fetch all necessary entities, clear the existing schedule,
+    // run the schedule generator algorithm, and save the new events.
     public List<Event> generateSchedule(String semesterId, GeneratorConfig config) {
         Semester semester = semesterRepo.findById(semesterId)
                 .orElseThrow(() -> new ResourceNotFoundException("Semester not found"));
@@ -92,11 +75,6 @@ public class ScheduleService {
         for (Event e : existing) {
             eventRepo.delete(e.getId());
         }
-
-        ScheduleGenerator generator = generators.stream()
-                .filter(g -> g.getAlgorithmName().equals(activeAlgorithmName))
-                .findFirst()
-                .orElseThrow(() -> new ValidationException("Active algorithm not found"));
 
         List<Event> events = generator.generate(input);
 

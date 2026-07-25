@@ -16,6 +16,7 @@ public class SetupService implements CommandLineRunner {
     private final TeacherService teacherService;
     private final BatchCourseMappingService mappingService;
     private final StudentService studentService;
+    private final LoggerService loggerService;
 
     public SetupService(SemesterService semesterService,
                         BatchService batchService,
@@ -23,7 +24,8 @@ public class SetupService implements CommandLineRunner {
                         RoomService roomService,
                         TeacherService teacherService,
                         BatchCourseMappingService mappingService,
-                        StudentService studentService) {
+                        StudentService studentService,
+                        LoggerService loggerService) {
         this.semesterService = semesterService;
         this.batchService = batchService;
         this.courseService = courseService; 
@@ -31,16 +33,17 @@ public class SetupService implements CommandLineRunner {
         this.teacherService = teacherService;
         this.mappingService = mappingService;
         this.studentService = studentService;
+        this.loggerService = loggerService;
     }
 
     @Override
     public void run(String... args) throws Exception {
         if (!semesterService.findAll().isEmpty()) {
-            System.out.println("Database already seeded. Skipping SetupService.");
+            loggerService.logSystem("Database already seeded. Skipping SetupService.");
             return;
         }
 
-        System.out.println("Starting SetupService to seed database...");
+        loggerService.logSystem("Starting SetupService to seed database...");
 
         // Create Semesters (Make Fall2026 active by default)
         Semester fall2026 = createSemester("Fall2026", LocalDate.of(2025, 8, 1), "2026", true);
@@ -140,7 +143,7 @@ public class SetupService implements CommandLineRunner {
         
         
         
-        System.out.println("SetupService successfully seeded Fall2026 active semester mappings.");
+        loggerService.logSystem("SetupService successfully seeded Fall2026 active semester mappings.");
     }
 
     private Semester createSemester(String name, LocalDate startDate, String academicYear, boolean isActive) {

@@ -40,6 +40,7 @@ public class BatchCourseMappingController {
 
     @PostMapping("/bulk")
     public ResponseEntity<List<BatchCourseMapping>> createBulk(@RequestBody List<BatchCourseMapping> entities) {
+        loggerService.logAdmin("Received POST request in BatchCourseMappingController");
         loggerService.logAdmin("Admin created bulk BatchCourseMappings");
         return ResponseEntity.ok(service.saveAll(entities));
     }
@@ -51,6 +52,7 @@ public class BatchCourseMappingController {
 
     @PutMapping("/{id}")
     public ResponseEntity<BatchCourseMapping> update(@PathVariable String id, @RequestBody BatchCourseMapping entity) {
+        loggerService.logAdmin("Received PUT request in BatchCourseMappingController");
         entity.setId(id);
         if (service.update(entity)) {
             loggerService.logAdmin("Admin updated BatchCourseMapping " + id);
@@ -61,6 +63,7 @@ public class BatchCourseMappingController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
+        loggerService.logAdmin("Received DELETE request in BatchCourseMappingController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted BatchCourseMapping " + id);
             return ResponseEntity.ok().build();

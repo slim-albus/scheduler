@@ -38,24 +38,5 @@ public class AdminScheduleController {
         }
     }
 
-    @GetMapping("/generate/algorithms")
-    public ResponseEntity<List<String>> getAvailableAlgorithms() {
-        return ResponseEntity.ok(scheduleService.getAvailableAlgorithms());
-    }
 
-    @GetMapping("/generate/algorithms/active")
-    public ResponseEntity<String> getActiveAlgorithm() {
-        return ResponseEntity.ok(scheduleService.getActiveAlgorithm());
-    }
-
-    @PostMapping("/generate/algorithms/active")
-    public ResponseEntity<Void> setActiveAlgorithm(@RequestBody String algorithmName) {
-        loggerService.logAdmin("Admin setting active algorithm to: " + algorithmName);
-        try {
-            scheduleService.setActiveAlgorithm(algorithmName.replace("\"", "").trim());
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 }

@@ -1,5 +1,7 @@
 package app.scheduler.services;
 
+import app.scheduler.services.LoggerService;
+
 import app.scheduler.models.Batch;
 import app.scheduler.models.Section;
 import app.scheduler.repositories.BatchRepository;
@@ -10,9 +12,12 @@ import java.util.Optional;
 
 @Service
 public class BatchService {
+    private final LoggerService loggerService;
+
     private final BatchRepository repository;
 
-    public BatchService(BatchRepository repository) {
+    public BatchService(BatchRepository repository, LoggerService loggerService) {
+        this.loggerService = loggerService;
         this.repository = repository;
     }
 
@@ -25,6 +30,7 @@ public class BatchService {
     }
 
     public Batch save(Batch entity) {
+        loggerService.logSystem("Saving entity in BatchService");
         Batch saved = repository.save(entity);
         if (entity.getSectionCount() > 0) {
             for (int i = 0; i < entity.getSectionCount(); i++) {
@@ -39,6 +45,7 @@ public class BatchService {
     }
 
     public boolean update(Batch entity) {
+        loggerService.logSystem("Updating entity in BatchService");
         return repository.update(entity);
     }
 
@@ -65,10 +72,12 @@ public class BatchService {
     }
 
     public Section saveSection(Section entity) {
+        loggerService.logSystem("Saving entity in BatchService");
         return repository.saveSection(entity);
     }
 
     public boolean updateSection(Section entity) {
+        loggerService.logSystem("Updating entity in BatchService");
         return repository.updateSection(entity);
     }
 

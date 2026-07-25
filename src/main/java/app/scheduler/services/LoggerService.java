@@ -37,6 +37,10 @@ public class LoggerService {
         print(YELLOW, "MAP", message);
     }
 
+    public void logSystem(String message) {
+        print(RESET, "SYSTEM", message);
+    }
+
     public void logError(String message) {
         print(RED, "ERROR", message);
     }

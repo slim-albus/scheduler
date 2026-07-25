@@ -40,6 +40,7 @@ public class SemesterController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Semester> update(@PathVariable String id, @RequestBody Semester entity) {
+        loggerService.logAdmin("Received PUT request in SemesterController");
         entity.setId(id);
         if (service.update(entity)) {
             loggerService.logAdmin("Admin updated Semester " + id);
@@ -50,6 +51,7 @@ public class SemesterController {
 
     @PutMapping("/{id}/active")
     public ResponseEntity<Void> setActive(@PathVariable String id) {
+        loggerService.logAdmin("Received PUT request in SemesterController");
         if (service.setActive(id)) {
             loggerService.logAdmin("Admin set active semester to " + id);
             return ResponseEntity.ok().build();
@@ -59,6 +61,7 @@ public class SemesterController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
+        loggerService.logAdmin("Received DELETE request in SemesterController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted Semester " + id);
             return ResponseEntity.ok().build();

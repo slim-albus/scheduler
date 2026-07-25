@@ -40,6 +40,7 @@ public class TeacherController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Teacher> update(@PathVariable String id, @RequestBody Teacher entity) {
+        loggerService.logAdmin("Received PUT request in TeacherController");
         entity.setId(id);
         if (service.update(entity)) {
             loggerService.logAdmin("Admin updated Teacher " + id);
@@ -50,6 +51,7 @@ public class TeacherController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
+        loggerService.logAdmin("Received DELETE request in TeacherController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted Teacher " + id);
             return ResponseEntity.ok().build();

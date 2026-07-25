@@ -37,12 +37,14 @@ public class BatchController {
 
     @PostMapping("/batches")
     public ResponseEntity<Batch> createBatch(@RequestBody Batch entity) {
+        loggerService.logAdmin("Received POST request in BatchController");
         loggerService.logAdmin("Admin created Batch");
         return ResponseEntity.ok(service.save(entity));
     }
 
     @PutMapping("/batches/{id}")
     public ResponseEntity<Batch> updateBatch(@PathVariable String id, @RequestBody Batch entity) {
+        loggerService.logAdmin("Received PUT request in BatchController");
         entity.setId(id);
         if (service.update(entity)) {
             loggerService.logAdmin("Admin updated Batch " + id);
@@ -53,6 +55,7 @@ public class BatchController {
 
     @DeleteMapping("/batches/{id}")
     public ResponseEntity<Void> deleteBatch(@PathVariable String id) {
+        loggerService.logAdmin("Received DELETE request in BatchController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted Batch " + id);
             return ResponseEntity.ok().build();
@@ -77,12 +80,14 @@ public class BatchController {
 
     @PostMapping("/sections")
     public ResponseEntity<Section> createSection(@RequestBody Section entity) {
+        loggerService.logAdmin("Received POST request in BatchController");
         loggerService.logAdmin("Admin created Section");
         return ResponseEntity.ok(service.saveSection(entity));
     }
 
     @PutMapping("/sections/{id}")
     public ResponseEntity<Section> updateSection(@PathVariable String id, @RequestBody Section entity) {
+        loggerService.logAdmin("Received PUT request in BatchController");
         entity.setId(id);
         if (service.updateSection(entity)) {
             loggerService.logAdmin("Admin updated Section " + id);
@@ -93,6 +98,7 @@ public class BatchController {
 
     @DeleteMapping("/sections/{id}")
     public ResponseEntity<Void> deleteSection(@PathVariable String id) {
+        loggerService.logAdmin("Received DELETE request in BatchController");
         if (service.deleteSection(id)) {
             loggerService.logAdmin("Admin deleted Section " + id);
             return ResponseEntity.ok().build();

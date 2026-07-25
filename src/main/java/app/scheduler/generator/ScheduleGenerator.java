@@ -5,6 +5,5 @@ import java.util.List;
 
 public interface ScheduleGenerator {
     List<Event> generate(GeneratorInput input);
-    String getAlgorithmName();
     boolean supportsPartialGeneration();
 }

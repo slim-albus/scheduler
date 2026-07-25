@@ -96,6 +96,7 @@ public class ScheduleController {
 
     @PutMapping("/event/{id}/cancel")
     public ResponseEntity<Event> cancelEvent(@PathVariable String id, HttpServletRequest request) {
+        loggerService.logAdmin("Received PUT request in ScheduleController");
         User user = (User) request.getAttribute("user");
         loggerService.logSchedule("User " + user.getUsername() + " cancelling event: " + id);
         return ResponseEntity.ok(scheduleService.cancelEvent(id, user));
@@ -103,6 +104,7 @@ public class ScheduleController {
 
     @PutMapping("/event/{id}/restore")
     public ResponseEntity<Event> restoreEvent(@PathVariable String id, HttpServletRequest request) {
+        loggerService.logAdmin("Received PUT request in ScheduleController");
         User user = (User) request.getAttribute("user");
         loggerService.logSchedule("User " + user.getUsername() + " restoring event: " + id);
         return ResponseEntity.ok(scheduleService.restoreEvent(id, user));
@@ -116,6 +118,7 @@ public class ScheduleController {
             @RequestParam int period,
             @RequestParam String roomId,
             HttpServletRequest request) {
+        loggerService.logAdmin("Received PUT request in ScheduleController");
         User user = (User) request.getAttribute("user");
         loggerService.logSchedule("User " + user.getUsername() + " rescheduling event: " + id + " to week " + week + " day " + day + " period " + period);
         return ResponseEntity.ok(scheduleService.rescheduleEvent(id, week, day, period, roomId, user));
@@ -123,6 +126,7 @@ public class ScheduleController {
 
     @PostMapping("/event")
     public ResponseEntity<Event> bookEvent(@RequestBody Event event, HttpServletRequest request) {
+        loggerService.logAdmin("Received POST request in ScheduleController");
         User user = (User) request.getAttribute("user");
         loggerService.logSchedule("User " + user.getUsername() + " booking new event for section: " + event.getSectionId());
         return ResponseEntity.ok(scheduleService.bookEvent(event, user));

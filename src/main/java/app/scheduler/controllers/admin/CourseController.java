@@ -40,6 +40,7 @@ public class CourseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Course> update(@PathVariable String id, @RequestBody Course entity) {
+        loggerService.logAdmin("Received PUT request in CourseController");
         entity.setId(id);
         if (service.update(entity)) {
             loggerService.logAdmin("Admin updated Course " + id);
@@ -50,6 +51,7 @@ public class CourseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
+        loggerService.logAdmin("Received DELETE request in CourseController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted Course " + id);
             return ResponseEntity.ok().build();

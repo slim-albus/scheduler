@@ -1,5 +1,7 @@
 package app.scheduler.services;
 
+import app.scheduler.services.LoggerService;
+
 import app.scheduler.models.Course;
 import app.scheduler.repositories.CourseRepository;
 import org.springframework.stereotype.Service;
@@ -9,9 +11,12 @@ import java.util.Optional;
 
 @Service
 public class CourseService {
+    private final LoggerService loggerService;
+
     private final CourseRepository repository;
 
-    public CourseService(CourseRepository repository) {
+    public CourseService(CourseRepository repository, LoggerService loggerService) {
+        this.loggerService = loggerService;
         this.repository = repository;
     }
 
@@ -24,10 +29,12 @@ public class CourseService {
     }
 
     public Course save(Course entity) {
+        loggerService.logSystem("Saving entity in CourseService");
         return repository.save(entity);
     }
 
     public boolean update(Course entity) {
+        loggerService.logSystem("Updating entity in CourseService");
         return repository.update(entity);
     }
 

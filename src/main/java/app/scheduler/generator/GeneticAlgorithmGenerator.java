@@ -89,11 +89,6 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
     private static final List<Integer> PERIODS = List.of(0, 1, 2, 3, 4); // 5 periods
 
     @Override
-    public String getAlgorithmName() {
-        return "Constraint Backtracking & Randomized Greedy";
-    }
-
-    @Override
     public boolean supportsPartialGeneration() {
         return true;
     }
@@ -232,6 +227,8 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
         return instances;
     }
 
+    // Tries multiple randomized greedy placements to find the best possible schedule.
+    // This provides a good initial population for the genetic algorithm or serves as a fallback.
     private List<ScheduleItem> randomizedGreedyPlacement(List<ClassInstance> instances, GeneratorInput input, int relaxationLevel) {
         List<ScheduleItem> best = List.of();
         for (int attempt = 0; attempt < 800; attempt++) {
@@ -239,6 +236,7 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
             List<ClassInstance> remaining = new ArrayList<>(instances);
             List<ScheduleItem> placed = new ArrayList<>();
             while (!remaining.isEmpty()) {
+                // Find the class with the smallest number of valid slots (Most Constrained Variable)
                 int smallestDomain = Integer.MAX_VALUE;
                 List<ClassInstance> tied = new ArrayList<>();
                 for (ClassInstance instance : remaining) {
@@ -295,7 +293,10 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
         return placed;
     }
 
+    // Recursively tries to place all classes using backtracking.
+    // If it hits a dead end, it backtracks and tries a different slot.
     private boolean placeAll(List<ClassInstance> remaining, List<ScheduleItem> placed, GeneratorInput input, int relaxationLevel) {
+        // Prevent infinite loops / excessive time taken by setting a search node limit
         if (++searchNodes > MAX_SEARCH_NODES) {
             searchLimitHit = true;
             return false;
@@ -335,9 +336,25 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
                     return true;
                 }
             }
+            // Backtrack: undo the assignment
             placed.remove(placed.size() - 1);
         }
         return false;
+    }
+
+    // Evaluates how good a candidate slot is based on soft constraints.
+    // Returns a higher score for better slots.
+    private int evaluateCandidate(ClassInstance instance, Candidate candidate, List<ScheduleItem> placed, GeneratorInput input, int relaxationLevel) {
+        int score = 100;
+
+        // Try to place the same section in the same room consecutively
+        boolean sameSectionSameRoom = placed.stream()
+                .anyMatch(p -> p.sectionId.equals(instance.sectionId) && p.day == candidate.day &&
+                        (p.period == candidate.period - 1 || p.period == candidate.period + 1) &&
+                        p.roomId.equals(candidate.room.getId()));
+        if (sameSectionSameRoom) score += 50;
+
+        return score;
     }
 
     private List<Candidate> validCandidates(ClassInstance instance, List<ScheduleItem> placed, GeneratorInput input, int relaxationLevel) {

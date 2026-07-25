@@ -40,6 +40,7 @@ public class RoomController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Room> update(@PathVariable String id, @RequestBody Room entity) {
+        loggerService.logAdmin("Received PUT request in RoomController");
         entity.setId(id);
         if (service.update(entity)) {
             loggerService.logAdmin("Admin updated Room " + id);
@@ -50,6 +51,7 @@ public class RoomController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
+        loggerService.logAdmin("Received DELETE request in RoomController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted Room " + id);
             return ResponseEntity.ok().build();

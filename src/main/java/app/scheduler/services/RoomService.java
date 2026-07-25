@@ -1,5 +1,7 @@
 package app.scheduler.services;
 
+import app.scheduler.services.LoggerService;
+
 import app.scheduler.models.Room;
 import app.scheduler.repositories.RoomRepository;
 import org.springframework.stereotype.Service;
@@ -9,9 +11,12 @@ import java.util.Optional;
 
 @Service
 public class RoomService {
+    private final LoggerService loggerService;
+
     private final RoomRepository repository;
 
-    public RoomService(RoomRepository repository) {
+    public RoomService(RoomRepository repository, LoggerService loggerService) {
+        this.loggerService = loggerService;
         this.repository = repository;
     }
 
@@ -24,10 +29,12 @@ public class RoomService {
     }
 
     public Room save(Room entity) {
+        loggerService.logSystem("Saving entity in RoomService");
         return repository.save(entity);
     }
 
     public boolean update(Room entity) {
+        loggerService.logSystem("Updating entity in RoomService");
         return repository.update(entity);
     }
 
