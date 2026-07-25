@@ -75,8 +75,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        loggerService.error("Unhandled Exception: " + ex.getMessage());
+    public ResponseEntity<Map<String, Object>> handleException(Exception ex) {
+        loggerService.logError("Unhandled Exception: " + ex.getMessage());
+        ex.printStackTrace();
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
     }
 }
