@@ -54,10 +54,10 @@ public class JdbcBatchRepository implements BatchRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM events WHERE batch_id = ?", id);
-        jdbcTemplate.update("DELETE FROM sections WHERE batch_id = ?", id);
-        jdbcTemplate.update("DELETE FROM batch_course_mappings WHERE batch_id = ?", id);
-        jdbcTemplate.update("UPDATE students SET batch_id = NULL WHERE batch_id = ?", id);
+        jdbcTemplate.update(SQLQueries.BATCH_DELETE_EVENTS, id);
+        jdbcTemplate.update(SQLQueries.BATCH_DELETE_SECTIONS, id);
+        jdbcTemplate.update(SQLQueries.BATCH_DELETE_MAPPINGS, id);
+        jdbcTemplate.update(SQLQueries.BATCH_RESET_STUDENTS_BATCH, id);
         return jdbcTemplate.update(SQLQueries.BATCH_DELETE, id) > 0;
     }
 
@@ -115,8 +115,8 @@ public class JdbcBatchRepository implements BatchRepository {
 
     @Override
     public boolean deleteSection(String id) {
-        jdbcTemplate.update("DELETE FROM events WHERE section_id = ?", id);
-        jdbcTemplate.update("UPDATE students SET section_id = NULL WHERE section_id = ?", id);
+        jdbcTemplate.update(SQLQueries.SECTION_DELETE_EVENTS, id);
+        jdbcTemplate.update(SQLQueries.SECTION_RESET_STUDENTS_SECTION, id);
         return jdbcTemplate.update(SQLQueries.SECTION_DELETE, id) > 0;
     }
 

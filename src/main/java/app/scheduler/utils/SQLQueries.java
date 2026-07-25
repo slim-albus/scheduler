@@ -9,6 +9,10 @@ public class SQLQueries {
     public static final String BATCH_FIND_BY_PROGRAM = "SELECT * FROM batches WHERE program = ?";
     public static final String BATCH_INSERT = "INSERT INTO batches (id, name, program, year) VALUES (?, ?, ?, ?)";
     public static final String BATCH_UPDATE = "UPDATE batches SET name = ?, program = ?, year = ? WHERE id = ?";
+    public static final String BATCH_DELETE_EVENTS = "DELETE FROM events WHERE batch_id = ?";
+    public static final String BATCH_DELETE_SECTIONS = "DELETE FROM sections WHERE batch_id = ?";
+    public static final String BATCH_DELETE_MAPPINGS = "DELETE FROM batch_course_mappings WHERE batch_id = ?";
+    public static final String BATCH_RESET_STUDENTS_BATCH = "UPDATE students SET batch_id = NULL WHERE batch_id = ?";
 
     // BATCH COURSE MAPPING
     public static final String BATCHCOURSEMAPPING_FIND_BY_ID = "SELECT * FROM batch_course_mappings WHERE id = ?";
@@ -55,6 +59,8 @@ public class SQLQueries {
     public static final String SECTION_FIND_BY_SEMESTER_ID = "SELECT DISTINCT s.* FROM sections s JOIN batches b ON s.batch_id = b.id JOIN batch_course_mappings m ON b.id = m.batch_id WHERE m.semester_id = ?";
     public static final String SECTION_INSERT = "INSERT INTO sections (id, name, batch_id, student_count) VALUES (?, ?, ?, ?)";
     public static final String SECTION_UPDATE = "UPDATE sections SET name = ?, batch_id = ?, student_count = ? WHERE id = ?";
+    public static final String SECTION_DELETE_EVENTS = "DELETE FROM events WHERE section_id = ?";
+    public static final String SECTION_RESET_STUDENTS_SECTION = "UPDATE students SET section_id = NULL WHERE section_id = ?";
 
     // SEMESTER
     public static final String SEMESTER_FIND_BY_ID = "SELECT * FROM semesters WHERE id = ?";
@@ -62,8 +68,12 @@ public class SQLQueries {
     public static final String SEMESTER_DELETE = "DELETE FROM semesters WHERE id = ?";
     public static final String SEMESTER_INSERT = "INSERT INTO semesters (id, name, start_date, weeks, academic_year, is_generated, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)";
     public static final String SEMESTER_UPDATE = "UPDATE semesters SET name = ?, start_date = ?, weeks = ?, academic_year = ?, is_generated = ?, is_active = ? WHERE id = ?";
+    public static final String SEMESTER_DELETE_EVENTS = "DELETE FROM events WHERE semester_id = ?";
+    public static final String SEMESTER_DELETE_MAPPINGS = "DELETE FROM batch_course_mappings WHERE semester_id = ?";
     public static final String SEMESTER_SET_ALL_INACTIVE = "UPDATE semesters SET is_active = 0";
     public static final String SEMESTER_SET_ACTIVE = "UPDATE semesters SET is_active = 1 WHERE id = ?";
+    public static final String SEMESTER_FIND_ACTIVE = "SELECT * FROM semesters WHERE is_active = 1 LIMIT 1";
+    public static final String SEMESTER_FIND_BY_YEAR = "SELECT * FROM semesters WHERE academic_year = ?";
 
     // SESSION
     public static final String SESSION_FIND_BY_ID = "SELECT * FROM sessions WHERE id = ?";
@@ -86,6 +96,9 @@ public class SQLQueries {
     public static final String TEACHER_DELETE = "DELETE FROM teachers WHERE id = ?";
     public static final String TEACHER_INSERT = "INSERT INTO teachers (id, name, email, department, type) VALUES (?, ?, ?, ?, ?)";
     public static final String TEACHER_UPDATE = "UPDATE teachers SET name = ?, email = ?, department = ?, type = ? WHERE id = ?";
+    public static final String TEACHER_DELETE_EVENTS = "DELETE FROM events WHERE teacher_id = ?";
+    public static final String TEACHER_CLEAR_LECTURE_TEACHER = "UPDATE batch_course_mappings SET lecture_teacher_id = NULL WHERE lecture_teacher_id = ?";
+    public static final String TEACHER_CLEAR_LAB_INSTRUCTOR = "UPDATE batch_course_mappings SET lab_instructor_id = NULL WHERE lab_instructor_id = ?";
 
     // USER
     public static final String USER_FIND_BY_ID = "SELECT * FROM users WHERE id = ?";
