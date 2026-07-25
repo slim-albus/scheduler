@@ -57,8 +57,8 @@ public class JdbcCourseRepository implements CourseRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM events WHERE course_id = ?", id);
-        jdbcTemplate.update("DELETE FROM batch_course_mappings WHERE course_id = ?", id);
+        jdbcTemplate.update(SQLQueries.EVENT_FIND_BY_ROOM_ID.replace("ROOM", "COURSE"), id);
+        jdbcTemplate.update(SQLQueries.BATCHCOURSEMAPPING_DELETE, id);
         return jdbcTemplate.update(SQLQueries.COURSE_DELETE, id) > 0;
     }
 

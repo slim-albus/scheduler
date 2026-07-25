@@ -55,9 +55,9 @@ public class JdbcTeacherRepository implements TeacherRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM events WHERE teacher_id = ?", id);
-        jdbcTemplate.update("UPDATE batch_course_mappings SET lecture_teacher_id = NULL WHERE lecture_teacher_id = ?", id);
-        jdbcTemplate.update("UPDATE batch_course_mappings SET lab_instructor_id = NULL WHERE lab_instructor_id = ?", id);
+        jdbcTemplate.update(SQLQueries.TEACHER_DELETE_EVENTS, id);
+        jdbcTemplate.update(SQLQueries.TEACHER_CLEAR_LECTURE_TEACHER, id);
+        jdbcTemplate.update(SQLQueries.TEACHER_CLEAR_LAB_INSTRUCTOR, id);
         return jdbcTemplate.update(SQLQueries.TEACHER_DELETE, id) > 0;
     }
 

@@ -63,8 +63,8 @@ public class JdbcSemesterRepository implements SemesterRepository {
 
     @Override
     public boolean delete(String id) {
-        jdbcTemplate.update("DELETE FROM events WHERE semester_id = ?", id);
-        jdbcTemplate.update("DELETE FROM batch_course_mappings WHERE semester_id = ?", id);
+        jdbcTemplate.update(SQLQueries.SEMESTER_DELETE_EVENTS, id);
+        jdbcTemplate.update(SQLQueries.SEMESTER_DELETE_MAPPINGS, id);
         return jdbcTemplate.update(SQLQueries.SEMESTER_DELETE, id) > 0;
     }
 
@@ -83,7 +83,7 @@ public class JdbcSemesterRepository implements SemesterRepository {
 
     @Override
     public Optional<Semester> findActive() {
-        List<Semester> results = jdbcTemplate.query("SELECT * FROM semesters WHERE is_active = 1 LIMIT 1", rowMapper);
+        List<Semester> results = jdbcTemplate.query(SQLQueries.SEMESTER_FIND_ACTIVE, rowMapper);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
@@ -100,7 +100,7 @@ public class JdbcSemesterRepository implements SemesterRepository {
 
     @Override
     public List<Semester> findByYear(String year) {
-        return jdbcTemplate.query("SELECT * FROM semesters WHERE academic_year = ?", rowMapper, year);
+        return jdbcTemplate.query(SQLQueries.SEMESTER_FIND_BY_YEAR, rowMapper, year);
     }
 
 }
