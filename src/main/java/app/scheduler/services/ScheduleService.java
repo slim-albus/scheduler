@@ -307,6 +307,13 @@ public class ScheduleService {
         if (current.getRoomId() != null)
             roomRepo.findById(current.getRoomId()).ifPresent(r -> eventDto.roomName = r.getName());
 
+        eventDto.teacherId = current.getTeacherId();
+        eventDto.courseId = current.getCourseId();
+        eventDto.sectionId = current.getSectionId();
+        eventDto.batchId = current.getBatchId();
+        eventDto.roomId = current.getRoomId();
+        eventDto.semesterId = current.getSemesterId();
+
         return eventDto;
     }
     public List<SlotDto> getAvailableSlots(String semesterId, String sectionId, String teacherId, Integer startWeek,

@@ -16,4 +16,12 @@ public class EventDto {
     public int week;
     public String date;
     public int labGroup;
+    
+    // IDs for rescheduling and details
+    public String teacherId;
+    public String courseId;
+    public String sectionId;
+    public String batchId;
+    public String roomId;
+    public String semesterId;
 }
