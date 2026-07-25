@@ -142,7 +142,7 @@ public class ScheduleService {
         }
     }
 
-    private void validateAvailability(int week, int day, int period, String roomId, String sectionId, String eventIdToIgnore) {
+    private void validateAvailability(int week, int day, int period, String roomId, String sectionId, String teacherId, String eventIdToIgnore) {
         // Room availability
         List<Event> roomEvents = eventRepo.findByRoomId(roomId);
         boolean roomConflict = roomEvents.stream().anyMatch(e -> 
@@ -160,6 +160,17 @@ public class ScheduleService {
             (eventIdToIgnore == null || !e.getId().equals(eventIdToIgnore))
         );
         if (sectionConflict) throw new ValidationException("Section is already booked at this time.");
+
+        // Teacher availability
+        if (teacherId != null) {
+            List<Event> teacherEvents = eventRepo.findByTeacherId(teacherId);
+            boolean teacherConflict = teacherEvents.stream().anyMatch(e -> 
+                e.getWeek() == week && e.getDay() == day && e.getPeriod() == period && 
+                !"CANCELED".equals(e.getStatus()) &&
+                (eventIdToIgnore == null || !e.getId().equals(eventIdToIgnore))
+            );
+            if (teacherConflict) throw new ValidationException("Teacher is already busy at this time.");
+        }
     }
 
     public Event cancelEvent(String eventId, User user) {
@@ -174,7 +185,7 @@ public class ScheduleService {
     public Event restoreEvent(String eventId, User user) {
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new ResourceNotFoundException("Event not found"));
         validateUserCanEditEvent(event, user);
-        validateAvailability(event.getWeek(), event.getDay(), event.getPeriod(), event.getRoomId(), event.getSectionId(), eventId);
+        validateAvailability(event.getWeek(), event.getDay(), event.getPeriod(), event.getRoomId(), event.getSectionId(), event.getTeacherId(), eventId);
         
         event.setStatus("SCHEDULED");
         eventRepo.update(event);
@@ -184,7 +195,7 @@ public class ScheduleService {
     public Event rescheduleEvent(String eventId, int newWeek, int newDay, int newPeriod, String newRoomId, User user) {
         Event event = eventRepo.findById(eventId).orElseThrow(() -> new ResourceNotFoundException("Event not found"));
         validateUserCanEditEvent(event, user);
-        validateAvailability(newWeek, newDay, newPeriod, newRoomId, event.getSectionId(), eventId);
+        validateAvailability(newWeek, newDay, newPeriod, newRoomId, event.getSectionId(), event.getTeacherId(), eventId);
         
         event.setWeek(newWeek);
         event.setDay(newDay);
@@ -197,7 +208,7 @@ public class ScheduleService {
 
     public Event bookEvent(Event newEvent, User user) {
         validateUserCanEditEvent(newEvent, user);
-        validateAvailability(newEvent.getWeek(), newEvent.getDay(), newEvent.getPeriod(), newEvent.getRoomId(), newEvent.getSectionId(), null);
+        validateAvailability(newEvent.getWeek(), newEvent.getDay(), newEvent.getPeriod(), newEvent.getRoomId(), newEvent.getSectionId(), newEvent.getTeacherId(), null);
         
         newEvent.setStatus("SCHEDULED");
         Event saved = eventRepo.save(newEvent);
@@ -288,17 +299,8 @@ public class ScheduleService {
         return eventDto;
     }
     public List<SlotDto> getAvailableSlots(String semesterId, String sectionId, String teacherId, Integer startWeek, String eventIdToIgnore) {
-        // Find teacher type to filter rooms
-        String roomTypePreference = null;
-        if (teacherId != null) {
-            teacherRepo.findById(teacherId).ifPresent(t -> {
-                if ("LAB_INSTRUCTOR".equals(t.getType())) {
-                    // roomTypePreference = "COMPUTER_LAB"; // Actually the user said "consider the kind of room the need lab or lecture(based on their teacher type)". Let's just find rooms that match the type.
-                }
-            });
-        }
         final String teacherType = teacherId != null ? teacherRepo.findById(teacherId).map(Teacher::getType).orElse(null) : null;
-        final String requiredRoomType = "LAB_INSTRUCTOR".equals(teacherType) ? "COMPUTER_LAB" : "LECTURE_ROOM";
+        final String requiredRoomType = "LAB".equals(teacherType) ? "LAB" : "LECTURE";
 
         Semester active = semesterId != null ? semesterRepo.findById(semesterId).orElse(semesterRepo.findActive().orElse(null)) : semesterRepo.findActive().orElse(null);
         if (active == null) return new ArrayList<>();
