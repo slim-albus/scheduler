@@ -10,7 +10,7 @@ import java.util.*;
 @Component
 public class GeneticAlgorithmGenerator implements ScheduleGenerator {
 
-    private static final int MAX_SEARCH_NODES = 50_000;
+    private static final int MAX_SEARCH_NODES = 500_000;
     private int searchNodes;
     private boolean searchLimitHit;
 
@@ -100,25 +100,43 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
 
     @Override
     public List<Event> generate(GeneratorInput input) {
-        searchNodes = 0;
-        searchLimitHit = false;
-
         List<ClassInstance> instances = buildClassInstances(input);
-        List<ScheduleItem> placed = randomizedGreedyPlacement(instances, input);
+        List<ScheduleItem> placed = new ArrayList<>();
 
-        if (placed.size() != instances.size()) {
+        boolean success = false;
+        // Progressive relaxation level loop:
+        // Level 0: Strict (daily load = 3, no same theory course on same day)
+        // Level 1: Relaxed load (daily load = 5, no same theory course on same day)
+        // Level 2: Relaxed load and relaxed course distribution (daily load = 5, allow same theory course)
+        for (int level = 0; level <= 2; level++) {
+            searchNodes = 0;
+            searchLimitHit = false;
+
+            // 1. Try randomized greedy placement
+            placed = randomizedGreedyPlacement(instances, input, level);
+            if (placed.size() == instances.size()) {
+                success = true;
+                break;
+            }
+
+            // 2. Try backtracking search with forward checking
             placed = new ArrayList<>();
-            if (!placeAll(instances, placed, input)) {
-                List<ScheduleItem> greedyPlaced = greedyPlacement(instances, input);
-                if (greedyPlaced.size() > placed.size()) {
-                    placed = greedyPlaced;
-                }
+            if (placeAll(instances, placed, input, level)) {
+                success = true;
+                break;
+            }
+        }
+
+        // 3. Fallback to greedy if still not completely successful
+        if (!success) {
+            List<ScheduleItem> greedyPlaced = greedyPlacement(instances, input, 2);
+            if (greedyPlaced.size() > placed.size()) {
+                placed = greedyPlaced;
             }
         }
 
         // Map final ScheduleItems to Event objects for all weeks of the semester
         List<Event> events = new ArrayList<>();
-        LocalDateTime now = LocalDateTime.now();
         int totalWeeks = input.getSemester().getWeeks() > 0 ? input.getSemester().getWeeks() : 16;
         java.time.LocalDate semStart = input.getSemester().getStartDate() != null ? input.getSemester().getStartDate() : java.time.LocalDate.now();
         
@@ -191,7 +209,6 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
                     .toList();
 
             for (Section section : batchSections) {
-                // HiLCoE theory session count: course.weeklyTheoryCount() (or default to 2 theory classes per week)
                 int theoryCount = 2; // default
                 for (int i = 0; i < theoryCount; i++) {
                     instances.add(new ClassInstance(UUID.randomUUID().toString(), mapping.getId(), course.getId(),
@@ -215,7 +232,7 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
         return instances;
     }
 
-    private List<ScheduleItem> randomizedGreedyPlacement(List<ClassInstance> instances, GeneratorInput input) {
+    private List<ScheduleItem> randomizedGreedyPlacement(List<ClassInstance> instances, GeneratorInput input, int relaxationLevel) {
         List<ScheduleItem> best = List.of();
         for (int attempt = 0; attempt < 800; attempt++) {
             Random random = new Random(attempt);
@@ -225,7 +242,7 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
                 int smallestDomain = Integer.MAX_VALUE;
                 List<ClassInstance> tied = new ArrayList<>();
                 for (ClassInstance instance : remaining) {
-                    int size = validCandidates(instance, placed, input).size();
+                    int size = validCandidates(instance, placed, input, relaxationLevel).size();
                     if (size < smallestDomain) {
                         smallestDomain = size;
                         tied.clear();
@@ -238,7 +255,7 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
                     break;
                 }
                 ClassInstance next = tied.get(random.nextInt(tied.size()));
-                List<Candidate> candidates = validCandidates(next, placed, input).stream()
+                List<Candidate> candidates = validCandidates(next, placed, input, relaxationLevel).stream()
                         .sorted(Comparator.comparingInt((Candidate c) -> c.score).reversed())
                         .toList();
                 int choiceLimit = Math.min(5, candidates.size());
@@ -257,14 +274,14 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
         return best;
     }
 
-    private List<ScheduleItem> greedyPlacement(List<ClassInstance> instances, GeneratorInput input) {
+    private List<ScheduleItem> greedyPlacement(List<ClassInstance> instances, GeneratorInput input, int relaxationLevel) {
         List<ClassInstance> remaining = new ArrayList<>(instances);
         List<ScheduleItem> placed = new ArrayList<>();
         while (!remaining.isEmpty()) {
             ClassInstance next = remaining.stream()
-                    .min(Comparator.comparingInt(instance -> validCandidates(instance, placed, input).size()))
+                    .min(Comparator.comparingInt(instance -> validCandidates(instance, placed, input, relaxationLevel).size()))
                     .orElseThrow();
-            List<Candidate> candidates = validCandidates(next, placed, input);
+            List<Candidate> candidates = validCandidates(next, placed, input, relaxationLevel);
             if (candidates.isEmpty()) {
                 return placed;
             }
@@ -278,7 +295,7 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
         return placed;
     }
 
-    private boolean placeAll(List<ClassInstance> remaining, List<ScheduleItem> placed, GeneratorInput input) {
+    private boolean placeAll(List<ClassInstance> remaining, List<ScheduleItem> placed, GeneratorInput input, int relaxationLevel) {
         if (++searchNodes > MAX_SEARCH_NODES) {
             searchLimitHit = true;
             return false;
@@ -288,9 +305,9 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
         }
 
         ClassInstance next = remaining.stream()
-                .min(Comparator.comparingInt(instance -> validCandidates(instance, placed, input).size()))
+                .min(Comparator.comparingInt(instance -> validCandidates(instance, placed, input, relaxationLevel).size()))
                 .orElseThrow();
-        List<Candidate> candidates = validCandidates(next, placed, input).stream()
+        List<Candidate> candidates = validCandidates(next, placed, input, relaxationLevel).stream()
                 .sorted(Comparator.comparingInt((Candidate c) -> c.score).reversed())
                 .toList();
         if (candidates.isEmpty()) {
@@ -303,15 +320,27 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
             ScheduleItem item = new ScheduleItem(UUID.randomUUID().toString(), next.offeringId, next.courseId, next.sectionId, next.labGroup,
                     candidate.room.getId(), next.teacherId, candidate.day, candidate.period, next.kind, candidate.warnings);
             placed.add(item);
-            if (placeAll(nextRemaining, placed, input)) {
-                return true;
+            
+            // Forward Checking: check if any remaining variable now has domain size 0
+            boolean forwardCheckingFailed = false;
+            for (ClassInstance rem : nextRemaining) {
+                if (validCandidates(rem, placed, input, relaxationLevel).isEmpty()) {
+                    forwardCheckingFailed = true;
+                    break;
+                }
+            }
+            
+            if (!forwardCheckingFailed) {
+                if (placeAll(nextRemaining, placed, input, relaxationLevel)) {
+                    return true;
+                }
             }
             placed.remove(placed.size() - 1);
         }
         return false;
     }
 
-    private List<Candidate> validCandidates(ClassInstance instance, List<ScheduleItem> placed, GeneratorInput input) {
+    private List<Candidate> validCandidates(ClassInstance instance, List<ScheduleItem> placed, GeneratorInput input, int relaxationLevel) {
         List<Candidate> candidates = new ArrayList<>();
         Teacher teacher = input.getTeachers().stream()
                 .filter(t -> t.getId().equals(instance.teacherId))
@@ -319,12 +348,15 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
                 .orElse(null);
         if (teacher == null) return candidates;
 
+        int maxDailyLoad = (relaxationLevel >= 1) ? 5 : 3;
+        boolean enforceSameDayTheory = (relaxationLevel == 0);
+
         for (int day : TEACHING_DAYS) {
             for (int period : PERIODS) {
-                if (dailyLoad(placed, instance, day) >= 3) {
+                if (dailyLoad(placed, instance, day) >= maxDailyLoad) {
                     continue;
                 }
-                if (hasSameTheoryCourseOnDay(placed, instance, day)) {
+                if (enforceSameDayTheory && hasSameTheoryCourseOnDay(placed, instance, day)) {
                     continue;
                 }
                 if (placed.stream().anyMatch(item -> item.day == day && item.period == period
@@ -439,4 +471,3 @@ public class GeneticAlgorithmGenerator implements ScheduleGenerator {
         return new Candidate(day, period, room, score, warnings);
     }
 }
-

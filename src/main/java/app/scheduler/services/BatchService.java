@@ -31,6 +31,7 @@ public class BatchService {
                 Section section = new Section();
                 section.setName(saved.getName() + " - Section " + (char)('A' + i));
                 section.setBatchId(saved.getId());
+                section.setStudentCount(35);
                 repository.saveSection(section);
             }
         }
