@@ -26,7 +26,7 @@ public class SemesterController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Semester> getById(@PathVariable String id) {
+    public ResponseEntity<Semester> getById(@PathVariable("id") String id) {
         return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -39,7 +39,7 @@ public class SemesterController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Semester> update(@PathVariable String id, @RequestBody Semester entity) {
+    public ResponseEntity<Semester> update(@PathVariable("id") String id, @RequestBody Semester entity) {
         loggerService.logAdmin("Received PUT request in SemesterController");
         entity.setId(id);
         if (service.update(entity)) {
@@ -50,7 +50,7 @@ public class SemesterController {
     }
 
     @PutMapping("/{id}/active")
-    public ResponseEntity<Void> setActive(@PathVariable String id) {
+    public ResponseEntity<Void> setActive(@PathVariable("id") String id) {
         loggerService.logAdmin("Received PUT request in SemesterController");
         if (service.setActive(id)) {
             loggerService.logAdmin("Admin set active semester to " + id);
@@ -60,7 +60,7 @@ public class SemesterController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         loggerService.logAdmin("Received DELETE request in SemesterController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted Semester " + id);

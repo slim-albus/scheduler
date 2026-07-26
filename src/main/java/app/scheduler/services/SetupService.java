@@ -137,13 +137,29 @@ public class SetupService implements CommandLineRunner {
 
         createMapping(drbse2503.getId(), swe203.getId(), tLecSWE3.getId(), tLabSWE2.getId(), fall2026.getId());
 
-        // create 60 students for each of the 4 batches we have 
-        
-        
-        
-        
-        
-        loggerService.logSystem("SetupService successfully seeded Fall2026 active semester mappings.");
+        // Create 5 students for DRB2502 batch
+        java.util.List<Section> drb2502Sections = batchService.findSectionsByBatchId(drb2502.getId());
+        String sec2502A = !drb2502Sections.isEmpty() ? drb2502Sections.get(0).getId() : null;
+        String sec2502B = drb2502Sections.size() > 1 ? drb2502Sections.get(1).getId() : null;
+
+        createStudent("Abebe Bikila", "CS2025001", "abebe.bikila@hilcoeschool.com", drb2502.getId(), sec2502A, 1);
+        createStudent("Bethlehem Tadesse", "CS2025002", "bethlehem.tadesse@hilcoeschool.com", drb2502.getId(), sec2502A, 2);
+        createStudent("Chala Alemu", "CS2025003", "chala.alemu@hilcoeschool.com", drb2502.getId(), sec2502B, 1);
+        createStudent("Danait Gebre", "CS2025004", "danait.gebre@hilcoeschool.com", drb2502.getId(), sec2502B, 2);
+        createStudent("Ephrem Solomon", "CS2025005", "ephrem.solomon@hilcoeschool.com", drb2502.getId(), sec2502A, 1);
+
+        // Create 5 students for DRBSE2502 batch
+        java.util.List<Section> drbse2502Sections = batchService.findSectionsByBatchId(drbse2502.getId());
+        String secSE2502A = !drbse2502Sections.isEmpty() ? drbse2502Sections.get(0).getId() : null;
+        String secSE2502B = drbse2502Sections.size() > 1 ? drbse2502Sections.get(1).getId() : null;
+
+        createStudent("Fikru Tefera", "SWE2025001", "fikru.tefera@hilcoeschool.com", drbse2502.getId(), secSE2502A, 1);
+        createStudent("Gifty Haile", "SWE2025002", "gifty.haile@hilcoeschool.com", drbse2502.getId(), secSE2502A, 2);
+        createStudent("Hannah Worku", "SWE2025003", "hannah.worku@hilcoeschool.com", drbse2502.getId(), secSE2502B, 1);
+        createStudent("Isaac Berhanu", "SWE2025004", "isaac.berhanu@hilcoeschool.com", drbse2502.getId(), secSE2502B, 2);
+        createStudent("Jemila Nuru", "SWE2025005", "jemila.nuru@hilcoeschool.com", drbse2502.getId(), secSE2502A, 1);
+
+        loggerService.logSystem("SetupService successfully seeded Fall2026 active semester mappings and students.");
     }
 
     private Semester createSemester(String name, LocalDate startDate, String academicYear, boolean isActive) {
@@ -204,14 +220,19 @@ public class SetupService implements CommandLineRunner {
         mapping.setSemesterId(semesterId);
         mappingService.save(mapping);
     }
-    // add a createStudent method that inserts a student of the fall 2026 batches
-    private void createStudent(String name,String studentId, String email, String batchId,int labGroup) {
+
+    private void createStudent(String name, String studentId, String email, String batchId, String sectionId, int labGroup) {
         Student student = new Student();
         student.setName(name);
         student.setStudentId(studentId);
         student.setEmail(email);
         student.setBatchId(batchId);
+        student.setSectionId(sectionId);
         student.setLabGroup(labGroup);
         studentService.save(student);
+    }
+
+    private void createStudent(String name, String studentId, String email, String batchId, int labGroup) {
+        createStudent(name, studentId, email, batchId, null, labGroup);
     }
 }

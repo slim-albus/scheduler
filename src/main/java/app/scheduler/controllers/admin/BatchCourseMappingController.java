@@ -26,7 +26,7 @@ public class BatchCourseMappingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BatchCourseMapping> getById(@PathVariable String id) {
+    public ResponseEntity<BatchCourseMapping> getById(@PathVariable("id") String id) {
         return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -46,12 +46,12 @@ public class BatchCourseMappingController {
     }
 
     @GetMapping("/semester/{semesterId}")
-    public ResponseEntity<List<BatchCourseMapping>> getBySemester(@PathVariable String semesterId) {
+    public ResponseEntity<List<BatchCourseMapping>> getBySemester(@PathVariable("semesterId") String semesterId) {
         return ResponseEntity.ok(service.findBySemesterId(semesterId));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BatchCourseMapping> update(@PathVariable String id, @RequestBody BatchCourseMapping entity) {
+    public ResponseEntity<BatchCourseMapping> update(@PathVariable("id") String id, @RequestBody BatchCourseMapping entity) {
         loggerService.logAdmin("Received PUT request in BatchCourseMappingController");
         entity.setId(id);
         if (service.update(entity)) {
@@ -62,7 +62,7 @@ public class BatchCourseMappingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         loggerService.logAdmin("Received DELETE request in BatchCourseMappingController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted BatchCourseMapping " + id);

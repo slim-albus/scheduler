@@ -26,7 +26,7 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Room> getById(@PathVariable String id) {
+    public ResponseEntity<Room> getById(@PathVariable("id") String id) {
         return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -39,7 +39,7 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Room> update(@PathVariable String id, @RequestBody Room entity) {
+    public ResponseEntity<Room> update(@PathVariable("id") String id, @RequestBody Room entity) {
         loggerService.logAdmin("Received PUT request in RoomController");
         entity.setId(id);
         if (service.update(entity)) {
@@ -50,7 +50,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         loggerService.logAdmin("Received DELETE request in RoomController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted Room " + id);

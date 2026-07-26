@@ -26,7 +26,7 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Teacher> getById(@PathVariable String id) {
+    public ResponseEntity<Teacher> getById(@PathVariable("id") String id) {
         return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -39,7 +39,7 @@ public class TeacherController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Teacher> update(@PathVariable String id, @RequestBody Teacher entity) {
+    public ResponseEntity<Teacher> update(@PathVariable("id") String id, @RequestBody Teacher entity) {
         loggerService.logAdmin("Received PUT request in TeacherController");
         entity.setId(id);
         if (service.update(entity)) {
@@ -50,7 +50,7 @@ public class TeacherController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         loggerService.logAdmin("Received DELETE request in TeacherController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted Teacher " + id);

@@ -29,7 +29,7 @@ public class BatchController {
     }
 
     @GetMapping("/batches/{id}")
-    public ResponseEntity<Batch> getBatchById(@PathVariable String id) {
+    public ResponseEntity<Batch> getBatchById(@PathVariable("id") String id) {
         return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -43,7 +43,7 @@ public class BatchController {
     }
 
     @PutMapping("/batches/{id}")
-    public ResponseEntity<Batch> updateBatch(@PathVariable String id, @RequestBody Batch entity) {
+    public ResponseEntity<Batch> updateBatch(@PathVariable("id") String id, @RequestBody Batch entity) {
         loggerService.logAdmin("Received PUT request in BatchController");
         entity.setId(id);
         if (service.update(entity)) {
@@ -54,7 +54,7 @@ public class BatchController {
     }
 
     @DeleteMapping("/batches/{id}")
-    public ResponseEntity<Void> deleteBatch(@PathVariable String id) {
+    public ResponseEntity<Void> deleteBatch(@PathVariable("id") String id) {
         loggerService.logAdmin("Received DELETE request in BatchController");
         if (service.delete(id)) {
             loggerService.logAdmin("Admin deleted Batch " + id);
@@ -72,7 +72,7 @@ public class BatchController {
     }
 
     @GetMapping("/sections/{id}")
-    public ResponseEntity<Section> getSectionById(@PathVariable String id) {
+    public ResponseEntity<Section> getSectionById(@PathVariable("id") String id) {
         return service.findSectionById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -86,7 +86,7 @@ public class BatchController {
     }
 
     @PutMapping("/sections/{id}")
-    public ResponseEntity<Section> updateSection(@PathVariable String id, @RequestBody Section entity) {
+    public ResponseEntity<Section> updateSection(@PathVariable("id") String id, @RequestBody Section entity) {
         loggerService.logAdmin("Received PUT request in BatchController");
         entity.setId(id);
         if (service.updateSection(entity)) {
@@ -97,7 +97,7 @@ public class BatchController {
     }
 
     @DeleteMapping("/sections/{id}")
-    public ResponseEntity<Void> deleteSection(@PathVariable String id) {
+    public ResponseEntity<Void> deleteSection(@PathVariable("id") String id) {
         loggerService.logAdmin("Received DELETE request in BatchController");
         if (service.deleteSection(id)) {
             loggerService.logAdmin("Admin deleted Section " + id);

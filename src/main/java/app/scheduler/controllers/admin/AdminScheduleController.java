@@ -23,7 +23,7 @@ public class AdminScheduleController {
 
     @PostMapping("/generate/{semesterId}")
     public ResponseEntity<List<Event>> generateSchedule(
-            @PathVariable String semesterId,
+            @PathVariable("semesterId") String semesterId,
             @RequestBody GeneratorConfigRequest configRequest) {
         GeneratorConfig config = new GeneratorConfig();
         config.setPopulationSize(configRequest.populationSize);
