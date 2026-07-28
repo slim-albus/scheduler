@@ -6,9 +6,16 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.*;
+import app.scheduler.services.LoggerService;
 
 @Component
 public class CspScheduleGenerator implements ScheduleGenerator {
+
+    private final LoggerService log;
+
+    public CspScheduleGenerator(LoggerService log) {
+        this.log = log;
+    }
 
     private static final int MAX_SEARCH_NODES = 500_000;
     private int searchNodes;
@@ -96,6 +103,7 @@ public class CspScheduleGenerator implements ScheduleGenerator {
     @Override
     public List<Event> generate(GeneratorInput input) {
         List<ClassInstance> instances = buildClassInstances(input);
+        log.logSchedule(String.format("Starting CSP Schedule Generation for %d total class instances", instances.size()));
         List<ScheduleItem> placed = new ArrayList<>();
 
         boolean success = false;
@@ -104,26 +112,34 @@ public class CspScheduleGenerator implements ScheduleGenerator {
         // Level 1: Relaxed load (daily load = 5, no same theory course on same day)
         // Level 2: Relaxed load and relaxed course distribution (daily load = 5, allow same theory course)
         for (int level = 0; level <= 2; level++) {
+            log.logSchedule(String.format("Attempting scheduling at Relaxation Level %d...", level));
             searchNodes = 0;
             searchLimitHit = false;
 
             // 1. Try randomized greedy placement
             placed = randomizedGreedyPlacement(instances, input, level);
             if (placed.size() == instances.size()) {
+                log.logSchedule(String.format("Successfully generated schedule using Randomized Greedy Placement at Level %d", level));
                 success = true;
                 break;
             }
 
             // 2. Try backtracking search with forward checking
             placed = new ArrayList<>();
+            log.logSchedule(String.format("Randomized greedy failed at Level %d. Falling back to Backtracking CSP search...", level));
             if (placeAll(instances, placed, input, level)) {
+                log.logSchedule(String.format("Successfully generated schedule using Backtracking CSP Search at Level %d. Search nodes explored: %d", level, searchNodes));
                 success = true;
                 break;
+            }
+            if (searchLimitHit) {
+                log.logSchedule(String.format("WARNING: Search node limit (%d) hit at Level %d. Branch pruning was insufficient.", MAX_SEARCH_NODES, level));
             }
         }
 
         // 3. Fallback to greedy if still not completely successful
         if (!success) {
+            log.logSchedule("WARNING: CSP Search failed at all levels. Falling back to best-effort Greedy Placement.");
             List<ScheduleItem> greedyPlaced = greedyPlacement(instances, input, 2);
             if (greedyPlaced.size() > placed.size()) {
                 placed = greedyPlaced;
@@ -228,7 +244,7 @@ public class CspScheduleGenerator implements ScheduleGenerator {
     }
 
     // Tries multiple randomized greedy placements to find the best possible schedule.
-    // This provides a good initial population for the genetic algorithm or serves as a fallback.
+    // This provides a good initial layout for the solver or serves as a fallback.
     private List<ScheduleItem> randomizedGreedyPlacement(List<ClassInstance> instances, GeneratorInput input, int relaxationLevel) {
         List<ScheduleItem> best = List.of();
         for (int attempt = 0; attempt < 800; attempt++) {
@@ -300,6 +316,9 @@ public class CspScheduleGenerator implements ScheduleGenerator {
         if (++searchNodes > MAX_SEARCH_NODES) {
             searchLimitHit = true;
             return false;
+        }
+        if (searchNodes % 50000 == 0) {
+            log.logSchedule(String.format("Backtracking search in progress... Explored %d nodes. Placed %d/%d items.", searchNodes, placed.size(), placed.size() + remaining.size()));
         }
         if (remaining.isEmpty()) {
             return true;

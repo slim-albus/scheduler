@@ -26,7 +26,7 @@ public class AdminScheduleController {
             @PathVariable("semesterId") String semesterId,
             @RequestBody GeneratorConfigRequest configRequest) {
         GeneratorConfig config = new GeneratorConfig();
-        config.setPopulationSize(configRequest.populationSize);
+        config.setMaxClassesPerDay(configRequest.maxClassesPerDay);
 
         loggerService.logAdmin("Admin triggered schedule generation for semester " + semesterId);
         try {
