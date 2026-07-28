@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
-public class GeneticAlgorithmGenerator implements ScheduleGenerator {
+public class CspScheduleGenerator implements ScheduleGenerator {
 
     private static final int MAX_SEARCH_NODES = 500_000;
     private int searchNodes;
