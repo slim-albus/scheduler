@@ -29,8 +29,10 @@ public class BatchCourseMappingService {
     }
 
     public BatchCourseMapping save(BatchCourseMapping entity) {
-        loggerService.logSystem("Saving entity in BatchCourseMappingService");
-        return repository.save(entity);
+        loggerService.logSystem("Creating new BatchCourseMapping...");
+        var saved = repository.save(entity);
+        loggerService.logSystem("Successfully saved BatchCourseMapping.");
+        return saved;
     }
 
     public List<BatchCourseMapping> saveAll(List<BatchCourseMapping> entities) {
@@ -38,12 +40,17 @@ public class BatchCourseMappingService {
     }
 
     public boolean update(BatchCourseMapping entity) {
-        loggerService.logSystem("Updating entity in BatchCourseMappingService");
-        return repository.update(entity);
+        loggerService.logSystem("Updating BatchCourseMapping...");
+        boolean updated = repository.update(entity);
+        loggerService.logSystem(updated ? "Successfully updated BatchCourseMapping." : "Failed to update BatchCourseMapping.");
+        return updated;
     }
 
     public boolean delete(String id) {
-        return repository.delete(id);
+        loggerService.logSystem("Deleting BatchCourseMapping...");
+        boolean deleted = repository.delete(id);
+        loggerService.logSystem(deleted ? "Successfully deleted BatchCourseMapping." : "Failed to delete BatchCourseMapping.");
+        return deleted;
     }
     
     public List<BatchCourseMapping> findBySemesterId(String semesterId) {

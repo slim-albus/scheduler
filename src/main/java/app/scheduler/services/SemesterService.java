@@ -29,15 +29,19 @@ public class SemesterService {
     }
 
     public Semester save(Semester entity) {
-        loggerService.logSystem("Saving entity in SemesterService");
+        loggerService.logSystem("Creating new Semester...");
         adjustDates(entity);
-        return repository.save(entity);
+        var saved = repository.save(entity);
+        loggerService.logSystem("Successfully saved Semester.");
+        return saved;
     }
 
     public boolean update(Semester entity) {
-        loggerService.logSystem("Updating entity in SemesterService");
+        loggerService.logSystem("Updating Semester...");
         adjustDates(entity);
-        return repository.update(entity);
+        boolean updated = repository.update(entity);
+        loggerService.logSystem(updated ? "Successfully updated Semester." : "Failed to update Semester.");
+        return updated;
     }
 
     private void adjustDates(Semester entity) {
@@ -57,6 +61,9 @@ public class SemesterService {
     }
 
     public boolean delete(String id) {
-        return repository.delete(id);
+        loggerService.logSystem("Deleting Semester...");
+        boolean deleted = repository.delete(id);
+        loggerService.logSystem(deleted ? "Successfully deleted Semester." : "Failed to delete Semester.");
+        return deleted;
     }
 }

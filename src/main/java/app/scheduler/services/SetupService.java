@@ -46,7 +46,7 @@ public class SetupService implements CommandLineRunner {
         loggerService.logSystem("Starting SetupService to seed database...");
 
         // Create Semesters (Make Fall2026 active by default)
-        Semester fall2026 = createSemester("Fall2026", LocalDate.of(2025, 8, 1), "2026", true);
+        Semester fall2026 = createSemester("Fall2026", LocalDate.of(2026, 7, 27), "2026", true);
         Semester spring2027 = createSemester("Spring2027", LocalDate.of(2026, 1, 15), "2027", false);
         Semester summer2027 = createSemester("Summer2027", LocalDate.of(2027, 5, 20), "2027", false);
 
@@ -77,17 +77,32 @@ public class SetupService implements CommandLineRunner {
 
         // Create Teachers
         Teacher tLecCS1 = createTeacher("Mohamed Abdalla", "mohamed.abdalla@hilcoeschool.com", "COMPUTER_SCIENCE", "LECTURE");
-        Teacher tLecSWE1 = createTeacher("Sami Saad", "sami.saad@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LECTURE");
         Teacher tLecCS2 = createTeacher("Khaled Omar", "khaled.omar@hilcoeschool.com", "COMPUTER_SCIENCE", "LECTURE");
-        Teacher tLecSWE2 = createTeacher("Ali Ahmed", "ali.ahmed@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LECTURE");
         Teacher tLecCS3 = createTeacher("Hassan Ibrahim", "hassan.ibrahim@hilcoeschool.com", "COMPUTER_SCIENCE", "LECTURE");
+        Teacher tLecCS4 = createTeacher("Youssef Nabil", "youssef.nabil@hilcoeschool.com", "COMPUTER_SCIENCE", "LECTURE");
+        Teacher tLecCS5 = createTeacher("Amr Hisham", "amr.hisham@hilcoeschool.com", "COMPUTER_SCIENCE", "LECTURE");
+        Teacher tLecCS6 = createTeacher("Tariq Ali", "tariq.ali@hilcoeschool.com", "COMPUTER_SCIENCE", "LECTURE");
+
+        Teacher tLecSWE1 = createTeacher("Sami Saad", "sami.saad@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LECTURE");
+        Teacher tLecSWE2 = createTeacher("Ali Ahmed", "ali.ahmed@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LECTURE");
         Teacher tLecSWE3 = createTeacher("Ahmed Mohamed", "ahmed.mohamed@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LECTURE");
+        Teacher tLecSWE4 = createTeacher("Fady Ghabour", "fady.ghabour@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LECTURE");
+        Teacher tLecSWE5 = createTeacher("Mina Maher", "mina.maher@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LECTURE");
+        Teacher tLecSWE6 = createTeacher("Emad Youssef", "emad.youssef@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LECTURE");
 
         Teacher tLabCS1 = createTeacher("Omar Mostafa", "omar.mostafa@hilcoeschool.com", "COMPUTER_SCIENCE", "LAB");
-        Teacher tLabSWE1 = createTeacher("Tamer Hamed", "tamer.hamed@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LAB");
         Teacher tLabCS2 = createTeacher("Karim Mostafa", "karim.mostafa@hilcoeschool.com", "COMPUTER_SCIENCE", "LAB");
-        Teacher tLabSWE2 = createTeacher("Osama Samir", "osama.samir@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LAB");
         Teacher tLabCS3 = createTeacher("Karim Samir", "karim.samir@hilcoeschool.com", "COMPUTER_SCIENCE", "LAB");
+        Teacher tLabCS4 = createTeacher("Ziad Sherif", "ziad.sherif@hilcoeschool.com", "COMPUTER_SCIENCE", "LAB");
+        Teacher tLabCS5 = createTeacher("Marwan Ali", "marwan.ali@hilcoeschool.com", "COMPUTER_SCIENCE", "LAB");
+        Teacher tLabCS6 = createTeacher("Adham Fawzi", "adham.fawzi@hilcoeschool.com", "COMPUTER_SCIENCE", "LAB");
+
+        Teacher tLabSWE1 = createTeacher("Tamer Hamed", "tamer.hamed@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LAB");
+        Teacher tLabSWE2 = createTeacher("Osama Samir", "osama.samir@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LAB");
+        Teacher tLabSWE3 = createTeacher("Rami Essam", "rami.essam@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LAB");
+        Teacher tLabSWE4 = createTeacher("Sherif Wagdi", "sherif.wagdi@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LAB");
+        Teacher tLabSWE5 = createTeacher("Hazem Magdy", "hazem.magdy@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LAB");
+        Teacher tLabSWE6 = createTeacher("Wael Salah", "wael.salah@hilcoeschool.com", "SOFTWARE_ENGINEERING", "LAB");
 
         // Create Courses
         Course cs101 = createCourse("Computer Science Fundamentals", "CS101", "COMPUTER_SCIENCE", 3, false);
@@ -129,27 +144,27 @@ public class SetupService implements CommandLineRunner {
         createMapping(drb2502.getId(), cs102.getId(), tLecCS1.getId(), tLabCS1.getId(), fall2026.getId()); // Lab
         createMapping(drb2502.getId(), cs103.getId(), tLecCS2.getId(), tLabCS2.getId(), fall2026.getId()); // Lab
         createMapping(drb2502.getId(), cs104.getId(), tLecCS3.getId(), tLabCS3.getId(), fall2026.getId()); // Lab
-        createMapping(drb2502.getId(), cs101.getId(), tLecCS1.getId(), null, fall2026.getId());            // Theory
-        createMapping(drb2502.getId(), cs110.getId(), tLecCS2.getId(), null, fall2026.getId());            // Theory
+        createMapping(drb2502.getId(), cs101.getId(), tLecCS4.getId(), null, fall2026.getId());            // Theory
+        createMapping(drb2502.getId(), cs110.getId(), tLecCS5.getId(), null, fall2026.getId());            // Theory
 
         // Batch 2: DRB2503 (CS) - 3 Lab, 2 Theory
-        createMapping(drb2503.getId(), cs105.getId(), tLecCS1.getId(), tLabCS1.getId(), fall2026.getId()); // Lab
-        createMapping(drb2503.getId(), cs106.getId(), tLecCS2.getId(), tLabCS2.getId(), fall2026.getId()); // Lab
-        createMapping(drb2503.getId(), cs107.getId(), tLecCS3.getId(), tLabCS3.getId(), fall2026.getId()); // Lab
+        createMapping(drb2503.getId(), cs105.getId(), tLecCS4.getId(), tLabCS4.getId(), fall2026.getId()); // Lab
+        createMapping(drb2503.getId(), cs106.getId(), tLecCS5.getId(), tLabCS5.getId(), fall2026.getId()); // Lab
+        createMapping(drb2503.getId(), cs107.getId(), tLecCS6.getId(), tLabCS6.getId(), fall2026.getId()); // Lab
         createMapping(drb2503.getId(), cs111.getId(), tLecCS1.getId(), null, fall2026.getId());            // Theory
         createMapping(drb2503.getId(), cs112.getId(), tLecCS2.getId(), null, fall2026.getId());            // Theory
 
         // Batch 3: DRBSE2502 (SWE) - 3 Lab, 2 Theory
         createMapping(drbse2502.getId(), swe202.getId(), tLecSWE1.getId(), tLabSWE1.getId(), fall2026.getId()); // Lab
         createMapping(drbse2502.getId(), swe203.getId(), tLecSWE2.getId(), tLabSWE2.getId(), fall2026.getId()); // Lab
-        createMapping(drbse2502.getId(), swe205.getId(), tLecSWE3.getId(), tLabSWE1.getId(), fall2026.getId()); // Lab
-        createMapping(drbse2502.getId(), swe201.getId(), tLecSWE1.getId(), null, fall2026.getId());             // Theory
-        createMapping(drbse2502.getId(), swe204.getId(), tLecSWE2.getId(), null, fall2026.getId());             // Theory
+        createMapping(drbse2502.getId(), swe205.getId(), tLecSWE3.getId(), tLabSWE3.getId(), fall2026.getId()); // Lab
+        createMapping(drbse2502.getId(), swe201.getId(), tLecSWE4.getId(), null, fall2026.getId());             // Theory
+        createMapping(drbse2502.getId(), swe204.getId(), tLecSWE5.getId(), null, fall2026.getId());             // Theory
 
         // Batch 4: DRBSE2503 (SWE) - 3 Lab, 2 Theory
-        createMapping(drbse2503.getId(), swe206.getId(), tLecSWE1.getId(), tLabSWE2.getId(), fall2026.getId()); // Lab
-        createMapping(drbse2503.getId(), swe210.getId(), tLecSWE2.getId(), tLabSWE1.getId(), fall2026.getId()); // Lab
-        createMapping(drbse2503.getId(), swe202.getId(), tLecSWE3.getId(), tLabSWE2.getId(), fall2026.getId()); // Lab (Reusing course for demo)
+        createMapping(drbse2503.getId(), swe206.getId(), tLecSWE4.getId(), tLabSWE4.getId(), fall2026.getId()); // Lab
+        createMapping(drbse2503.getId(), swe210.getId(), tLecSWE5.getId(), tLabSWE5.getId(), fall2026.getId()); // Lab
+        createMapping(drbse2503.getId(), swe202.getId(), tLecSWE6.getId(), tLabSWE6.getId(), fall2026.getId()); // Lab (Reusing course for demo)
         createMapping(drbse2503.getId(), swe207.getId(), tLecSWE1.getId(), null, fall2026.getId());             // Theory
         createMapping(drbse2503.getId(), swe208.getId(), tLecSWE2.getId(), null, fall2026.getId());             // Theory
 

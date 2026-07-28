@@ -30,7 +30,7 @@ public class BatchService {
     }
 
     public Batch save(Batch entity) {
-        loggerService.logSystem("Saving entity in BatchService");
+        loggerService.logSystem("Creating new Batch...");
         Batch saved = repository.save(entity);
         if (entity.getSectionCount() > 0) {
             for (int i = 0; i < entity.getSectionCount(); i++) {
@@ -41,16 +41,22 @@ public class BatchService {
                 repository.saveSection(section);
             }
         }
+        loggerService.logSystem("Successfully saved Batch.");
         return saved;
     }
 
     public boolean update(Batch entity) {
-        loggerService.logSystem("Updating entity in BatchService");
-        return repository.update(entity);
+        loggerService.logSystem("Updating Batch...");
+        boolean updated = repository.update(entity);
+        loggerService.logSystem(updated ? "Successfully updated Batch." : "Failed to update Batch.");
+        return updated;
     }
 
     public boolean delete(String id) {
-        return repository.delete(id);
+        loggerService.logSystem("Deleting Batch...");
+        boolean deleted = repository.delete(id);
+        loggerService.logSystem(deleted ? "Successfully deleted Batch." : "Failed to delete Batch.");
+        return deleted;
     }
 
     // --- Section related methods ---
@@ -72,16 +78,23 @@ public class BatchService {
     }
 
     public Section saveSection(Section entity) {
-        loggerService.logSystem("Saving entity in BatchService");
-        return repository.saveSection(entity);
+        loggerService.logSystem("Creating new Batch...");
+        var saved = repository.saveSection(entity);
+        loggerService.logSystem("Successfully saved Section.");
+        return saved;
     }
 
     public boolean updateSection(Section entity) {
-        loggerService.logSystem("Updating entity in BatchService");
-        return repository.updateSection(entity);
+        loggerService.logSystem("Updating Batch...");
+        boolean updated = repository.updateSection(entity);
+        loggerService.logSystem(updated ? "Successfully updated Section." : "Failed to update Section.");
+        return updated;
     }
 
     public boolean deleteSection(String id) {
-        return repository.deleteSection(id);
+        loggerService.logSystem("Deleting Section...");
+        boolean deleted = repository.deleteSection(id);
+        loggerService.logSystem(deleted ? "Successfully deleted Section." : "Failed to delete Section.");
+        return deleted;
     }
 }

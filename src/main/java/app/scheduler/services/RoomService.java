@@ -29,16 +29,23 @@ public class RoomService {
     }
 
     public Room save(Room entity) {
-        loggerService.logSystem("Saving entity in RoomService");
-        return repository.save(entity);
+        loggerService.logSystem("Creating new Room...");
+        var saved = repository.save(entity);
+        loggerService.logSystem("Successfully saved Room.");
+        return saved;
     }
 
     public boolean update(Room entity) {
-        loggerService.logSystem("Updating entity in RoomService");
-        return repository.update(entity);
+        loggerService.logSystem("Updating Room...");
+        boolean updated = repository.update(entity);
+        loggerService.logSystem(updated ? "Successfully updated Room." : "Failed to update Room.");
+        return updated;
     }
 
     public boolean delete(String id) {
-        return repository.delete(id);
+        loggerService.logSystem("Deleting Room...");
+        boolean deleted = repository.delete(id);
+        loggerService.logSystem(deleted ? "Successfully deleted Room." : "Failed to delete Room.");
+        return deleted;
     }
 }

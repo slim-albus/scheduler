@@ -388,6 +388,7 @@ public class ScheduleService {
                     "No active semester found or active semester has no start date. Returning empty room occupation.");
             return new ArrayList<>();
         }
+        System.out.println("Client time: " + clientTime);
 
         // Calculate week and day
         java.time.LocalDate start = active.getStartDate()
@@ -429,7 +430,9 @@ public class ScheduleService {
             loggerService.logMap("No rooms occupied at the current time. It is break time or outside working hours.");
             // return new ArrayList<>();
         }
-
+        
+        // targetPeriod = 2;
+        // targetWeek = 1;
         // If outside normal hours or during break, we can just return empty or the next
         // period.
         // For simplicity, if targetPeriod is 0, we can just say no rooms are occupied

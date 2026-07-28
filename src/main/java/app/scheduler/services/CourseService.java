@@ -29,16 +29,23 @@ public class CourseService {
     }
 
     public Course save(Course entity) {
-        loggerService.logSystem("Saving entity in CourseService");
-        return repository.save(entity);
+        loggerService.logSystem("Creating new Course...");
+        var saved = repository.save(entity);
+        loggerService.logSystem("Successfully saved Course.");
+        return saved;
     }
 
     public boolean update(Course entity) {
-        loggerService.logSystem("Updating entity in CourseService");
-        return repository.update(entity);
+        loggerService.logSystem("Updating Course...");
+        boolean updated = repository.update(entity);
+        loggerService.logSystem(updated ? "Successfully updated Course." : "Failed to update Course.");
+        return updated;
     }
 
     public boolean delete(String id) {
-        return repository.delete(id);
+        loggerService.logSystem("Deleting Course...");
+        boolean deleted = repository.delete(id);
+        loggerService.logSystem(deleted ? "Successfully deleted Course." : "Failed to delete Course.");
+        return deleted;
     }
 }

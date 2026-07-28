@@ -31,18 +31,24 @@ public class StudentService {
     }
 
     public Student save(Student entity) {
-        loggerService.logSystem("Saving entity in StudentService");
+        loggerService.logSystem("Creating new Student...");
         Student saved = repository.save(entity);
         authService.autoRegister(saved.getStudentId(), "STUDENT", null, saved.getId());
+        loggerService.logSystem("Successfully saved Student.");
         return saved;
     }
 
     public boolean update(Student entity) {
-        loggerService.logSystem("Updating entity in StudentService");
-        return repository.update(entity);
+        loggerService.logSystem("Updating Student...");
+        boolean updated = repository.update(entity);
+        loggerService.logSystem(updated ? "Successfully updated Student." : "Failed to update Student.");
+        return updated;
     }
 
     public boolean delete(String id) {
-        return repository.delete(id);
+        loggerService.logSystem("Deleting Student...");
+        boolean deleted = repository.delete(id);
+        loggerService.logSystem(deleted ? "Successfully deleted Student." : "Failed to delete Student.");
+        return deleted;
     }
 }
