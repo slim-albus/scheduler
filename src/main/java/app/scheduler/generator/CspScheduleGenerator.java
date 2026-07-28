@@ -92,8 +92,19 @@ public class CspScheduleGenerator implements ScheduleGenerator {
         }
     }
 
-    private static final List<Integer> TEACHING_DAYS = List.of(0, 1, 2, 3, 4, 5); // 0-indexed days (Mon-Sat)
-    private static final List<Integer> PERIODS = List.of(0, 1, 2, 3, 4); // 5 periods
+    private List<Integer> getTeachingDays(GeneratorInput input) {
+        List<Integer> days = new ArrayList<>();
+        int daysPerWeek = input.getConfig() != null ? input.getConfig().getDaysPerWeek() : 6;
+        for (int i = 0; i < daysPerWeek; i++) days.add(i);
+        return days;
+    }
+
+    private List<Integer> getPeriods(GeneratorInput input) {
+        List<Integer> periods = new ArrayList<>();
+        int periodsPerDay = input.getConfig() != null ? input.getConfig().getPeriodsPerDay() : 5;
+        for (int i = 0; i < periodsPerDay; i++) periods.add(i);
+        return periods;
+    }
 
     @Override
     public boolean supportsPartialGeneration() {
@@ -220,7 +231,7 @@ public class CspScheduleGenerator implements ScheduleGenerator {
                     .toList();
 
             for (Section section : batchSections) {
-                int theoryCount = 2; // default
+                int theoryCount = input.getConfig() != null ? input.getConfig().getLecturesPerCoursePerWeek() : 2;
                 for (int i = 0; i < theoryCount; i++) {
                     instances.add(new ClassInstance(UUID.randomUUID().toString(), mapping.getId(), course.getId(),
                             "THEORY", section.getId(), null, mapping.getLectureTeacherId(), section.getStudentCount(), course.isHasLab()));
@@ -384,11 +395,12 @@ public class CspScheduleGenerator implements ScheduleGenerator {
                 .orElse(null);
         if (teacher == null) return candidates;
 
-        int maxDailyLoad = (relaxationLevel >= 1) ? 5 : 3;
+        int baseLoad = input.getConfig() != null ? input.getConfig().getMaxClassesPerDay() : 3;
+        int maxDailyLoad = (relaxationLevel >= 1) ? baseLoad + 2 : baseLoad;
         boolean enforceSameDayTheory = (relaxationLevel == 0);
 
-        for (int day : TEACHING_DAYS) {
-            for (int period : PERIODS) {
+        for (int day : getTeachingDays(input)) {
+            for (int period : getPeriods(input)) {
                 if (dailyLoad(placed, instance, day) >= maxDailyLoad) {
                     continue;
                 }
