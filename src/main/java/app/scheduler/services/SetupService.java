@@ -96,15 +96,15 @@ public class SetupService implements CommandLineRunner {
         Course cs104 = createCourse("Algorithms", "CS104", "COMPUTER_SCIENCE", 3, true);
         Course cs105 = createCourse("Database Systems", "CS105", "COMPUTER_SCIENCE", 3, true);
         
-        createCourse("Computer Networks", "CS106", "COMPUTER_SCIENCE", 3, true);
-        createCourse("Operating Systems", "CS107", "COMPUTER_SCIENCE", 3, true);
-        createCourse("Artificial Intelligence", "CS108", "COMPUTER_SCIENCE", 3, true);
-        createCourse("Machine Learning", "CS109", "COMPUTER_SCIENCE", 3, true);
-        createCourse("Web Development", "CS110", "COMPUTER_SCIENCE", 3, false);
-        createCourse("Mobile Development", "CS111", "COMPUTER_SCIENCE", 3, false);
-        createCourse("Computer Graphics", "CS112", "COMPUTER_SCIENCE", 3, false);
-        createCourse("Cybersecurity", "CS113", "COMPUTER_SCIENCE", 3, false);
-        createCourse("Cloud Computing", "CS114", "COMPUTER_SCIENCE", 3, false);
+        Course cs106 = createCourse("Computer Networks", "CS106", "COMPUTER_SCIENCE", 3, true);
+        Course cs107 = createCourse("Operating Systems", "CS107", "COMPUTER_SCIENCE", 3, true);
+        Course cs108 = createCourse("Artificial Intelligence", "CS108", "COMPUTER_SCIENCE", 3, true);
+        Course cs109 = createCourse("Machine Learning", "CS109", "COMPUTER_SCIENCE", 3, true);
+        Course cs110 = createCourse("Web Development", "CS110", "COMPUTER_SCIENCE", 3, false);
+        Course cs111 = createCourse("Mobile Development", "CS111", "COMPUTER_SCIENCE", 3, false);
+        Course cs112 = createCourse("Computer Graphics", "CS112", "COMPUTER_SCIENCE", 3, false);
+        Course cs113 = createCourse("Cybersecurity", "CS113", "COMPUTER_SCIENCE", 3, false);
+        Course cs114 = createCourse("Cloud Computing", "CS114", "COMPUTER_SCIENCE", 3, false);
         createCourse("Blockchain Systems", "CS115", "COMPUTER_SCIENCE", 3, false);
         createCourse("Internet of Things", "CS116", "COMPUTER_SCIENCE", 3, false);
         createCourse("AR/VR Design", "CS117", "COMPUTER_SCIENCE", 3, false);
@@ -116,26 +116,42 @@ public class SetupService implements CommandLineRunner {
         Course swe202 = createCourse("Software Testing", "SWE202", "SOFTWARE_ENGINEERING", 3, true);
         Course swe203 = createCourse("Software Architecture", "SWE203", "SOFTWARE_ENGINEERING", 3, true);
         
-        createCourse("Project Management", "SWE204", "SOFTWARE_ENGINEERING", 3, false);
-        createCourse("Quality Assurance", "SWE205", "SOFTWARE_ENGINEERING", 3, true);
-        createCourse("Configuration Management", "SWE206", "SOFTWARE_ENGINEERING", 3, true);
-        createCourse("Process Improvement", "SWE207", "SOFTWARE_ENGINEERING", 3, false);
-        createCourse("Software Metrics", "SWE208", "SOFTWARE_ENGINEERING", 3, false);
-        createCourse("Requirements Engineering", "SWE209", "SOFTWARE_ENGINEERING", 3, false);
-        createCourse("Software Security", "SWE210", "SOFTWARE_ENGINEERING", 3, true);
+        Course swe204 = createCourse("Project Management", "SWE204", "SOFTWARE_ENGINEERING", 3, false);
+        Course swe205 = createCourse("Quality Assurance", "SWE205", "SOFTWARE_ENGINEERING", 3, true);
+        Course swe206 = createCourse("Configuration Management", "SWE206", "SOFTWARE_ENGINEERING", 3, true);
+        Course swe207 = createCourse("Process Improvement", "SWE207", "SOFTWARE_ENGINEERING", 3, false);
+        Course swe208 = createCourse("Software Metrics", "SWE208", "SOFTWARE_ENGINEERING", 3, false);
+        Course swe209 = createCourse("Requirements Engineering", "SWE209", "SOFTWARE_ENGINEERING", 3, false);
+        Course swe210 = createCourse("Software Security", "SWE210", "SOFTWARE_ENGINEERING", 3, true);
 
         // Auto-seed Course Mappings so algorithm can run immediately without manual config
-        createMapping(drb2502.getId(), cs101.getId(), tLecCS1.getId(), null, fall2026.getId());
-        createMapping(drb2502.getId(), cs102.getId(), tLecCS1.getId(), tLabCS1.getId(), fall2026.getId());
-        createMapping(drb2502.getId(), cs103.getId(), tLecCS2.getId(), tLabCS2.getId(), fall2026.getId());
+        // Batch 1: DRB2502 (CS) - 3 Lab, 2 Theory
+        createMapping(drb2502.getId(), cs102.getId(), tLecCS1.getId(), tLabCS1.getId(), fall2026.getId()); // Lab
+        createMapping(drb2502.getId(), cs103.getId(), tLecCS2.getId(), tLabCS2.getId(), fall2026.getId()); // Lab
+        createMapping(drb2502.getId(), cs104.getId(), tLecCS3.getId(), tLabCS3.getId(), fall2026.getId()); // Lab
+        createMapping(drb2502.getId(), cs101.getId(), tLecCS1.getId(), null, fall2026.getId());            // Theory
+        createMapping(drb2502.getId(), cs110.getId(), tLecCS2.getId(), null, fall2026.getId());            // Theory
 
-        createMapping(drb2503.getId(), cs104.getId(), tLecCS2.getId(), tLabCS2.getId(), fall2026.getId());
-        createMapping(drb2503.getId(), cs105.getId(), tLecCS3.getId(), tLabCS3.getId(), fall2026.getId());
+        // Batch 2: DRB2503 (CS) - 3 Lab, 2 Theory
+        createMapping(drb2503.getId(), cs105.getId(), tLecCS1.getId(), tLabCS1.getId(), fall2026.getId()); // Lab
+        createMapping(drb2503.getId(), cs106.getId(), tLecCS2.getId(), tLabCS2.getId(), fall2026.getId()); // Lab
+        createMapping(drb2503.getId(), cs107.getId(), tLecCS3.getId(), tLabCS3.getId(), fall2026.getId()); // Lab
+        createMapping(drb2503.getId(), cs111.getId(), tLecCS1.getId(), null, fall2026.getId());            // Theory
+        createMapping(drb2503.getId(), cs112.getId(), tLecCS2.getId(), null, fall2026.getId());            // Theory
 
-        createMapping(drbse2502.getId(), swe201.getId(), tLecSWE1.getId(), null, fall2026.getId());
-        createMapping(drbse2502.getId(), swe202.getId(), tLecSWE2.getId(), tLabSWE1.getId(), fall2026.getId());
+        // Batch 3: DRBSE2502 (SWE) - 3 Lab, 2 Theory
+        createMapping(drbse2502.getId(), swe202.getId(), tLecSWE1.getId(), tLabSWE1.getId(), fall2026.getId()); // Lab
+        createMapping(drbse2502.getId(), swe203.getId(), tLecSWE2.getId(), tLabSWE2.getId(), fall2026.getId()); // Lab
+        createMapping(drbse2502.getId(), swe205.getId(), tLecSWE3.getId(), tLabSWE1.getId(), fall2026.getId()); // Lab
+        createMapping(drbse2502.getId(), swe201.getId(), tLecSWE1.getId(), null, fall2026.getId());             // Theory
+        createMapping(drbse2502.getId(), swe204.getId(), tLecSWE2.getId(), null, fall2026.getId());             // Theory
 
-        createMapping(drbse2503.getId(), swe203.getId(), tLecSWE3.getId(), tLabSWE2.getId(), fall2026.getId());
+        // Batch 4: DRBSE2503 (SWE) - 3 Lab, 2 Theory
+        createMapping(drbse2503.getId(), swe206.getId(), tLecSWE1.getId(), tLabSWE2.getId(), fall2026.getId()); // Lab
+        createMapping(drbse2503.getId(), swe210.getId(), tLecSWE2.getId(), tLabSWE1.getId(), fall2026.getId()); // Lab
+        createMapping(drbse2503.getId(), swe202.getId(), tLecSWE3.getId(), tLabSWE2.getId(), fall2026.getId()); // Lab (Reusing course for demo)
+        createMapping(drbse2503.getId(), swe207.getId(), tLecSWE1.getId(), null, fall2026.getId());             // Theory
+        createMapping(drbse2503.getId(), swe208.getId(), tLecSWE2.getId(), null, fall2026.getId());             // Theory
 
         // Create 5 students for DRB2502 batch
         java.util.List<Section> drb2502Sections = batchService.findSectionsByBatchId(drb2502.getId());
