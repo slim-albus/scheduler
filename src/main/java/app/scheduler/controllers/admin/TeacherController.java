@@ -2,7 +2,6 @@ package app.scheduler.controllers.admin;
 
 import app.scheduler.models.Teacher;
 import app.scheduler.services.TeacherService;
-import app.scheduler.services.LoggerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,16 +11,13 @@ import java.util.List;
 @RequestMapping("/api/admin/teachers")
 public class TeacherController {
     private final TeacherService service;
-    private final LoggerService loggerService;
 
-    public TeacherController(TeacherService service, LoggerService loggerService) {
+    public TeacherController(TeacherService service) {
         this.service = service;
-        this.loggerService = loggerService;
     }
 
     @GetMapping
     public ResponseEntity<List<Teacher>> getAll() {
-        loggerService.logAdmin("Admin fetched all teachers");
         return ResponseEntity.ok(service.findAll());
     }
 
@@ -34,16 +30,13 @@ public class TeacherController {
 
     @PostMapping
     public ResponseEntity<Teacher> create(@RequestBody Teacher entity) {
-        loggerService.logAdmin("Admin created Teacher");
         return ResponseEntity.ok(service.save(entity));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Teacher> update(@PathVariable("id") String id, @RequestBody Teacher entity) {
-        loggerService.logAdmin("Received PUT request in TeacherController");
         entity.setId(id);
         if (service.update(entity)) {
-            loggerService.logAdmin("Admin updated Teacher " + id);
             return ResponseEntity.ok(entity);
         }
         return ResponseEntity.notFound().build();
@@ -51,9 +44,7 @@ public class TeacherController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {
-        loggerService.logAdmin("Received DELETE request in TeacherController");
         if (service.delete(id)) {
-            loggerService.logAdmin("Admin deleted Teacher " + id);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();

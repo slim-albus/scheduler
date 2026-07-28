@@ -77,7 +77,7 @@ public class ScheduleService {
         }
 
         List<Event> events = generator.generate(input);
-
+        loggerService.logSchedule(String.format("inserting %d generated events into database", events.size()));
         for (Event e : events) {
             eventRepo.save(e);
         }

@@ -2,7 +2,6 @@ package app.scheduler.controllers.admin;
 
 import app.scheduler.models.Semester;
 import app.scheduler.services.SemesterService;
-import app.scheduler.services.LoggerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,16 +11,13 @@ import java.util.List;
 @RequestMapping("/api/admin/semesters")
 public class SemesterController {
     private final SemesterService service;
-    private final LoggerService loggerService;
 
-    public SemesterController(SemesterService service, LoggerService loggerService) {
+    public SemesterController(SemesterService service) {
         this.service = service;
-        this.loggerService = loggerService;
     }
 
     @GetMapping
     public ResponseEntity<List<Semester>> getAll() {
-        loggerService.logAdmin("Admin fetched all semesters");
         return ResponseEntity.ok(service.findAll());
     }
 
@@ -34,16 +30,13 @@ public class SemesterController {
 
     @PostMapping
     public ResponseEntity<Semester> create(@RequestBody Semester entity) {
-        loggerService.logAdmin("Admin created Semester");
         return ResponseEntity.ok(service.save(entity));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Semester> update(@PathVariable("id") String id, @RequestBody Semester entity) {
-        loggerService.logAdmin("Received PUT request in SemesterController");
         entity.setId(id);
         if (service.update(entity)) {
-            loggerService.logAdmin("Admin updated Semester " + id);
             return ResponseEntity.ok(entity);
         }
         return ResponseEntity.notFound().build();
@@ -51,9 +44,7 @@ public class SemesterController {
 
     @PutMapping("/{id}/active")
     public ResponseEntity<Void> setActive(@PathVariable("id") String id) {
-        loggerService.logAdmin("Received PUT request in SemesterController");
         if (service.setActive(id)) {
-            loggerService.logAdmin("Admin set active semester to " + id);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
@@ -61,9 +52,7 @@ public class SemesterController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") String id) {
-        loggerService.logAdmin("Received DELETE request in SemesterController");
         if (service.delete(id)) {
-            loggerService.logAdmin("Admin deleted Semester " + id);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();

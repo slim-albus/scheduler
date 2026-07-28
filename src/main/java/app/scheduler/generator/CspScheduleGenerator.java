@@ -167,6 +167,7 @@ public class CspScheduleGenerator implements ScheduleGenerator {
             semStart = semStart.minusDays(1);
         }
 
+        log.logSchedule(String.format("total placements generated : %d", placed.size()));
         for (int week = 1; week <= totalWeeks; week++) {
             for (ScheduleItem item : placed) {
                 Event event = new Event();

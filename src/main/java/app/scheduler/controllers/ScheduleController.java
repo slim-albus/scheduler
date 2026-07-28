@@ -7,7 +7,6 @@ import app.scheduler.models.dtos.SlotDto;
 import app.scheduler.models.dtos.EventDto;
 import app.scheduler.models.dtos.RoomOccupationDto;
 import app.scheduler.services.ScheduleService;
-import app.scheduler.services.LoggerService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +17,9 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/schedule")
 public class ScheduleController {
-    private final LoggerService loggerService;
     private final ScheduleService scheduleService;
     
-    public ScheduleController(ScheduleService scheduleService, LoggerService loggerService) {
-        this.loggerService = loggerService;
+    public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
 
@@ -43,8 +40,6 @@ public class ScheduleController {
                 targetSemesterId = activeSem.getId();
             }
         }
-
-        loggerService.logSchedule("Fetching schedule for " + role + " " + user.getUsername() + " in semester " + targetSemesterId);
         
         if ("STUDENT".equals(role)) {
             List<Event> studentEvents = scheduleService.getScheduleForStudent(user.getStudentId(), targetSemesterId);
@@ -64,8 +59,6 @@ public class ScheduleController {
             @RequestParam(name = "teacherId", required = false) String teacherId,
             @RequestParam(name = "startWeek", required = false) Integer startWeek,
             @RequestParam(name = "eventIdToIgnore", required = false) String eventIdToIgnore) {
-            
-        loggerService.logSchedule("Fetching available slots for section: " + sectionId + " startWeek: " + startWeek);
         return ResponseEntity.ok(scheduleService.getAvailableSlots(semesterId, sectionId, teacherId, startWeek, eventIdToIgnore));
     }
 
@@ -89,24 +82,18 @@ public class ScheduleController {
                 targetTime = LocalDateTime.now();
             }
         }
-        
-        loggerService.logMap("Fetching live room occupation for time " + targetTime);
         return ResponseEntity.ok(scheduleService.getLiveRoomOccupation(targetTime));
     }
 
     @PutMapping("/event/{id}/cancel")
     public ResponseEntity<Event> cancelEvent(@PathVariable("id") String id, HttpServletRequest request) {
-        loggerService.logAdmin("Received PUT request in ScheduleController");
         User user = (User) request.getAttribute("user");
-        loggerService.logSchedule("User " + user.getUsername() + " cancelling event: " + id);
         return ResponseEntity.ok(scheduleService.cancelEvent(id, user));
     }
 
     @PutMapping("/event/{id}/restore")
     public ResponseEntity<Event> restoreEvent(@PathVariable("id") String id, HttpServletRequest request) {
-        loggerService.logAdmin("Received PUT request in ScheduleController");
         User user = (User) request.getAttribute("user");
-        loggerService.logSchedule("User " + user.getUsername() + " restoring event: " + id);
         return ResponseEntity.ok(scheduleService.restoreEvent(id, user));
     }
 
@@ -118,17 +105,13 @@ public class ScheduleController {
             @RequestParam("period") int period,
             @RequestParam("roomId") String roomId,
             HttpServletRequest request) {
-        loggerService.logAdmin("Received PUT request in ScheduleController");
         User user = (User) request.getAttribute("user");
-        loggerService.logSchedule("User " + user.getUsername() + " rescheduling event: " + id + " to week " + week + " day " + day + " period " + period);
         return ResponseEntity.ok(scheduleService.rescheduleEvent(id, week, day, period, roomId, user));
     }
 
     @PostMapping("/event")
     public ResponseEntity<Event> bookEvent(@RequestBody Event event, HttpServletRequest request) {
-        loggerService.logAdmin("Received POST request in ScheduleController");
         User user = (User) request.getAttribute("user");
-        loggerService.logSchedule("User " + user.getUsername() + " booking new event for section: " + event.getSectionId());
         return ResponseEntity.ok(scheduleService.bookEvent(event, user));
     }
 }
