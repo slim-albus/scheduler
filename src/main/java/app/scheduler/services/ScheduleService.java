@@ -388,7 +388,7 @@ public class ScheduleService {
                     "No active semester found or active semester has no start date. Returning empty room occupation.");
             return new ArrayList<>();
         }
-        System.out.println("Client time: " + clientTime);
+        // System.out.println("Client time: " + clientTime);
 
         // Calculate week and day
         java.time.LocalDate start = active.getStartDate()
