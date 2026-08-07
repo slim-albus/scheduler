@@ -1,0 +1,72 @@
+package app.scheduler.repositories.impl;
+
+import app.scheduler.models.Teacher;
+import app.scheduler.repositories.TeacherRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import app.scheduler.utils.SQLQueries;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public class JdbcTeacherRepository implements TeacherRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public JdbcTeacherRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private final RowMapper<Teacher> rowMapper = (rs, rowNum) -> {
+        Teacher obj = new Teacher();
+        obj.setId(rs.getString("id"));
+        obj.setName(rs.getString("name"));
+        obj.setEmail(rs.getString("email"));
+        obj.setDepartment(rs.getString("department"));
+        obj.setType(rs.getString("type"));
+        return obj;
+    };
+
+    @Override
+    public Teacher save(Teacher entity) {
+        if (entity.getId() == null || entity.getId().isEmpty()) {
+            entity.setId(UUID.randomUUID().toString());
+        }
+        jdbcTemplate.update(
+            SQLQueries.TEACHER_INSERT,
+            entity.getId(), entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType()
+        );
+        return entity;
+    }
+
+    @Override
+    public Optional<Teacher> findById(String id) {
+        List<Teacher> results = jdbcTemplate.query(SQLQueries.TEACHER_FIND_BY_ID, rowMapper, id);
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+    }
+
+    @Override
+    public List<Teacher> findAll() {
+        return jdbcTemplate.query(SQLQueries.TEACHER_FIND_ALL, rowMapper);
+    }
+
+    @Override
+    public boolean delete(String id) {
+        jdbcTemplate.update(SQLQueries.TEACHER_DELETE_EVENTS, id);
+        jdbcTemplate.update(SQLQueries.TEACHER_CLEAR_LECTURE_TEACHER, id);
+        jdbcTemplate.update(SQLQueries.TEACHER_CLEAR_LAB_INSTRUCTOR, id);
+        return jdbcTemplate.update(SQLQueries.TEACHER_DELETE, id) > 0;
+    }
+
+    @Override
+    public boolean update(Teacher entity) {
+        return jdbcTemplate.update(
+            SQLQueries.TEACHER_UPDATE,
+            entity.getName(), entity.getEmail(), entity.getDepartment(), entity.getType(), entity.getId()
+        ) > 0;
+    }
+
+}

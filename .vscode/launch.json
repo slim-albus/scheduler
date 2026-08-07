@@ -1,14 +1,24 @@
 {
-    "configurations": [
-        {
-            "type": "java",
-            "name": "Spring Boot-SchedulerApplication<scheduler>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "app.scheduler.SchedulerApplication",
-            "projectName": "scheduler",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        }
-    ]
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-SchedulerApplication<scheduler>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "app.scheduler.SchedulerApplication",
+      "projectName": "scheduler",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SchedulerApplication<schedule>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "app.scheduler.SchedulerApplication",
+      "projectName": "schedule",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
 }
